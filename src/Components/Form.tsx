@@ -1,8 +1,8 @@
-import React from "react";
-import Header from "./Components/Header";
-import AppContainer from "./Components/AppContainer";
-import InputField from "./Components/InputField";
-import Button from "./Components/Button";
+import React from 'react'
+import Header from "./Header";
+import AppContainer from "./AppContainer";
+import InputField from "./InputField";
+import Button from "./Button";
 const formFields = [
   { id: 1, label: "First Name", type: "text" },
   { id: 2, label: "Last Name", type: "text" },
@@ -10,7 +10,7 @@ const formFields = [
   { id: 4, label: "Date of Birth", type: "date" },
   { id: 5, label: "Phone Number", type: "tel" },
 ];
-function App() {
+export default function Form() {
   return (
     <AppContainer>
       <div className=" p-4 mx-auto bg-white shadow-lg rounded-xl w-5/12 px-5">
@@ -21,7 +21,5 @@ function App() {
         <Button name={"Submit"} />
       </div>
     </AppContainer>
-  );
+  )
 }
-
-export default App;

@@ -24,7 +24,7 @@ export default function LabelledInput(props: propsType) {
           onClick={(_) => removeFieldCB(id)}
         >
           Remove
-        </button>{" "}
+        </button>
       </div>
     </React.Fragment>
   );

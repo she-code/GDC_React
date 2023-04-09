@@ -4,15 +4,17 @@ import Button from "./Button";
 import LabelledInput from "./LabelledInput";
 
 const formFields = [
-  { id: 1, label: "First Name", fieldType: "text" ,value:""},
-  { id: 2, label: "Last Name", fieldType: "text" ,value:""},
-  { id: 3, label: "Email", fieldType: "email" ,value:""},
-  { id: 4, label: "Date of Birth", fieldType: "date" ,value:""},
-  { id: 5, label: "Phone Number", fieldType: "tel" ,value:""},
+  { id: 1, label: "First Name", fieldType: "text", value: "" },
+  { id: 2, label: "Last Name", fieldType: "text", value: "" },
+  { id: 3, label: "Email", fieldType: "email", value: "" },
+  { id: 4, label: "Date of Birth", fieldType: "date", value: "" },
+  { id: 5, label: "Phone Number", fieldType: "tel", value: "" },
 ];
 export default function Form(props: { closeFormCB: () => void }) {
   const [state, setState] = useState(formFields);
   const [newField, setNewField] = useState("");
+
+  //creates  a new field
   const addField = () => {
     setState([
       ...state,
@@ -20,16 +22,29 @@ export default function Form(props: { closeFormCB: () => void }) {
         id: Number(new Date()),
         label: newField,
         fieldType: "text",
-        value:""
+        value: newField,
       },
     ]);
-    setNewField("")
+    setNewField("");
   };
+
+  //removes a field with the given id
   const removeField = (id: number) => {
     setState(state.filter((field) => field.id !== id));
   };
+
+  //clears the form
   const clearForm = () => {
-    setState([]);
+    const updatedFields = state.map((state) => ({ ...state, value: "" }));
+    setState(updatedFields);
+  };
+
+  //makes the form fields editable
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const existingData = [...state];
+    let valueToUpdate = existingData.find((field) => field.id === id);
+    valueToUpdate!.value = e.target.value;
+    setState(existingData);
   };
   return (
     <div className="p-4 divide-y-2 divide-dotted flex-col gap-2">
@@ -40,6 +55,8 @@ export default function Form(props: { closeFormCB: () => void }) {
             label={field.label}
             type={field.fieldType}
             removeFieldCB={removeField}
+            value={field.value}
+            handleInputChangeCB={handleChange}
           />
         ))}
       </div>
@@ -59,7 +76,6 @@ export default function Form(props: { closeFormCB: () => void }) {
 
         <Button name={"Close Form"} handleEvent={props.closeFormCB} />
         <Button name={"Clear Form"} handleEvent={clearForm} />
-
       </div>
     </div>
   );

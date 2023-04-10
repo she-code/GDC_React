@@ -1,28 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Button from "./Button";
 import LabelledInput from "./LabelledInput";
 
-const formFields = [
-  { id: 1, label: "First Name", fieldType: "text" ,value:""},
-  { id: 2, label: "Last Name", fieldType: "text" ,value:""},
-  { id: 3, label: "Email", fieldType: "email" ,value:""},
-  { id: 4, label: "Date of Birth", fieldType: "date" ,value:""},
-  { id: 5, label: "Phone Number", fieldType: "tel" ,value:""},
+interface formField {
+  id: number;
+  label: string;
+  fieldType: string;
+  value: string;
+}
+const initialFormFields: formField[] = [
+  { id: 1, label: "First Name", fieldType: "text", value: "" },
+  { id: 2, label: "Last Name", fieldType: "text", value: "" },
+  { id: 3, label: "Email", fieldType: "email", value: "" },
+  { id: 4, label: "Date of Birth", fieldType: "date", value: "" },
+  { id: 5, label: "Phone Number", fieldType: "tel", value: "" },
 ];
+const initialState: () => formField[] = () => {
+  const formFiedlsJson = localStorage.getItem("formFields");
+  const persistantFormFields = formFiedlsJson
+    ? JSON.parse(formFiedlsJson)
+    : initialFormFields;
+  return persistantFormFields;
+};
+const saveFormData = (currentState: formField[]) => {
+  localStorage.setItem("formFields", JSON.stringify(currentState));
+};
 export default function Form(props: { closeFormCB: () => void }) {
-  const [state, setState] = useState(formFields);
+  const [state, setState] = useState(initialState());
   const [newField, setNewField] = useState("");
+
+  useEffect(() => {
+    console.log("Component mounted");
+    const oldTitle = document.title;
+    document.title = "Form Editor";
+    return () => {
+      document.title = oldTitle;
+    };
+  }, []);
+  //save to localstorage with out button click
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      saveFormData(state);
+      console.log("saved");
+
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [state]);
+
   const addField = () => {
+    //queues triger
     setState([
       ...state,
       {
         id: Number(new Date()),
         label: newField,
         fieldType: "text",
-        value: newField,      },
+        value: newField,
+      },
     ]);
-    setNewField("")
+    setNewField("");
+    //when you want to update use clousers
+    //state=>
+    //clousers give the value at the time of trigger
   };
   const removeField = (id: number) => {
     setState(state.filter((field) => field.id !== id));
@@ -48,7 +91,6 @@ export default function Form(props: { closeFormCB: () => void }) {
             value={field.value}
             removeFieldCB={removeField}
             handleInputChangeCB={handleChange}
-
           />
         ))}
       </div>
@@ -64,13 +106,15 @@ export default function Form(props: { closeFormCB: () => void }) {
         <Button name={"Add field"} handleEvent={addField} />
       </div>
       <div className="flex gap-4">
-        <Button name={"Submit"} handleEvent={() => {}} />
-
+        <button
+          className="bg-blue-600 text-white py-2 px-3 text-lg uppercase rounded-xl m-3 w-1/6 mx-auto"
+          onClick={(_) => saveFormData(state)}
+        >
+          Save
+        </button>
         <Button name={"Close Form"} handleEvent={props.closeFormCB} />
         <Button name={"Clear Form"} handleEvent={clearForm} />
-
       </div>
     </div>
   );
 }
-

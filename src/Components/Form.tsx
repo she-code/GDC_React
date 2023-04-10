@@ -3,6 +3,11 @@ import React, { useState, useEffect } from "react";
 import Button from "./Button";
 import LabelledInput from "./LabelledInput";
 
+interface formData {
+  id:number
+  title:string;
+  formFields:formField[];
+}
 interface formField {
   id: number;
   label: string;
@@ -16,15 +21,27 @@ const initialFormFields: formField[] = [
   { id: 4, label: "Date of Birth", fieldType: "date", value: "" },
   { id: 5, label: "Phone Number", fieldType: "tel", value: "" },
 ];
-const initialState: () => formField[] = () => {
-  const formFiedlsJson = localStorage.getItem("formFields");
+const getLocalForms: ()=>formData[] =()=>{
+  const savedFormsJson = localStorage.getItem("formData");
+  return savedFormsJson
+  ? JSON.parse(savedFormsJson)
+  : []
+   
+}
+const initialState: () => formData = () => {
+  const localForms = getLocalForms()
+  if(localForms.length>0){
+    return localForms[0] 
+  }
+ // const newForm = 
+  const formFiedlsJson = localStorage.getItem("formData");
   const persistantFormFields = formFiedlsJson
     ? JSON.parse(formFiedlsJson)
-    : initialFormFields;
+    : {id:Number(new Date()),title:"Untitled",formFields:initialFormFields}
   return persistantFormFields;
 };
-const saveFormData = (currentState: formField[]) => {
-  localStorage.setItem("formFields", JSON.stringify(currentState));
+const saveFormData = (currentState: formData) => {
+  localStorage.setItem("formData", JSON.stringify(currentState));
 };
 export default function Form(props: { closeFormCB: () => void }) {
   const [state, setState] = useState(initialState());
@@ -53,37 +70,46 @@ export default function Form(props: { closeFormCB: () => void }) {
 
   const addField = () => {
     //queues triger
-    setState([
+    setState({
       ...state,
-      {
-        id: Number(new Date()),
-        label: newField,
-        fieldType: "text",
-        value: newField,
-      },
-    ]);
+      formFields:[...state.formFields,{
+      id: Number(new Date()),
+      label: newField,
+      fieldType: "text",
+      value: newField,
+    },]
+  });
     setNewField("");
     //when you want to update use clousers
     //state=>
     //clousers give the value at the time of trigger
   };
   const removeField = (id: number) => {
-    setState(state.filter((field) => field.id !== id));
+    setState({...state,
+      formFields:state.formFields.filter((field) => field.id !== id)})
+    
   };
   const clearForm = () => {
-    const updatedFields = state.map((state) => ({ ...state, value: "" }));
-    setState(updatedFields);
+    const updatedFields = state.formFields.map((state) => ({ ...state, value: "" }));
+    setState({
+      ...state,
+      formFields:updatedFields
+  });
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    const existingData = [...state];
+    const existingData = [...state.formFields];
     let valueToUpdate = existingData.find((field) => field.id === id);
-    valueToUpdate!.value = e.target.value;
-    setState(existingData);
+   valueToUpdate!.value = e.target.value;
+         setState({
+      ...state,
+      formFields:existingData
+  });
   };
+  
   return (
     <div className="p-4 divide-y-2 divide-dotted flex-col gap-2">
       <div>
-        {state.map((field) => (
+        {state.formFields.map((field) => (
           <LabelledInput
             id={field.id}
             label={field.label}

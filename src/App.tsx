@@ -3,6 +3,7 @@ import Form from "./Components/Form";
 import AppContainer from "./Components/AppContainer";
 import Header from "./Components/Header";
 import Home from "./Components/Home";
+import FormsList from "./Components/FormsList";
 
 function App() {
   const [state, setState] = useState("Home");
@@ -15,7 +16,7 @@ function App() {
         {state === "Home" ? (
           <Home openFormCB={openForm} />
         ) : (
-          <Form  closeFormCB={closeForm} />
+          <FormsList closeFormsListCB={closeForm} />
         )}
       </div>
     </AppContainer>

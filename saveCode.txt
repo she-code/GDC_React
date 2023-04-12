@@ -1,4 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+// const handleChange = (id:number,value:string) => {
+  //   // const existingData = [...state.formFields];
+  //   // let valueToUpdate = existingData.find((field) => field.id === id);
+  // //  valueToUpdate!.value = e.target.value;
+  //   // setState({...state,formFields:{existingData}}
+  //   //   );
+  //     // setState({...state,formFields:state.formFields.map((field)=>{
+  //     //   if(field.id=== id){
+  //     //     return {...field,value}
+  //     //   }
+  //     //   return field;
+  //     // })}
+  //     // )
+  // };
+
+
+  forma.tsx
+  import React, { useState, useEffect, useRef } from "react";
 
 import Button from "./Button";
 import LabelledInput from "./LabelledInput";
@@ -42,6 +59,7 @@ const getLocalForms: () => formData[] = () => {
 
 
 const initialState: (id:number) => formData = (id) => {
+  let count =0
   const localForms = getLocalForms();
   // if (localForms.length > 0) {
   const selectedForm = localForms!.find(form=>form.id=== id)
@@ -50,11 +68,12 @@ const initialState: (id:number) => formData = (id) => {
   } else {
     const newForm = {
       id: Number(new Date()),
-      title: "Untitled",
+      title: "Untitled there",
       formFields: initialFormFields,
     };
     saveLocalForms([...localForms,newForm]);
-    
+  console.log( "count", count++);
+
   return newForm;
   
 }};
@@ -91,6 +110,7 @@ const saveFormData = (currentState: formData) => {
   }
 };
 export default function Form(props: { closeFormCB: () => void,id:any }) {
+  console.log("FormEditor rendered");
   const [state, setState] = useState(()=>initialState(props.id!));
   const [newField, setNewField] = useState("");
   const [displayForms,setDisplayForms] = useState("form")
@@ -106,20 +126,20 @@ export default function Form(props: { closeFormCB: () => void,id:any }) {
     };
   }, []);
   //save to localstorage with out button click
-  useEffect(() => {
-    let count =0
-    console.log("Component mounted",count++);
-    let timeout = setTimeout(() => {
-      console.log("inside time",count++);
+  // useEffect(() => {
+  //   let count =0
+  //   console.log("Component mounted",count++);
+  //   let timeout = setTimeout(() => {
+  //     console.log("inside time",count++);
 
-      saveFormData(state);
-      console.log("saved");
-    }, 1000);
+  //     saveFormData(state);
+  //     console.log("saved");
+  //   }, 1000);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [state]);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, [state]);
 
   const addField = () => {
     //queues triger

@@ -9,8 +9,11 @@ export default function Home(props: { openFormCB: () => void }) {
           <p className="text-xl font-semibold ">Welcome to home Page</p>
         </div>
       </div>
-      <button className="p-2 bg-blue-500 text-white font-bold" onClick={props.openFormCB}>
-        Open Form{" "}
+      <button
+        className="p-2 bg-blue-500 text-white font-bold"
+        onClick={props.openFormCB}
+      >
+        View Forms{" "}
       </button>
     </div>
   );

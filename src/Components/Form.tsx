@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import Button from "./Button";
 import LabelledInput from "./LabelledInput";
-import FormsList from "./FormsList";
+import { Link } from "raviger";
 
 interface formData {
   id: number;
@@ -58,10 +58,9 @@ const saveFormData = (currentState: formData) => {
     saveLocalForms(updatedLocalForms);
   }
 };
-export default function Form(props: { closeFormCB: () => void; id: any }) {
+export default function Form(props: { id: any }) {
   const [state, setState] = useState(() => initialState(props.id!));
   const [newField, setNewField] = useState("");
-  const [displayForms, setDisplayForms] = useState("form");
   const titleRef = useRef<HTMLInputElement>(null);
 
   //updates the title
@@ -105,7 +104,6 @@ export default function Form(props: { closeFormCB: () => void; id: any }) {
     //state=>
     //clousers give the value at the time of trigger
   };
-  const closeFormsList = () => setDisplayForms("forms");
 
   //removes field
   const removeField = (id: number) => {
@@ -138,54 +136,48 @@ export default function Form(props: { closeFormCB: () => void; id: any }) {
 
   return (
     <div className="p-4 divide-y-2 divide-dotted flex-col gap-2">
-      {displayForms === "form" ? (
-        <>
-          {" "}
-          <div>
-            <input
-              type="text"
-              className="border-2 border-gray-500 rounded-lg p-2 my-2 flex-1  w-full"
-              value={state.title}
-              onChange={(e) => setState({ ...state, title: e.target.value })}
-              ref={titleRef}
-            />
-            {state.formFields.map((field) => (
-              <LabelledInput
-                key={field.id}
-                id={field.id}
-                label={field.label}
-                type={field.fieldType}
-                value={field.value}
-                removeFieldCB={removeField}
-                handleInputChangeCB={handleChange}
-              />
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newField}
-              className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
-              onChange={(e) => {
-                setNewField(e.target.value);
-              }}
-            />
-            <Button name={"Add field"} handleEvent={addField} />
-          </div>
-          <div className="flex gap-4">
-            <button
-              className="bg-blue-600 text-white py-2 px-3 text-lg uppercase rounded-xl m-3 w-1/6 mx-auto"
-              onClick={(_) => saveFormData(state)}
-            >
-              Save
-            </button>
-            <Button name={"Close Form"} handleEvent={props.closeFormCB} />
-            <Button name={"Clear Form"} handleEvent={clearForm} />
-          </div>
-        </>
-      ) : (
-        <FormsList closeFormsListCB={closeFormsList} />
-      )}
+      <div>
+        <input
+          type="text"
+          className="border-2 border-gray-500 rounded-lg p-2 my-2 flex-1  w-full"
+          value={state.title}
+          onChange={(e) => setState({ ...state, title: e.target.value })}
+          ref={titleRef}
+        />
+        {state.formFields.map((field) => (
+          <LabelledInput
+            key={field.id}
+            id={field.id}
+            label={field.label}
+            type={field.fieldType}
+            value={field.value}
+            removeFieldCB={removeField}
+            handleInputChangeCB={handleChange}
+          />
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={newField}
+          className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
+          onChange={(e) => {
+            setNewField(e.target.value);
+          }}
+        />
+        <Button name={"Add field"} handleEvent={addField} />
+      </div>
+      <div className="flex gap-4">
+        <button
+          className="bg-blue-600 text-white py-2 px-3 text-lg uppercase rounded-xl m-3 w-1/6 mx-auto"
+          onClick={(_) => saveFormData(state)}
+        >
+          Save
+        </button>
+        <Link href="/">Close Form</Link>
+
+        <Button name={"Clear Form"} handleEvent={clearForm} />
+      </div>
     </div>
   );
 }

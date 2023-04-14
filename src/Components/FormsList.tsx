@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Form from "./Form";
 import { Link, useQueryParams } from "raviger";
+import PreviewQuestion from "./PreviewQuestion";
 
 export default function FormsList() {
   const [formsListState, setFormsList] = useState([]);
@@ -9,6 +10,9 @@ export default function FormsList() {
   const [searchString, setSearchString] = useState("");
   const savedForms = localStorage.getItem("savedForms");
 
+  //create an iterator for the form fields
+  //on next func add itr++
+  //on prev itr --
   useEffect(() => {
     const savedFormsJson = JSON.parse(savedForms!);
     setFormsList(savedFormsJson);
@@ -22,6 +26,11 @@ export default function FormsList() {
     localStorage.setItem("savedForms", JSON.stringify(filteredForms));
     setFormsList(filteredForms);
   };
+
+  // const handleNext = ()=>{
+  //   if()
+  //   setCurrentField(currentField + 1)
+  // }
   return (
     <div>
       {formId === 0 ? (
@@ -31,7 +40,7 @@ export default function FormsList() {
               href="/forms/0"
               className="bg-yellow-500 py-2 px-3 text-white rounded-lg"
             >
-              New Form
+              + New Form
             </Link>
           </div>
           <form
@@ -60,7 +69,7 @@ export default function FormsList() {
                   <p>{form.title}</p>
                   <Link
                     href={`/forms/${form.id}`}
-                    className="py-2 px-3 text-green-500"
+                    className="py-2 px-3 text-green-500 "
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -96,6 +105,12 @@ export default function FormsList() {
                       />
                     </svg>
                   </button>
+                  <Link
+                    href={`/preview/${form.id}`}
+                    className=" py-2 px-3 text-blue-500 border-2"
+                  >
+                    Preview
+                  </Link>
                 </div>
               ))}
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import Button from "./Button";
 import LabelledInput from "./LabelledInput";
-import { Link } from "raviger";
+import { Link, navigate } from "raviger";
 
 interface formData {
   id: number;
@@ -61,7 +61,13 @@ const saveFormData = (currentState: formData) => {
 export default function Form(props: { id: any }) {
   const [state, setState] = useState(() => initialState(props.id!));
   const [newField, setNewField] = useState("");
+  const [type, setType] = useState("text");
   const titleRef = useRef<HTMLInputElement>(null);
+
+  //programatically updated the form Id in the url
+  useEffect(() => {
+    state.id !== props.id && navigate(`/forms/${state.id}`);
+  }, [state.id, props.id]);
 
   //updates the title
   useEffect(() => {
@@ -94,7 +100,7 @@ export default function Form(props: { id: any }) {
         {
           id: Number(new Date()),
           label: newField,
-          fieldType: "text",
+          fieldType: type,
           value: newField,
         },
       ],
@@ -125,9 +131,11 @@ export default function Form(props: { id: any }) {
     });
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    console.log("called");
     const existingData = [...state.formFields];
     let valueToUpdate = existingData.find((field) => field.id === id);
-    valueToUpdate!.value = e.target.value;
+    valueToUpdate!.label = e.target.value;
+    console.log(valueToUpdate);
     setState({
       ...state,
       formFields: existingData,
@@ -145,18 +153,30 @@ export default function Form(props: { id: any }) {
           ref={titleRef}
         />
         {state.formFields.map((field) => (
-          <LabelledInput
-            key={field.id}
-            id={field.id}
-            label={field.label}
-            type={field.fieldType}
-            value={field.value}
-            removeFieldCB={removeField}
-            handleInputChangeCB={handleChange}
+          <input
+            className="border-0 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
+            type="text"
+            value={field.label}
+            onChange={(e) => handleChange(e, field.id)}
           />
         ))}
       </div>
       <div className="flex gap-2">
+        <select
+          name="typeSelecter"
+          id=""
+          className="px-2 focus:outline-none border-2 border-gray-200"
+          onChange={(e) => {
+            setType(e.target.value);
+            console.log(type);
+          }}
+        >
+          <option value="text">text</option>
+          <option value="tel">tel</option>
+          <option value="password">password</option>
+          <option value="email">email</option>
+          <option value="date">date</option>
+        </select>
         <input
           type="text"
           value={newField}

@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../logo.svg";
-import { Link } from "raviger";
+import { ActiveLink, Link } from "raviger";
 
 export default function Header(props: { title: string }) {
   const links = [
@@ -17,13 +17,14 @@ export default function Header(props: { title: string }) {
       />
       <div className="flex justify-evenly">
         {links.map((link) => (
-          <Link
+          <ActiveLink
             href={link.url}
             key={link.url}
+            exactActiveClass="text-yellow-500"
             className="p-3 shadow-md text-lg mx-2"
           >
             {link.page}
-          </Link>
+          </ActiveLink>
         ))}
       </div>
     </div>

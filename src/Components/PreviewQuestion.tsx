@@ -149,29 +149,31 @@ export default function PreviewQuestion(props: { id: any }) {
   }, [userRes]);
 
   useEffect(() => {
-    setResponse({
-      ...responseState,
-      responses: [
-        ...responseState.responses,
-        {
-          question: state.formFields[currentField].label!,
-          response: userRes,
-        },
-      ],
-    });
+    userRes
+      ? setResponse({
+          ...responseState,
+          responses: [
+            ...responseState.responses,
+            {
+              question: state.formFields[currentField].label!,
+              response: userRes,
+            },
+          ],
+        })
+      : setResponse(responseState);
     prevField.current = currentField;
     setUserRes("");
     console.log(responseState);
   }, [currentField]);
-  useEffect(() => {
-    let timeout = setTimeout(() => {
-      saveResponseData(responseState);
-    }, 1000);
+  // useEffect(() => {
+  //   let timeout = setTimeout(() => {
+  //     saveResponseData(responseState);
+  //   }, 1000);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [responseState]);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, [responseState]);
 
   // useEffect(() => {
   //   if (userRes !== "" && currentField !== prevField.current) {
@@ -192,11 +194,17 @@ export default function PreviewQuestion(props: { id: any }) {
   // }, [currentField, userRes]);
   return (
     <div className="h-64">
+      {/* {responseState.responses.length > 0 ? (
+        <div>
+          <p className="text-xl font-semibold">
+            {responseState.responses[currentField].question}{" "}
+          </p>
+        </div>
+      ) : ( */}
       <div className="m-3">
         <p className="text-xl font-semibold">
           {state.formFields[currentField].label}
         </p>
-        {/* / {responseState.responses[currentField].map((res) => ( ))} */}
         <input
           className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
           type={state.formFields[currentField].fieldType}
@@ -206,6 +214,7 @@ export default function PreviewQuestion(props: { id: any }) {
           }}
         />
       </div>
+      {/* )} */}
       <div className="flex justify-between">
         {currentField === 0 ? (
           <div></div>

@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Form from "./Form";
 import { Link, useQueryParams } from "raviger";
-import PreviewQuestion from "./PreviewQuestion";
 
 export default function FormsList() {
   const [formsListState, setFormsList] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState("");
   const savedForms = localStorage.getItem("savedForms");
 
-  //create an iterator for the form fields
-  //on next func add itr++
-  //on prev itr --
   useEffect(() => {
     const savedFormsJson = JSON.parse(savedForms!);
     setFormsList(savedFormsJson);
@@ -27,10 +24,6 @@ export default function FormsList() {
     setFormsList(filteredForms);
   };
 
-  // const handleNext = ()=>{
-  //   if()
-  //   setCurrentField(currentField + 1)
-  // }
   return (
     <div>
       {formId === 0 ? (
@@ -65,7 +58,10 @@ export default function FormsList() {
                 form.title.toLowerCase().includes(search?.toLowerCase() || "")
               )
               .map((form: any) => (
-                <div className="flex gap-2 justify-between my-2" key={form.id}>
+                <div
+                  className="flex gap-2 justify-between my-2 items-center"
+                  key={form.id}
+                >
                   <p>{form.title}</p>
                   <Link
                     href={`/forms/${form.id}`}
@@ -86,6 +82,7 @@ export default function FormsList() {
                       />
                     </svg>
                   </Link>
+
                   <button
                     className=" py-2 px-3 text-red-500"
                     onClick={(_) => deleteForm(form.id)}

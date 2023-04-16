@@ -30,14 +30,18 @@ export default function PreviewQuestion(props: { id: any }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, setState] = useState(() => initialState(id!));
+
   const [currentField, setCurrentField] = useState(0);
   const [exsitingValue, setExisting] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   //initializes the response value
-  const initialResponse: (id: number) => responseData = (id) => {
+  const initialResponse: (id: number) => responseData | undefined = (id) => {
+    if (!state) {
+      return;
+    }
     const localResponses = getLocalResponses();
-    const selectedResponse = localResponses!.find(
+    const selectedResponse = localResponses?.find(
       (response) => response.formId === id
     );
     if (selectedResponse) {
@@ -55,11 +59,24 @@ export default function PreviewQuestion(props: { id: any }) {
   };
   const [responseState, setResponse] = useState(initialResponse(id));
   const [userRes, setUserRes] = useState(
-    responseState.responses[currentField]?.response || ""
+    responseState?.responses[currentField]?.response || ""
   );
+  useEffect(() => {
+    if (!state) {
+      return;
+    }
+    if (mounted) {
+      alert("Your responses are automatically saved");
+    } else {
+      setMounted(true);
+    }
+  }, [mounted, state]);
 
   //increments the currentField value
   const handleNext = () => {
+    if (!state) {
+      return;
+    }
     if (currentField <= state.formFields.length - 1) {
       setCurrentField(currentField + 1);
     }
@@ -72,16 +89,11 @@ export default function PreviewQuestion(props: { id: any }) {
     }
   };
 
-  //displays an alert message
-  useEffect(() => {
-    if (mounted) {
-      alert("Your responses are automatically saved");
-    } else {
-      setMounted(true);
-    }
-  }, [mounted]);
   //updates the user response when input changes
   useEffect(() => {
+    if (!state || !responseState) {
+      return;
+    }
     const existingData = [...responseState.responses];
     let valueToUpdate = existingData.find(
       (field) => field.question === state.formFields[currentField].label
@@ -99,6 +111,10 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //updates or creates response
   useEffect(() => {
+    if (!state || !responseState) {
+      return;
+    }
+
     let existingRes = responseState.responses.find(
       (res) => res.question === state.formFields[currentField].label!
     );
@@ -127,6 +143,9 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //saves the response automatically in localstorage
   useEffect(() => {
+    if (!responseState) {
+      return;
+    }
     let timeout = setTimeout(() => {
       saveResponseData(responseState);
     }, 1000);
@@ -136,7 +155,7 @@ export default function PreviewQuestion(props: { id: any }) {
     };
   }, [responseState]);
 
-  return (
+  return state ? (
     <div className="h-64">
       {exsitingValue ? (
         <div className="m-5">
@@ -193,7 +212,9 @@ export default function PreviewQuestion(props: { id: any }) {
         <div className="flex justify-center">
           <button
             className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
-            onClick={(_) => saveResponseData(responseState)}
+            onClick={(_) =>
+              responseState ? saveResponseData(responseState) : () => {}
+            }
           >
             Submit
           </button>
@@ -202,5 +223,7 @@ export default function PreviewQuestion(props: { id: any }) {
         ""
       )}
     </div>
+  ) : (
+    <div>Form with this Id doesn't exist</div>
   );
 }

@@ -4,9 +4,12 @@ import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
 import Form from "../Components/Form";
 import PreviewQuestion from "../Components/PreviewQuestion";
+import ErrorPage from "../Components/ErrorPage";
 
 const routes = {
   "/": () => <Home />,
+  "/error": () => <ErrorPage />,
+
   "/about": () => <About />,
   "/forms/:formId": ({ formId }: { formId: string }) => (
     <Form id={Number(formId)} />

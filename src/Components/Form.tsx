@@ -51,7 +51,7 @@ export default function Form(props: { id: any }) {
   const [type, setType] = useState("text");
   const titleRef = useRef<HTMLInputElement>(null);
 
-  //programatically updated the form Id in the url
+  //programatically updates the form Id in the url
   useEffect(() => {
     state.id !== props.id && navigate(`/forms/${state.id}`);
   }, [state.id, props.id]);

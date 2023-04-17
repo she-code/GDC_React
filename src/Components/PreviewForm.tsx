@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { responseData } from "../utils/types/types";
-import { initialState } from "../utils";
+import { responseData } from "../types/responseTypes";
+import { initialState } from "../utils/storageUtils";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");

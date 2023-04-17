@@ -3,7 +3,7 @@ import Home from "../Components/Home";
 import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
 import Form from "../Components/Form";
-import PreviewQuestion from "../Components/PreviewQuestion";
+import PreviewQuestion from "../Components/PreviewForm";
 import ErrorPage from "../Components/ErrorPage";
 
 const routes = {

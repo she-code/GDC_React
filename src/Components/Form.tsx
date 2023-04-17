@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 
 import Button from "./Button";
 import { Link, navigate } from "raviger";
-import { getLocalForms } from "../utils";
-import { formData, formField } from "../utils/types/types";
+import { getLocalForms } from "../utils/storageUtils";
+import { formData, formField } from "../types/formTypes";
 
 const initialFormFields: formField[] = [
   { id: 1, label: "First Name", fieldType: "text", value: "" },
@@ -131,7 +131,7 @@ export default function Form(props: { id: any }) {
   };
 
   return (
-    <div className="p-4 divide-y-2 divide-dotted flex-col gap-2">
+    <div className="p-4 divide-y-2 divide-dotted flex-col gap-2 ">
       <div>
         <input
           type="text"

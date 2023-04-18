@@ -38,24 +38,23 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
-    if (!state) {
-      return;
-    }
-    const localResponses = getLocalResponses();
-    const selectedResponse = localResponses?.find(
-      (response) => response.formId === id
-    );
-    if (selectedResponse) {
-      console.log("initial", selectedResponse);
-      return selectedResponse;
-    } else {
-      const newResponse = {
-        id: Number(new Date()),
-        formId: state.id,
-        formTitle: state.title,
-        responses: [],
-      };
-      return newResponse;
+    if (state?.formFields?.length) {
+      const localResponses = getLocalResponses();
+      const selectedResponse = localResponses?.find(
+        (response) => response.formId === id
+      );
+      if (selectedResponse) {
+        console.log("initial", selectedResponse);
+        return selectedResponse;
+      } else {
+        const newResponse = {
+          id: Number(new Date()),
+          formId: state.id,
+          formTitle: state.title,
+          responses: [],
+        };
+        return newResponse;
+      }
     }
   };
   const [responseState, setResponse] = useState(initialResponse(id));
@@ -97,7 +96,7 @@ export default function PreviewQuestion(props: { id: any }) {
     }
     const existingData = [...responseState.responses];
     let valueToUpdate = existingData.find(
-      (field) => field.question === state.formFields[currentField].label
+      (field) => field.question === state.formFields[currentField]?.label
     );
     if (valueToUpdate !== undefined) {
       valueToUpdate.response = userRes;
@@ -112,48 +111,48 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //updates or creates response
   useEffect(() => {
-    if (!state || !responseState) {
+    if (!responseState || !state?.formFields?.length) {
       return;
+    } else {
+      let existingRes = responseState.responses.find(
+        (res) => res.question === state.formFields[currentField]?.label
+      );
+      if (existingRes) {
+        console.log("if", responseState);
+        setExisting(true);
+        setUserRes(responseState.responses[currentField]?.response || "");
+        return;
+      }
+      setResponse({
+        ...responseState,
+        responses: [
+          ...responseState.responses,
+          {
+            question: state.formFields[currentField]?.label,
+            response: userRes,
+          },
+        ],
+      });
+      console.log("ädded");
+      setUserRes("");
+      setExisting(false);
     }
-
-    let existingRes = responseState.responses.find(
-      (res) => res.question === state.formFields[currentField].label!
-    );
-    if (existingRes) {
-      console.log("if", responseState);
-      setExisting(true);
-      setUserRes(responseState.responses[currentField]?.response || "");
-      return;
-    }
-    setResponse({
-      ...responseState,
-      responses: [
-        ...responseState.responses,
-        {
-          question: state.formFields[currentField].label!,
-          response: userRes,
-        },
-      ],
-    });
-    console.log("ädded");
-    setUserRes("");
-    setExisting(false);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentField]);
 
   //saves the response automatically in localstorage
   useEffect(() => {
-    if (!responseState) {
-      return;
-    }
-    let timeout = setTimeout(() => {
-      saveResponseData(responseState);
-    }, 1000);
+    let timeout: ReturnType<typeof setTimeout>;
 
+    if (state?.formFields?.length) {
+      timeout = setTimeout(() => {
+        saveResponseData(responseState as responseData);
+      }, 1000);
+    }
     return () => {
-      clearTimeout(timeout);
+      if (timeout) clearTimeout(timeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState]);
 
   return state ? (
@@ -189,12 +188,18 @@ export default function PreviewQuestion(props: { id: any }) {
         {currentField === state.formFields.length - 1 ? (
           ""
         ) : (
-          <button
-            className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
-            onClick={handleNext}
-          >
-            Next
-          </button>
+          <>
+            {state.formFields.length > 0 ? (
+              <button
+                className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            ) : (
+              <></>
+            )}
+          </>
         )}
       </div>
       {currentField === state.formFields.length - 1 ? (

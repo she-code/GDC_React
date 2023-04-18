@@ -157,7 +157,7 @@ export default function PreviewQuestion(props: { id: any }) {
 
   return state ? (
     <div className="h-64">
-      {exsitingValue ? (
+      {state.formFields[currentField].kind === "text" ? (
         <div className="m-5">
           <p className="text-xl font-semibold">
             {state.formFields[currentField].label}
@@ -172,19 +172,7 @@ export default function PreviewQuestion(props: { id: any }) {
           />
         </div>
       ) : (
-        <div className="m-5">
-          <p className="text-xl font-semibold">
-            {state.formFields[currentField].label}
-          </p>
-          <input
-            className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
-            type={state.formFields[currentField].fieldType}
-            value={userRes}
-            onChange={(e) => {
-              setUserRes(e.target.value);
-            }}
-          />
-        </div>
+        <div> hi</div>
       )}
       <div className="flex justify-between">
         {currentField === 0 ? (

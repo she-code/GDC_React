@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../logo.svg";
-import { ActiveLink, Link } from "raviger";
+import { ActiveLink } from "raviger";
 
 export default function Header(props: { title: string }) {
   const links = [

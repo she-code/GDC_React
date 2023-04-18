@@ -6,9 +6,18 @@ interface propsType {
   value: string;
   removeFieldCB: (id: number) => void;
   handleInputChangeCB: (e: any, id: number) => void;
+  disabled: boolean;
 }
 export default function LabelledInput(props: propsType) {
-  const { id, label, type, removeFieldCB, value, handleInputChangeCB } = props;
+  const {
+    id,
+    label,
+    type,
+    disabled,
+    removeFieldCB,
+    value,
+    handleInputChangeCB,
+  } = props;
   return (
     <React.Fragment>
       <label className="font-semibold text-xl">{label}</label>
@@ -18,6 +27,7 @@ export default function LabelledInput(props: propsType) {
           type={type}
           value={value}
           onChange={(e) => handleInputChangeCB(e, id)}
+          disabled={disabled}
         />
         <button
           className=" p-2  m-3 w-1/6 mx-auto text-red-500"

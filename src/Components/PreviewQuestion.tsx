@@ -37,28 +37,23 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
-    // if (!state) {
-    //   return;
-    // }
-    if (!state || !state.formFields || state.formFields.length < 0) {
-      return;
-    }
-
-    const localResponses = getLocalResponses();
-    const selectedResponse = localResponses?.find(
-      (response) => response.formId === id
-    );
-    if (selectedResponse) {
-      console.log("initial", selectedResponse);
-      return selectedResponse;
-    } else {
-      const newResponse = {
-        id: Number(new Date()),
-        formId: state.id,
-        formTitle: state.title,
-        responses: [],
-      };
-      return newResponse;
+    if (state?.formFields?.length) {
+      const localResponses = getLocalResponses();
+      const selectedResponse = localResponses?.find(
+        (response) => response.formId === id
+      );
+      if (selectedResponse) {
+        console.log("initial", selectedResponse);
+        return selectedResponse;
+      } else {
+        const newResponse = {
+          id: Number(new Date()),
+          formId: state.id,
+          formTitle: state.title,
+          responses: [],
+        };
+        return newResponse;
+      }
     }
   };
   const [responseState, setResponse] = useState(initialResponse(id));
@@ -115,15 +110,7 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //updates or creates response
   useEffect(() => {
-    // if (!state || !responseState) {
-    //   return;
-    // }
-    if (
-      !responseState ||
-      !state ||
-      !state.formFields ||
-      state.formFields.length < 0
-    ) {
+    if (!responseState || !state?.formFields?.length) {
       return;
     } else {
       let existingRes = responseState.responses.find(
@@ -154,26 +141,17 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //saves the response automatically in localstorage
   useEffect(() => {
-    // if (!responseState || state?.formFields?.length < 0) {
-    //   return;
-    // }
-    if (
-      !responseState ||
-      !state ||
-      !state.formFields ||
-      state.formFields.length < 0
-    ) {
-      // return;
-    } else {
-      let timeout = setTimeout(() => {
-        saveResponseData(responseState);
-      }, 1000);
+    let timeout: ReturnType<typeof setTimeout>;
 
-      return () => {
-        clearTimeout(timeout);
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (state?.formFields?.length) {
+      timeout = setTimeout(() => {
+        saveResponseData(responseState as responseData);
+      }, 1000);
     }
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState]);
 
   return state ? (
@@ -233,12 +211,18 @@ export default function PreviewQuestion(props: { id: any }) {
         {currentField === state.formFields.length - 1 ? (
           ""
         ) : (
-          <button
-            className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
-            onClick={handleNext}
-          >
-            Next
-          </button>
+          <>
+            {state.formFields.length > 0 ? (
+              <button
+                className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
+                onClick={handleNext}
+              >
+                Next
+              </button>
+            ) : (
+              <></>
+            )}
+          </>
         )}
       </div>
       {currentField === state.formFields.length - 1 ? (

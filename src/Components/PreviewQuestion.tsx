@@ -37,9 +37,13 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
-    if (!state) {
+    // if (!state) {
+    //   return;
+    // }
+    if (!state || !state.formFields || state.formFields.length < 0) {
       return;
     }
+
     const localResponses = getLocalResponses();
     const selectedResponse = localResponses?.find(
       (response) => response.formId === id
@@ -96,7 +100,7 @@ export default function PreviewQuestion(props: { id: any }) {
     }
     const existingData = [...responseState.responses];
     let valueToUpdate = existingData.find(
-      (field) => field.question === state.formFields[currentField].label
+      (field) => field.question === state.formFields[currentField]?.label
     );
     if (valueToUpdate !== undefined) {
       valueToUpdate.response = userRes;
@@ -111,79 +115,108 @@ export default function PreviewQuestion(props: { id: any }) {
 
   //updates or creates response
   useEffect(() => {
-    if (!state || !responseState) {
+    // if (!state || !responseState) {
+    //   return;
+    // }
+    if (
+      !responseState ||
+      !state ||
+      !state.formFields ||
+      state.formFields.length < 0
+    ) {
       return;
+    } else {
+      let existingRes = responseState.responses.find(
+        (res) => res.question === state.formFields[currentField]?.label
+      );
+      if (existingRes) {
+        console.log("if", responseState);
+        setExisting(true);
+        setUserRes(responseState.responses[currentField]?.response || "");
+        return;
+      }
+      setResponse({
+        ...responseState,
+        responses: [
+          ...responseState.responses,
+          {
+            question: state.formFields[currentField]?.label,
+            response: userRes,
+          },
+        ],
+      });
+      console.log("ädded");
+      setUserRes("");
+      setExisting(false);
     }
-
-    let existingRes = responseState.responses.find(
-      (res) => res.question === state.formFields[currentField].label!
-    );
-    if (existingRes) {
-      console.log("if", responseState);
-      setExisting(true);
-      setUserRes(responseState.responses[currentField]?.response || "");
-      return;
-    }
-    setResponse({
-      ...responseState,
-      responses: [
-        ...responseState.responses,
-        {
-          question: state.formFields[currentField].label!,
-          response: userRes,
-        },
-      ],
-    });
-    console.log("ädded");
-    setUserRes("");
-    setExisting(false);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentField]);
 
   //saves the response automatically in localstorage
   useEffect(() => {
-    if (!responseState) {
-      return;
-    }
-    let timeout = setTimeout(() => {
-      saveResponseData(responseState);
-    }, 1000);
+    // if (!responseState || state?.formFields?.length < 0) {
+    //   return;
+    // }
+    if (
+      !responseState ||
+      !state ||
+      !state.formFields ||
+      state.formFields.length < 0
+    ) {
+      // return;
+    } else {
+      let timeout = setTimeout(() => {
+        saveResponseData(responseState);
+      }, 1000);
 
-    return () => {
-      clearTimeout(timeout);
-    };
+      return () => {
+        clearTimeout(timeout);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
   }, [responseState]);
 
   return state ? (
     <div className="h-64">
       {exsitingValue ? (
         <div className="m-5">
-          <p className="text-xl font-semibold">
-            {state.formFields[currentField].label}
-          </p>
-          <input
-            className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
-            type={state.formFields[currentField].fieldType}
-            value={userRes}
-            onChange={(e) => {
-              setUserRes(e.target.value);
-            }}
-          />
+          {state.formFields.length > 0 ? (
+            <>
+              <p className="text-xl font-semibold">
+                {state.formFields[currentField]?.label}
+              </p>
+              <input
+                className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
+                type={state.formFields[currentField]?.fieldType}
+                value={userRes}
+                onChange={(e) => {
+                  setUserRes(e.target.value);
+                }}
+              />
+            </>
+          ) : (
+            <div>No questions</div>
+          )}
         </div>
       ) : (
         <div className="m-5">
-          <p className="text-xl font-semibold">
-            {state.formFields[currentField].label}
-          </p>
-          <input
-            className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
-            type={state.formFields[currentField].fieldType}
-            value={userRes}
-            onChange={(e) => {
-              setUserRes(e.target.value);
-            }}
-          />
+          {state.formFields.length > 0 ? (
+            <>
+              <p className="text-xl font-semibold">
+                {state.formFields[currentField]?.label}
+              </p>
+              <input
+                className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
+                type={state.formFields[currentField]?.fieldType}
+                value={userRes}
+                onChange={(e) => {
+                  setUserRes(e.target.value);
+                }}
+              />
+            </>
+          ) : (
+            <div>No questions</div>
+          )}
         </div>
       )}
       <div className="flex justify-between">

@@ -29,14 +29,14 @@ export type textFieldTypes =
   | "password"
   | "number";
 /***descriminated unions */
-type TextField = {
+export type TextField = {
   id: number;
   kind: "text";
   label: string;
   fieldType: textFieldTypes;
   value: string;
 };
-type DropdownField = {
+export type DropdownField = {
   id: number;
   kind: "dropdown";
   label: string;

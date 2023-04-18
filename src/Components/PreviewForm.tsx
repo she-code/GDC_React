@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { responseData } from "../types/responseTypes";
 import { initialState } from "../utils/storageUtils";
+import { TextField } from "../types/formTypes";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -164,7 +165,7 @@ export default function PreviewQuestion(props: { id: any }) {
           </p>
           <input
             className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
-            type={state.formFields[currentField].fieldType}
+            type={(state.formFields[currentField] as TextField).fieldType}
             value={userRes}
             onChange={(e) => {
               setUserRes(e.target.value);

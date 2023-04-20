@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { responseData } from "../types/responseTypes";
 import { initialState } from "../utils/storageUtils";
-import { TextField } from "../types/formTypes";
+import { DropdownField, TextField } from "../types/formTypes";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -36,6 +36,9 @@ export default function PreviewQuestion(props: { id: any }) {
   const [exsitingValue, setExisting] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  //*************selectinput  */
+  const [isOpen, setIsOpen] = useState(false);
+
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
     if (state?.formFields?.length) {
@@ -61,16 +64,20 @@ export default function PreviewQuestion(props: { id: any }) {
   const [userRes, setUserRes] = useState(
     responseState?.responses[currentField]?.response || ""
   );
-  useEffect(() => {
-    if (!state) {
-      return;
-    }
-    if (mounted) {
-      alert("Your responses are automatically saved");
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(
+    (responseState?.responses[currentField]?.response as string[]) || []
+  );
+  const options = (state?.formFields[currentField] as DropdownField).options;
+
+  const handleCheckboxChange = (option: string) => {
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter((item) => item !== option));
     } else {
-      setMounted(true);
+      setSelectedOptions([...selectedOptions, option]);
     }
-  }, [mounted, state]);
+
+    console.log("from change", selectedOptions);
+  };
 
   //increments the currentField value
   const handleNext = () => {
@@ -88,6 +95,45 @@ export default function PreviewQuestion(props: { id: any }) {
       setCurrentField(currentField - 1);
     }
   };
+
+  useEffect(() => {
+    if (!state) {
+      return;
+    }
+    if (mounted) {
+      alert("Your responses are automatically saved");
+    } else {
+      setMounted(true);
+    }
+  }, [mounted, state]);
+
+  //saves selected options in dropdown
+  useEffect(() => {
+    if (!state || !responseState) {
+      return;
+    }
+    const existingData = [...responseState.responses];
+    let valueToUpdate = existingData.find(
+      (field) => field.question === state.formFields[currentField]?.label
+    );
+    if (valueToUpdate) {
+      // valueToUpdate.response.push(selOp);
+      // = [...valueToUpdate.response, selOp];
+      // if (Array.isArray(valueToUpdate.response)) {
+      //   valueToUpdate.response.push(...selectedOptions);
+      // } else {
+      //   valueToUpdate.response = [selOp];
+      // }
+      valueToUpdate.response = [...selectedOptions];
+      setResponse({
+        ...responseState,
+        responses: existingData,
+      });
+      //setSelectedOptions([]);
+    }
+
+    console.log("from chek ude", valueToUpdate, { selectedOptions });
+  }, [selectedOptions]);
 
   //updates the user response when input changes
   useEffect(() => {
@@ -121,6 +167,10 @@ export default function PreviewQuestion(props: { id: any }) {
         console.log("if", responseState);
         setExisting(true);
         setUserRes(responseState.responses[currentField]?.response || "");
+        setSelectedOptions(
+          (responseState?.responses[currentField]?.response as string[]) || []
+        );
+
         return;
       }
       setResponse({
@@ -133,9 +183,10 @@ export default function PreviewQuestion(props: { id: any }) {
           },
         ],
       });
-      console.log("ädded");
       setUserRes("");
       setExisting(false);
+      setSelectedOptions([]);
+      console.log("ädded", { selectedOptions });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentField]);
@@ -157,23 +208,82 @@ export default function PreviewQuestion(props: { id: any }) {
 
   return state ? (
     <div className="h-64">
-      {state.formFields[currentField].kind === "text" ? (
-        <div className="m-5">
-          <p className="text-xl font-semibold">
-            {state.formFields[currentField].label}
-          </p>
-          <input
-            className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
-            type={(state.formFields[currentField] as TextField).fieldType}
-            value={userRes}
-            onChange={(e) => {
-              setUserRes(e.target.value);
-            }}
-          />
-        </div>
+      {state.formFields.length > 0 ? (
+        <>
+          {state.formFields[currentField].kind === "text" ? (
+            <div className="m-5">
+              <p className="text-xl font-semibold">
+                {state.formFields[currentField].label}
+              </p>
+              <input
+                className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
+                type={(state.formFields[currentField] as TextField).fieldType}
+                value={userRes}
+                onChange={(e) => {
+                  setUserRes(e.target.value);
+                }}
+              />
+            </div>
+          ) : (
+            // <select
+            //   value={userRes}
+            //   onChange={(e) => {
+            //     setUserRes(e.target.value);
+            //   }}
+            // >
+            //   <option>Select an option</option>
+            //   {(state.formFields[currentField] as DropdownField).options.map(
+            //     (option, index) => (
+            //       <option key={index} value={option}>
+            //         {option}
+            //       </option>
+            //     )
+            //   )}
+            // </select>
+            <div className="flex">
+              <p className="p-5">{state.formFields[currentField].label}</p>
+              {/* <SelectWithCheckboxes
+                options={
+                  (state.formFields[currentField] as DropdownField).options
+                }
+                onCheckedCB={saveDropDownValue}
+                fieldLabel={state.formFields[currentField].label}
+              /> */}
+              <div className="select-with-checkboxes ">
+                <button
+                  className="dropdown-toggle py-2 px-3 mt-5 border-2 border-gray-300 "
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  {selectedOptions.length === 0
+                    ? "Select options"
+                    : selectedOptions.join(", ")}
+                </button>
+                {isOpen && (
+                  <ul className=" shadow-lg bg-gray-300 w-full">
+                    {options.map((option) => (
+                      <li key={option}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={selectedOptions.includes(option)}
+                            onChange={() => {
+                              handleCheckboxChange(option);
+                            }}
+                          />
+                          {option}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       ) : (
-        <div> hi</div>
+        <div>No questions</div>
       )}
+
       <div className="flex justify-between">
         {currentField === 0 ? (
           <div></div>

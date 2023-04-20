@@ -19,7 +19,7 @@ export default function LabelledInput(props: propsType) {
     handleInputChangeCB,
   } = props;
   return (
-    <React.Fragment>
+    <div key={id}>
       <label className="font-semibold text-xl">{label}</label>
       <div className="flex gap-2">
         <input
@@ -27,7 +27,7 @@ export default function LabelledInput(props: propsType) {
           type={type}
           value={value}
           onChange={(e) => handleInputChangeCB(e, id)}
-          disabled={disabled}
+          // disabled={disabled}
         />
         <button
           className=" p-2  m-3 w-1/6 mx-auto text-red-500"
@@ -49,6 +49,6 @@ export default function LabelledInput(props: propsType) {
           </svg>
         </button>
       </div>
-    </React.Fragment>
+    </div>
   );
 }

@@ -27,7 +27,10 @@ export type textFieldTypes =
   | "date"
   | "tel"
   | "password"
-  | "number";
+  | "radio"
+  | "textarea"
+  | "number"
+  | "select";
 /***descriminated unions */
 export type TextField = {
   id: number;

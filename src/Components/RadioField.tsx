@@ -5,17 +5,19 @@ export default function RadioField(props: {
   label: string;
   value: string;
   id: number;
-  handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>, id: number) => void;
+  checked: boolean;
+  handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
-  const { type, label, value, handleChangeCB, id } = props;
+  const { type, label, value, handleChangeCB, checked } = props;
   return (
     <div className="">
       <input
         type={type}
         value={value}
-        onChange={(e) => handleChangeCB(e, id)}
+        onChange={(e) => handleChangeCB(e)}
+        checked={checked}
       />
-      <label className="font-semibold text-xl ml-2">{label}</label>
+      <label className="text-lg ml-2">{label}</label>
     </div>
   );
 }

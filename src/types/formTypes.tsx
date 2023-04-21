@@ -46,5 +46,12 @@ export type DropdownField = {
   options: string[];
   value: string;
 };
-
-export type formField = TextField | DropdownField;
+export type RadioType = {
+  id: number;
+  kind: "radio";
+  label: string;
+  fieldType: textFieldTypes;
+  value: string;
+  options: string[];
+};
+export type formField = TextField | DropdownField | RadioType;

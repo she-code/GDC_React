@@ -12,6 +12,7 @@ export interface formField {
 export interface responseType {
   question: string;
   response: string;
+  questionId: number;
 }
 export interface responseData {
   id: number;

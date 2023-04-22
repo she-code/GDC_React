@@ -26,7 +26,7 @@ const saveResponseData = (currentState: responseData) => {
     saveLocalResponses(updatedLocalResponses);
   }
 };
-export default function PreviewQuestion(props: { id: any }) {
+export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, setState] = useState(() => initialState(id!));
@@ -129,6 +129,7 @@ export default function PreviewQuestion(props: { id: any }) {
           {
             question: state.formFields[currentField]?.label,
             response: userRes,
+            questionId: state.formFields[currentField]?.id,
           },
         ],
       });

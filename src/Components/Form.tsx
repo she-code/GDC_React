@@ -4,6 +4,7 @@ import Button from "./Button";
 import { Link, navigate } from "raviger";
 import { getLocalForms, getLocalResponses } from "../utils";
 import { formData, formField } from "../utils/types/types";
+import CustomInputField from "./CustomInputField";
 
 const initialFormFields: formField[] = [
   { id: 1, label: "First Name", fieldType: "text", value: "" },
@@ -45,7 +46,7 @@ const saveFormData = (currentState: formData) => {
     saveLocalForms(updatedLocalForms);
   }
 };
-export default function Form(props: { id: any }) {
+export default function Form(props: { id: number }) {
   const [state, setState] = useState(() => initialState(props.id!));
   const [newField, setNewField] = useState("");
   const [type, setType] = useState("text");
@@ -99,14 +100,7 @@ export default function Form(props: { id: any }) {
   };
 
   //removes field
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const removeField = (id: number) => {
-  //   setState({
-  //     ...state,
-  //     formFields: state.formFields.filter((field) => field.id !== id),
-  //   });
-  // };
-  const removeField = (id: number, label: string) => {
+  const removeField = (id: number) => {
     setState({
       ...state,
       formFields: state.formFields.filter((field) => field.id !== id),
@@ -115,22 +109,22 @@ export default function Form(props: { id: any }) {
     const responses = getLocalResponses();
     responses.forEach((response) => {
       response.responses = response.responses.filter(
-        (r) => r.question !== label
+        (r) => r.questionId !== id
       );
     });
     localStorage.setItem("savedResponses", JSON.stringify(responses));
   };
   // clears the form input values
-  const clearForm = () => {
-    const updatedFields = state.formFields.map((state) => ({
-      ...state,
-      value: "",
-    }));
-    setState({
-      ...state,
-      formFields: updatedFields,
-    });
-  };
+  // const clearForm = () => {
+  //   const updatedFields = state.formFields.map((state) => ({
+  //     ...state,
+  //     value: "",
+  //   }));
+  //   setState({
+  //     ...state,
+  //     formFields: updatedFields,
+  //   });
+  // };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     console.log("called");
     const existingData = [...state.formFields];
@@ -143,14 +137,16 @@ export default function Form(props: { id: any }) {
     });
   };
 
+  const updateFormTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, title: e.target.value });
+  };
   return (
     <div className="p-4 divide-y-2 divide-dotted flex-col gap-2">
       <div>
-        <input
-          type="text"
-          className="border-2 border-gray-500 rounded-lg p-2 my-2 flex-1  w-full"
+        <CustomInputField
           value={state.title}
-          onChange={(e) => setState({ ...state, title: e.target.value })}
+          handleInputChangeCB={updateFormTitle}
+          type="text"
           ref={titleRef}
         />
         {state.formFields.map((field) => (
@@ -163,7 +159,7 @@ export default function Form(props: { id: any }) {
             />
             <button
               className=" py-2 px-3 text-red-500"
-              onClick={(_) => removeField(field.id, field.label)}
+              onClick={(_) => removeField(field.id)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -224,7 +220,7 @@ export default function Form(props: { id: any }) {
           Close Form
         </Link>
 
-        <Button name={"Clear Form"} handleEvent={clearForm} />
+        {/* <Button name={"Clear Form"} handleEvent={clearForm} /> */}
       </div>
     </div>
   );

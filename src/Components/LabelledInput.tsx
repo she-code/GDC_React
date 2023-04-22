@@ -5,7 +5,10 @@ interface propsType {
   type: string;
   value: string;
   removeFieldCB: (id: number) => void;
-  handleInputChangeCB: (e: any, id: number) => void;
+  handleInputChangeCB: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => void;
 }
 export default function LabelledInput(props: propsType) {
   const { id, label, type, removeFieldCB, value, handleInputChangeCB } = props;

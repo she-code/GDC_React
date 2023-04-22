@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { responseData } from "../utils/types/types";
 import { initialState } from "../utils";
 
@@ -60,12 +63,25 @@ export default function PreviewQuestion(props: { id: number }) {
   const [userRes, setUserRes] = useState(
     responseState?.responses[currentField]?.response || ""
   );
+
+  const notify = () =>
+    toast.info("Your responses are automatically saved", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   useEffect(() => {
     if (!state) {
       return;
     }
     if (mounted) {
-      alert("Your responses are automatically saved");
+      // alert("Your responses are automatically saved");
+      notify();
     } else {
       setMounted(true);
     }
@@ -95,7 +111,7 @@ export default function PreviewQuestion(props: { id: number }) {
     }
     const existingData = [...responseState.responses];
     let valueToUpdate = existingData.find(
-      (field) => field.question === state.formFields[currentField]?.label
+      (field) => field.questionId === state.formFields[currentField]?.id
     );
     if (valueToUpdate !== undefined) {
       valueToUpdate.response = userRes;
@@ -157,6 +173,18 @@ export default function PreviewQuestion(props: { id: number }) {
 
   return state ? (
     <div className="h-64">
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {exsitingValue ? (
         <div className="m-5">
           {state.formFields.length > 0 ? (

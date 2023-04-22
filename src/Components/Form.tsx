@@ -81,19 +81,21 @@ export default function Form(props: { id: number }) {
   //creates field
   const addField = () => {
     //queues triger
-    setState({
-      ...state,
-      formFields: [
-        ...state.formFields,
-        {
-          id: Number(new Date()),
-          label: newField,
-          fieldType: type,
-          value: newField,
-        },
-      ],
-    });
-    setNewField("");
+    if (newField) {
+      setState({
+        ...state,
+        formFields: [
+          ...state.formFields,
+          {
+            id: Number(new Date()),
+            label: newField,
+            fieldType: type,
+            value: newField,
+          },
+        ],
+      });
+      setNewField("");
+    }
     //when you want to update use clousers
     //state=>
     //clousers give the value at the time of trigger
@@ -147,7 +149,7 @@ export default function Form(props: { id: number }) {
           value={state.title}
           handleInputChangeCB={updateFormTitle}
           type="text"
-          ref={titleRef}
+          elementRef={titleRef}
         />
         {state.formFields.map((field) => (
           <div className="flex justify-between" key={field.id}>
@@ -183,7 +185,7 @@ export default function Form(props: { id: number }) {
         <select
           name="typeSelecter"
           id=""
-          className="px-2 focus:outline-none border-2 border-gray-200"
+          className="px-2 focus:outline-none border-2 border-gray-200 rounded-lg"
           onChange={(e) => {
             setType(e.target.value);
             console.log(type);
@@ -215,7 +217,7 @@ export default function Form(props: { id: number }) {
         </button>
         <Link
           href="/"
-          className="bg-yellow-600 text-white py-2 px-3 text-lg uppercase rounded-xl m-3 w-1/6 text-center"
+          className="bg-yellow-400 text-white py-2 px-3 text-lg uppercase rounded-xl m-3 w-1/6 text-center"
         >
           Close Form
         </Link>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Form from "./Form";
 import { Link, useQueryParams } from "raviger";
+import { getLocalResponses } from "../utils";
 
 export default function FormsList() {
   const [formsListState, setFormsList] = useState([]);
@@ -16,11 +17,19 @@ export default function FormsList() {
   }, [savedForms]);
 
   //deletes a form with the given ID
+  // also deletes all the responses for that form
   const deleteForm = (id: number) => {
     const savedFormsJson = JSON.parse(savedForms!);
     const filteredForms = savedFormsJson.filter((form: any) => form.id !== id);
     localStorage.removeItem("savedForms");
     localStorage.setItem("savedForms", JSON.stringify(filteredForms));
+
+    const responses = getLocalResponses();
+    const filteredResponses = responses.filter(
+      (response: any) => response.formId !== id
+    );
+    console.log({ filteredResponses }, { responses });
+    localStorage.setItem("savedResponses", JSON.stringify(filteredResponses));
     setFormsList(filteredForms);
   };
 

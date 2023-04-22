@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 import Button from "./Button";
 import { Link, navigate } from "raviger";
-import { getLocalForms } from "../utils";
+import { getLocalForms, getLocalResponses } from "../utils";
 import { formData, formField } from "../utils/types/types";
 
 const initialFormFields: formField[] = [
@@ -100,13 +100,26 @@ export default function Form(props: { id: any }) {
 
   //removes field
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const removeField = (id: number) => {
+  // const removeField = (id: number) => {
+  //   setState({
+  //     ...state,
+  //     formFields: state.formFields.filter((field) => field.id !== id),
+  //   });
+  // };
+  const removeField = (id: number, label: string) => {
     setState({
       ...state,
       formFields: state.formFields.filter((field) => field.id !== id),
     });
+    //removes the field from the saved responses
+    const responses = getLocalResponses();
+    responses.forEach((response) => {
+      response.responses = response.responses.filter(
+        (r) => r.question !== label
+      );
+    });
+    localStorage.setItem("savedResponses", JSON.stringify(responses));
   };
-
   // clears the form input values
   const clearForm = () => {
     const updatedFields = state.formFields.map((state) => ({
@@ -150,7 +163,7 @@ export default function Form(props: { id: any }) {
             />
             <button
               className=" py-2 px-3 text-red-500"
-              onClick={(_) => removeField(field.id)}
+              onClick={(_) => removeField(field.id, field.label)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

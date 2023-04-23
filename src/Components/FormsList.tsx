@@ -48,7 +48,7 @@ export default function FormsList() {
           <div className="flex justify-between my-5">
             <Link
               href="/forms/0"
-              className="bg-yellow-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-yellow-600"
+              className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

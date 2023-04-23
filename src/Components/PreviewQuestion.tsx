@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "raviger";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { responseData } from "../utils/types/types";
 import { initialState } from "../utils";
+import CustomInputField from "./CustomInputField";
+import CustomHeader from "./CustomHeader";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -33,10 +37,9 @@ export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, setState] = useState(() => initialState(id!));
-
   const [currentField, setCurrentField] = useState(0);
-  const [exsitingValue, setExisting] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const navigate = useNavigate();
 
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
@@ -130,11 +133,10 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     } else {
       let existingRes = responseState.responses.find(
-        (res) => res.question === state.formFields[currentField]?.label
+        (res) => res.questionId === state.formFields[currentField]?.id
       );
       if (existingRes) {
         console.log("if", responseState);
-        setExisting(true);
         setUserRes(responseState.responses[currentField]?.response || "");
         return;
       }
@@ -151,7 +153,6 @@ export default function PreviewQuestion(props: { id: number }) {
       });
       console.log("ädded");
       setUserRes("");
-      setExisting(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentField]);
@@ -171,8 +172,14 @@ export default function PreviewQuestion(props: { id: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState]);
 
+  const updateUserResponse = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserRes(e.target.value);
+  };
   return state ? (
-    <div className="h-64">
+    <div className=" w-4/5 mx-auto">
+      <h1 className="text-2xl font-semibold text-center capitalize">
+        {state.title}
+      </h1>
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -185,56 +192,46 @@ export default function PreviewQuestion(props: { id: number }) {
         pauseOnHover
         theme="light"
       />
-      {exsitingValue ? (
-        <div className="m-5">
-          {state.formFields.length > 0 ? (
-            <>
-              <p className="text-xl font-semibold">
-                {state.formFields[currentField]?.label}
-              </p>
-              <input
-                className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-yellow-500 focus:border-l-8"
-                type={state.formFields[currentField]?.fieldType}
-                value={userRes}
-                onChange={(e) => {
-                  setUserRes(e.target.value);
-                }}
-              />
-            </>
-          ) : (
-            <div>No questions</div>
-          )}
-        </div>
-      ) : (
-        <div className="m-5">
-          {state.formFields.length > 0 ? (
-            <>
-              <p className="text-xl font-semibold">
-                {state.formFields[currentField]?.label}
-              </p>
-              <input
-                className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8"
-                type={state.formFields[currentField]?.fieldType}
-                value={userRes}
-                onChange={(e) => {
-                  setUserRes(e.target.value);
-                }}
-              />
-            </>
-          ) : (
-            <div>No questions</div>
-          )}
-        </div>
-      )}
-      <div className="flex justify-between">
+      <div className="m-5 mt-8">
+        {state.formFields.length > 0 ? (
+          <>
+            <CustomHeader
+              title={state.formFields[currentField]?.label}
+              capitalize={true}
+            />
+            <CustomInputField
+              type={state.formFields[currentField]?.fieldType}
+              value={userRes}
+              handleInputChangeCB={updateUserResponse}
+            />
+          </>
+        ) : (
+          <div>No questions</div>
+        )}
+      </div>
+
+      <div className="flex justify-between h-48">
         {currentField === 0 ? (
           <div></div>
         ) : (
           <button
-            className="bg-yellow-500 text-white rounded-lg py-2 px-3 w-20"
+            className="bg-yellow-500 text-white rounded-lg py-2 px-2 h-10"
             onClick={handlePrev}
           >
-            Prev
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
           </button>
         )}
         {currentField === state.formFields.length - 1 ? (
@@ -243,10 +240,23 @@ export default function PreviewQuestion(props: { id: number }) {
           <>
             {state.formFields.length > 0 ? (
               <button
-                className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
+                className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
                 onClick={handleNext}
               >
-                Next
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
               </button>
             ) : (
               <></>
@@ -255,12 +265,15 @@ export default function PreviewQuestion(props: { id: number }) {
         )}
       </div>
       {currentField === state.formFields.length - 1 ? (
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-5">
           <button
-            className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
-            onClick={(_) =>
-              responseState ? saveResponseData(responseState) : () => {}
-            }
+            className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"
+            onClick={(_) => {
+              if (responseState) {
+                saveResponseData(responseState);
+                navigate("/");
+              }
+            }}
           >
             Submit
           </button>

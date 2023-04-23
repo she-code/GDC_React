@@ -19,7 +19,7 @@ export default function Header(props: { title: string }) {
           <ActiveLink
             href={link.url}
             key={link.url}
-            exactActiveClass="text-yellow-500"
+            exactActiveClass="text-green-500"
             className="p-3 shadow-md text-lg mx-2 font-semibold "
           >
             {link.page}

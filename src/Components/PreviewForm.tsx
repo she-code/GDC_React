@@ -3,6 +3,14 @@ import { responseData } from "../types/responseTypes";
 import { initialState } from "../utils/storageUtils";
 import { DropdownField, RadioType, TextField } from "../types/formTypes";
 import RadioField from "./RadioField";
+import { useNavigate } from "raviger";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
+import CustomInputField from "./CustomInputField";
+import CustomHeader from "./CustomHeader";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -28,14 +36,13 @@ const saveResponseData = (currentState: responseData) => {
     saveLocalResponses(updatedLocalResponses);
   }
 };
-export default function PreviewQuestion(props: { id: any }) {
+export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, setState] = useState(() => initialState(id!));
-
   const [currentField, setCurrentField] = useState(0);
-  const [exsitingValue, setExisting] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const navigate = useNavigate();
 
   //*************selectinput  */
   const [isOpen, setIsOpen] = useState(false);
@@ -75,12 +82,31 @@ export default function PreviewQuestion(props: { id: any }) {
   const handleCheckboxChange = (option: string) => {
     if (selectedOptions.includes(option)) {
       setSelectedOptions(selectedOptions.filter((item) => item !== option));
+
+  const notify = () =>
+    toast.info("Your responses are automatically saved", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  useEffect(() => {
+    if (!state) {
+      return;
+    }
+    if (mounted) {
+      // alert("Your responses are automatically saved");
+      notify();
     } else {
       setSelectedOptions([...selectedOptions, option]);
     }
 
     console.log("from change", selectedOptions);
-  };
+  });
 
   //increments the currentField value
   const handleNext = () => {
@@ -138,7 +164,7 @@ export default function PreviewQuestion(props: { id: any }) {
     }
     const existingData = [...responseState.responses];
     let valueToUpdate = existingData.find(
-      (field) => field.question === state.formFields[currentField]?.label
+      (field) => field.questionId === state.formFields[currentField]?.id
     );
     if (valueToUpdate !== undefined) {
       valueToUpdate.response = userRes;
@@ -157,11 +183,10 @@ export default function PreviewQuestion(props: { id: any }) {
       return;
     } else {
       let existingRes = responseState.responses.find(
-        (res) => res.question === state.formFields[currentField]?.label
+        (res) => res.questionId === state.formFields[currentField]?.id
       );
       if (existingRes) {
         console.log("if", responseState);
-        setExisting(true);
         setUserRes(responseState.responses[currentField]?.response || "");
         if (state.formFields[currentField]?.kind === "dropdown") {
           setSelectedOptions(
@@ -178,11 +203,11 @@ export default function PreviewQuestion(props: { id: any }) {
           {
             question: state.formFields[currentField]?.label,
             response: userRes,
+            questionId: state.formFields[currentField]?.id,
           },
         ],
       });
       setUserRes("");
-      setExisting(false);
       setSelectedOptions([]);
       console.log("ädded", { selectedOptions });
     }
@@ -204,6 +229,9 @@ export default function PreviewQuestion(props: { id: any }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState]);
 
+  const updateUserResponse = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserRes(e.target.value);
+  };
   return state ? (
     <div className=" h-72">
       {state.formFields.length > 0 ? (
@@ -295,14 +323,62 @@ export default function PreviewQuestion(props: { id: any }) {
       )}
 
       <div className="flex justify-between">
+    <div className=" w-4/5 mx-auto">
+      <h1 className="text-2xl font-semibold text-center capitalize">
+        {state.title}
+      </h1>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <div className="m-5 mt-8">
+        {state.formFields.length > 0 ? (
+          <>
+            <CustomHeader
+              title={state.formFields[currentField]?.label}
+              capitalize={true}
+            />
+            <CustomInputField
+              type={(state.formFields[currentField] as TextField)?.fieldType}
+              value={userRes as string}
+              handleInputChangeCB={updateUserResponse}
+            />
+          </>
+        ) : (
+          <div>No questions</div>
+        )}
+      </div>
+
+      <div className="flex justify-between h-48">
         {currentField === 0 ? (
           <div></div>
         ) : (
           <button
-            className="bg-yellow-500 text-white rounded-lg py-2 px-3 w-20"
+            className="bg-yellow-500 text-white rounded-lg py-2 px-2 h-10"
             onClick={handlePrev}
           >
-            Prev
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
           </button>
         )}
         {currentField === state.formFields.length - 1 ? (
@@ -311,10 +387,23 @@ export default function PreviewQuestion(props: { id: any }) {
           <>
             {state.formFields.length > 0 ? (
               <button
-                className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
+                className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
                 onClick={handleNext}
               >
-                Next
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
               </button>
             ) : (
               <></>
@@ -323,12 +412,15 @@ export default function PreviewQuestion(props: { id: any }) {
         )}
       </div>
       {currentField === state.formFields.length - 1 ? (
-        <div className="flex justify-center">
+        <div className="flex justify-center mb-5">
           <button
-            className="bg-blue-500 text-white rounded-lg py-2 px-3 w-20"
-            onClick={(_) =>
-              responseState ? saveResponseData(responseState) : () => {}
-            }
+            className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"
+            onClick={(_) => {
+              if (responseState) {
+                saveResponseData(responseState);
+                navigate("/");
+              }
+            }}
           >
             Submit
           </button>

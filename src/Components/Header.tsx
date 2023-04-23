@@ -1,14 +1,13 @@
-import React from "react";
 import logo from "../logo.svg";
 import { ActiveLink } from "raviger";
 
 export default function Header(props: { title: string }) {
   const links = [
-    { page: "Home", url: "/" },
-    { page: "About", url: "/about" },
+    { page: "HOME", url: "/" },
+    { page: "ABOUT", url: "/about" },
   ];
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between text-gray-500">
       <img
         src={logo}
         className="animate-spin h-16 w-16"
@@ -20,8 +19,8 @@ export default function Header(props: { title: string }) {
           <ActiveLink
             href={link.url}
             key={link.url}
-            exactActiveClass="text-yellow-500"
-            className="p-3 shadow-md text-lg mx-2"
+            exactActiveClass="text-green-500"
+            className="p-3 shadow-md text-lg mx-2 font-semibold "
           >
             {link.page}
           </ActiveLink>

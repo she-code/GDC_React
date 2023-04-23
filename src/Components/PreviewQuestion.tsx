@@ -96,6 +96,7 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     }
     if (currentField <= state.formFields.length - 1) {
+      setUserRes("");
       setCurrentField(currentField + 1);
     }
   };
@@ -103,13 +104,14 @@ export default function PreviewQuestion(props: { id: number }) {
   //decrements the currentField value
   const handlePrev = () => {
     if (currentField > 0) {
+      setUserRes("");
       setCurrentField(currentField - 1);
     }
   };
 
   //updates the user response when input changes
   useEffect(() => {
-    if (!state || !responseState) {
+    if (!state || !responseState || !userRes) {
       return;
     }
     const existingData = [...responseState.responses];

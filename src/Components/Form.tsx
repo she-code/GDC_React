@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Link, navigate } from "raviger";
@@ -178,18 +178,6 @@ export default function Form(props: { id: number }) {
   };
   return (
     <div className="p-4  flex-col gap-2 mx-auto  w-10/12">
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       <div className=" w-11/12 mr-6">
         <div className="mb-3">
           <CustomInputField

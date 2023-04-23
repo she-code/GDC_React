@@ -1,4 +1,6 @@
 import { useRoutes } from "raviger";
+import { ToastContainer } from "react-toastify";
+
 import Home from "../Components/Home";
 import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
@@ -21,5 +23,21 @@ const routes = {
 
 export default function AppRouter() {
   let routeResult = useRoutes(routes);
-  return <AppContainer>{routeResult}</AppContainer>;
+  return (
+    <AppContainer>
+      {routeResult}{" "}
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </AppContainer>
+  );
 }

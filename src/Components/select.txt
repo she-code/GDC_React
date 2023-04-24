@@ -59,8 +59,7 @@ export default function LabelledDropDown(props: {
             value={selectedOption}
             onChange={(e) => updateSelectedOption(e, field.id)}
           />
-
-          {/* <select
+          <select
             className="focus:outline-none"
             key={field.id}
             value={field.value}
@@ -77,7 +76,7 @@ export default function LabelledDropDown(props: {
                 </option>
               )
             )}
-          </select> */}
+          </select>
         </div>
       </div>
       <div className=" flex w-3/4 ml-5 pl-5">

@@ -5,6 +5,7 @@ import AppContainer from "../Components/AppContainer";
 import Form from "../Components/Form";
 import PreviewQuestion from "../Components/PreviewForm";
 import ErrorPage from "../Components/ErrorPage";
+import { ToastContainer } from "react-toastify";
 
 const routes = {
   "/": () => <Home />,
@@ -21,5 +22,21 @@ const routes = {
 
 export default function AppRouter() {
   let routeResult = useRoutes(routes);
-  return <AppContainer>{routeResult}</AppContainer>;
+  return (
+    <AppContainer>
+      {routeResult}
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </AppContainer>
+  );
 }

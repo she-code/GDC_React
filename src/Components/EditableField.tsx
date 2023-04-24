@@ -1,20 +1,38 @@
 import React from "react";
+import { TextField, formField } from "../types/formTypes";
 
 export default function EditableField(props: {
-  field: any;
+  field: formField;
   handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>, id: number) => void;
   removeFieldCB: (id: number, label: string) => void;
 }) {
   const { handleChangeCB, removeFieldCB, field } = props;
   return (
-    <div className="flex justify-between" key={field.id}>
-      <input
-        className="border-0 border-l-blue-500 rounded-lg py-3  font-semibold text-xl
-      my-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8 h-10"
-        type="text"
-        value={field.label}
-        onChange={(e) => handleChangeCB(e, field.id)}
-      />
+    <div className="flex  items-center  justify-between">
+      <div className="flex items-center">
+        <div className="w-2 h-2 rounded-full bg-green-600"></div>
+        {field.kind === "dropdown" ? (
+          <p className="capitalize  text-base text-gray-500">
+            <span className="mx-1 font-semibold text-lg  text-black">(</span>
+            Multi-Select
+            <span className=" font-semibold text-xl mx-1  text-black">)</span>
+          </p>
+        ) : (
+          <p className="capitalize  text-base text-gray-500">
+            <span className="mx-1 font-semibold text-lg  text-black">(</span>
+            {(field as TextField).fieldType}
+            <span className=" font-semibold text-xl mx-1  text-black">)</span>
+          </p>
+        )}
+        <input
+          className="border-0 border-l-blue-500 rounded-lg py-3  font-semibold text-xl
+      my-2  w-min focus:outline-none focus:border-l-green-500 focus:border-l-8 h-10 capitalize"
+          type="text"
+          value={field.label}
+          onChange={(e) => handleChangeCB(e, field.id)}
+        />
+      </div>
+
       <button
         className=" py-2 px-3 text-red-500"
         onClick={(_) => removeFieldCB(field.id, field.label)}

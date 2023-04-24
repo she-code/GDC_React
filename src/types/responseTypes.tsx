@@ -1,5 +1,6 @@
 export interface responseType {
   question: string;
+  questionId: number;
   response: string | string[];
 }
 export interface responseData {

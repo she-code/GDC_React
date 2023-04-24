@@ -8,7 +8,7 @@ export default function CustomHeader(props: {
   const { title, margin, capitalize } = props;
   return (
     <p
-      className={`text-xl font-semibold text-gray-600 ${
+      className={`text-2xl font-semibold text-gray-600 ${
         margin ? "mt-6" : "mt-0"
       } ${capitalize ? "capitalize" : "none"} `}
     >

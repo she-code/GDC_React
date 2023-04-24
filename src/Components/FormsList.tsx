@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Form from "./Form";
 import { Link, useQueryParams } from "raviger";
-import { getLocalResponses } from "../utils";
+import { getLocalResponses } from "../utils/storageUtils";
 import CustomInputField from "./CustomInputField";
 import FormCard from "./FormCard";
-import { formData, responseData } from "../utils/types/types";
+import { formData } from "../types/formTypes";
+import { responseData } from "../types/responseTypes";
 
 export default function FormsList() {
   const [formsListState, setFormsList] = useState([]);

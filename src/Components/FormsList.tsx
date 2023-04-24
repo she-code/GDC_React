@@ -1,0 +1,127 @@
+import React, { useEffect, useState } from "react";
+import Form from "./Form";
+import { Link, useQueryParams } from "raviger";
+import { getLocalResponses } from "../utils";
+import CustomInputField from "./CustomInputField";
+import FormCard from "./FormCard";
+import { formData, responseData } from "../utils/types/types";
+
+export default function FormsList() {
+  const [formsListState, setFormsList] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [formId, setFormId] = useState(0);
+  const [{ search }, setQuery] = useQueryParams();
+  const [searchString, setSearchString] = useState("");
+  const savedForms = localStorage.getItem("savedForms");
+
+  useEffect(() => {
+    const savedFormsJson = JSON.parse(savedForms!);
+    setFormsList(savedFormsJson);
+  }, [savedForms]);
+
+  const deleteForm = (id: number) => {
+    //deletes the form from localStorage
+    const savedFormsJson = JSON.parse(savedForms!);
+    const filteredForms = savedFormsJson.filter(
+      (form: formData) => form.id !== id
+    );
+    localStorage.removeItem("savedForms");
+    localStorage.setItem("savedForms", JSON.stringify(filteredForms));
+
+    //deletes the form responses from localStorage
+    const responses = getLocalResponses();
+    const filteredResponses = responses.filter(
+      (response: responseData) => response.formId !== id
+    );
+    console.log({ filteredResponses }, { responses });
+    localStorage.setItem("savedResponses", JSON.stringify(filteredResponses));
+    setFormsList(filteredForms);
+  };
+
+  const updateSearchString = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchString(e.target.value);
+  };
+  return (
+    <div>
+      {formId === 0 ? (
+        <>
+          <div className="flex justify-between my-5">
+            <Link
+              href="/forms/0"
+              className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 mr-2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              <span className="text-lg">New Form</span>
+            </Link>
+          </div>
+          <form
+            className="mr-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setQuery({ search: searchString });
+            }}
+          >
+            <div className="relative h-10 w-full min-w-[200px] mb-5">
+              <div className="absolute  top-7 right-3 grid h-5 w-5 -translate-y-2/4 ">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </div>
+              <CustomInputField
+                value={searchString}
+                type="text"
+                handleInputChangeCB={updateSearchString}
+              />
+            </div>
+          </form>
+          <div className="mx-5">
+            {formsListState
+              ?.filter((form: formData) =>
+                form.title.toLowerCase().includes(search?.toLowerCase() || "")
+              )
+              .map((form: formData) => (
+                <div
+                  className="flex gap-2 justify-between my-2 items-center"
+                  key={form.id}
+                >
+                  <FormCard
+                    title={form.title}
+                    key={form.id}
+                    questions={form.formFields?.length}
+                    id={form.id}
+                    handleDeleteEventCB={deleteForm}
+                  />
+                </div>
+              ))}
+          </div>
+        </>
+      ) : (
+        <Form id={formId} />
+      )}
+    </div>
+  );
+}

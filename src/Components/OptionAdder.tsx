@@ -5,12 +5,13 @@ export default function OptionAdder(props: {
   state: formData;
   setState: (state: formData) => void;
   id: number;
+  emptyFieldAlertCB: () => void;
 }) {
-  const { state, setState, id } = props;
+  const { state, setState, id, emptyFieldAlertCB } = props;
   const [option, setOption] = useState("");
 
   //adds option to radio  and dropdown
-  const addRadioOption = (id: number) => {
+  const addOption = (id: number) => {
     const previousState = [...state.formFields];
     const fieldToUpdate = previousState.filter((field) => field.id === id)[0];
     if (fieldToUpdate && "options" in fieldToUpdate) {
@@ -36,7 +37,12 @@ export default function OptionAdder(props: {
       />
 
       <button
-        onClick={(_) => addRadioOption(id)}
+        onClick={(_) => {
+          if (option) {
+            addOption(id);
+          }
+          emptyFieldAlertCB();
+        }}
         className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
       >
         Add

@@ -37,6 +37,14 @@ const initialFormFields: formField[] = [
     value: "",
     fieldType: "radio",
   },
+  {
+    kind: "radio",
+    id: 6,
+    label: "Choose color",
+    options: ["red", "#ffff00", "rgb(45,67,247)"],
+    value: "",
+    fieldType: "color",
+  },
 ];
 
 const initialState: (id: number) => formData = (id) => {
@@ -119,7 +127,7 @@ export default function Form(props: { id: number }) {
             },
           ],
         });
-      } else if (type === "radio") {
+      } else if (type === "radio" || type === "color") {
         //queues triger
         if (newField) {
           setState({
@@ -249,7 +257,6 @@ export default function Form(props: { id: number }) {
     index: number
   ) => {
     const existingData = [...state.formFields];
-    const responses = getLocalResponses();
 
     let valueToUpdate = existingData.find((field) => field.id === id);
     (valueToUpdate as DropdownField | RadioType).options.forEach(
@@ -321,6 +328,7 @@ export default function Form(props: { id: number }) {
             <option value="textarea">textarea</option>
             <option value="radio">radio</option>
             <option value="select">multi-select</option>
+            <option value="color">color-picker</option>
           </select>
         </div>
 
@@ -368,6 +376,7 @@ export default function Form(props: { id: number }) {
                       setState={setState}
                       state={state}
                       updateOptionCB={updateOptions}
+                      emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
                 case "radio":
@@ -380,10 +389,11 @@ export default function Form(props: { id: number }) {
                       setState={setState}
                       state={state}
                       updateOptionCB={updateOptions}
+                      emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
                 default:
-                  break;
+                  return <div>no fields</div>;
               }
             })}
           </>

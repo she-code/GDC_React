@@ -10,6 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
+import ColorPicker from "./ColorPicker";
+import NotFound from "./NotFound";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -223,6 +225,9 @@ export default function PreviewQuestion(props: { id: number }) {
   const updateUserResponse = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserRes(e.target.value);
   };
+  const updateColor = (color: string) => {
+    setUserRes(color);
+  };
   return state ? (
     <div className=" w-4/5 mx-auto">
       <h1 className="text-2xl font-semibold text-center capitalize">
@@ -250,40 +255,54 @@ export default function PreviewQuestion(props: { id: number }) {
               <div>
                 <>
                   {state.formFields[currentField].kind === "radio" ? (
-                    <div>
-                      <CustomHeader
-                        title={state.formFields[currentField]?.label}
-                        capitalize={true}
-                      />
-                      <div className="  overflow-y-auto h-36 m-5">
-                        {(state.formFields[currentField] as RadioType).options
-                          .length > 0 ? (
-                          <>
-                            {(
-                              state.formFields[currentField] as RadioType
-                            ).options?.map((option, index) => (
-                              <RadioField
-                                type={
-                                  (state.formFields[currentField] as RadioType)
-                                    ?.fieldType
-                                }
-                                value={option}
-                                id={state.formFields[currentField]?.id}
-                                key={index}
-                                checked={userRes === option}
-                                handleChangeCB={(e) => {
-                                  setUserRes(e.target.value);
-                                  console.log(userRes);
-                                }}
-                                label={option}
-                              />
-                            ))}
-                          </>
-                        ) : (
-                          <div>No options are added</div>
-                        )}
-                      </div>
-                    </div>
+                    <>
+                      {(state.formFields[currentField] as RadioType)
+                        .fieldType === "color" ? (
+                        <ColorPicker
+                          field={state.formFields[currentField]}
+                          value={userRes as string}
+                          setColorCB={updateColor}
+                        />
+                      ) : (
+                        <div>
+                          <CustomHeader
+                            title={state.formFields[currentField]?.label}
+                            capitalize={true}
+                          />
+                          <div className="  overflow-y-auto h-36 m-5">
+                            {(state.formFields[currentField] as RadioType)
+                              .options.length > 0 ? (
+                              <>
+                                {(
+                                  state.formFields[currentField] as RadioType
+                                ).options?.map((option, index) => (
+                                  <RadioField
+                                    type={
+                                      (
+                                        state.formFields[
+                                          currentField
+                                        ] as RadioType
+                                      )?.fieldType
+                                    }
+                                    value={option}
+                                    id={state.formFields[currentField]?.id}
+                                    key={index}
+                                    checked={userRes === option}
+                                    handleChangeCB={(e) => {
+                                      setUserRes(e.target.value);
+                                      console.log(userRes);
+                                    }}
+                                    label={option}
+                                  />
+                                ))}
+                              </>
+                            ) : (
+                              <div>No options are added</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="flex items-center">
                       <CustomHeader
@@ -416,6 +435,6 @@ export default function PreviewQuestion(props: { id: number }) {
       )}
     </div>
   ) : (
-    <div>Form with this Id doesn't exist</div>
+    <NotFound />
   );
 }

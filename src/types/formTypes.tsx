@@ -30,6 +30,7 @@ export type textFieldTypes =
   | "radio"
   | "textarea"
   | "number"
+  | "color"
   | "select";
 /***descriminated unions */
 export type TextField = {

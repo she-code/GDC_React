@@ -1,6 +1,6 @@
 import React from "react";
 import EditableField from "./EditableField";
-import OptionAdder from "./RadioOptionAdder";
+import OptionAdder from "./OptionAdder";
 import {
   DropdownField,
   RadioType,
@@ -21,6 +21,7 @@ export default function CustomFieldWithOption(props: {
     id: number,
     index: number
   ) => void;
+  emptyFieldAlertCB: () => void;
 }) {
   const {
     field,
@@ -29,16 +30,22 @@ export default function CustomFieldWithOption(props: {
     state,
     removeFieldCB,
     updateOptionCB,
+    emptyFieldAlertCB,
   } = props;
   return (
-    <div key={field.id}>
-      <div className="flex items-center w-full">
+    <div>
+      <div className="flex items-center w-full" key={field.id}>
         <EditableField
           field={field}
           handleChangeCB={handleChangeCB}
           removeFieldCB={removeFieldCB}
         />
-        <OptionAdder setState={setState} state={state} id={field.id} />
+        <OptionAdder
+          setState={setState}
+          state={state}
+          id={field.id}
+          emptyFieldAlertCB={emptyFieldAlertCB}
+        />
       </div>
       <>
         <p className="font-semibold text-lg">Options</p>

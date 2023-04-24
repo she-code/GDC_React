@@ -8,7 +8,7 @@ export default function EditableField(props: {
 }) {
   const { handleChangeCB, removeFieldCB, field } = props;
   return (
-    <div className="flex  items-center  justify-between">
+    <div className="flex  items-center  justify-between" key={field.id}>
       <div className="flex items-center">
         <div className="w-2 h-2 rounded-full bg-green-600"></div>
         {field.kind === "dropdown" ? (

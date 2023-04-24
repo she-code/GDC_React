@@ -4,12 +4,11 @@ import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
 import Form from "../Components/Form";
 import PreviewQuestion from "../Components/PreviewForm";
-import ErrorPage from "../Components/ErrorPage";
 import { ToastContainer } from "react-toastify";
+import NotFound from "../Components/NotFound";
 
 const routes = {
   "/": () => <Home />,
-  "/error": () => <ErrorPage />,
 
   "/about": () => <About />,
   "/forms/:formId": ({ formId }: { formId: string }) => (
@@ -18,6 +17,7 @@ const routes = {
   "/preview/:formId": ({ formId }: { formId: string }) => (
     <PreviewQuestion id={Number(formId)} />
   ),
+  "*": () => <NotFound />,
 };
 
 export default function AppRouter() {

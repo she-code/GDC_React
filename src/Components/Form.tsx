@@ -122,7 +122,7 @@ export default function Form(props: { id: number }) {
 
   // creates toast
   const notify = () =>
-    toast.info("Form is up to date", {
+    toast.info("Form is up-to-date", {
       position: "top-center",
       autoClose: 2000,
       hideProgressBar: true,

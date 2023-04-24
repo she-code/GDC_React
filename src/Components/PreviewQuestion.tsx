@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "raviger";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { responseData } from "../utils/types/types";
@@ -182,8 +182,7 @@ export default function PreviewQuestion(props: { id: number }) {
       <h1 className="text-2xl font-semibold text-center capitalize">
         {state.title}
       </h1>
-      <ToastContainer
-      
+
       <div className="m-5 mt-8">
         {state.formFields.length > 0 ? (
           <>

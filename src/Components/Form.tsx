@@ -146,11 +146,9 @@ export default function Form(props: { id: number }) {
       theme: "light",
     });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
-    console.log("called");
     const existingData = [...state.formFields];
     let valueToUpdate = existingData.find((field) => field.id === id);
     valueToUpdate!.label = e.target.value;
-    console.log(valueToUpdate);
     setState({
       ...state,
       formFields: existingData,
@@ -202,7 +200,6 @@ export default function Form(props: { id: number }) {
             className="px-2 focus:outline-none font-light "
             onChange={(e) => {
               setType(e.target.value);
-              console.log(type);
             }}
           >
             <option value="text">text</option>

@@ -49,7 +49,6 @@ export default function PreviewQuestion(props: { id: number }) {
         (response) => response.formId === id
       );
       if (selectedResponse) {
-        console.log("initial", selectedResponse);
         return selectedResponse;
       } else {
         const newResponse = {
@@ -125,7 +124,6 @@ export default function PreviewQuestion(props: { id: number }) {
       ...responseState,
       responses: existingData,
     });
-    console.log("updating", userRes, responseState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRes]);
 
@@ -138,7 +136,6 @@ export default function PreviewQuestion(props: { id: number }) {
         (res) => res.questionId === state.formFields[currentField]?.id
       );
       if (existingRes) {
-        console.log("if", responseState);
         setUserRes(responseState.responses[currentField]?.response || "");
         return;
       }
@@ -153,7 +150,6 @@ export default function PreviewQuestion(props: { id: number }) {
           },
         ],
       });
-      console.log("ädded");
       setUserRes("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

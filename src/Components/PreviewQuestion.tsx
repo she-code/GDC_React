@@ -183,17 +183,7 @@ export default function PreviewQuestion(props: { id: number }) {
         {state.title}
       </h1>
       <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      
       <div className="m-5 mt-8">
         {state.formFields.length > 0 ? (
           <>

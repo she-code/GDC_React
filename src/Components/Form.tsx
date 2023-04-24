@@ -249,14 +249,29 @@ export default function Form(props: { id: number }) {
     index: number
   ) => {
     const existingData = [...state.formFields];
+    const responses = getLocalResponses();
+
     let valueToUpdate = existingData.find((field) => field.id === id);
     (valueToUpdate as DropdownField | RadioType).options.forEach(
       (option: string, i: number) => {
         if (index === i) {
           (valueToUpdate as DropdownField | RadioType).options[i] =
             e.target.value;
-          option = e.target.value;
           console.log({ option }, e.target.value);
+          // responses.forEach((response) => {
+          //   response.responses.forEach((res) => {
+          //     if (
+          //       res.question ===
+          //       (valueToUpdate as DropdownField | RadioType).options[i]
+          //     ) {
+          //       res.question = e.target.value;
+          //       localStorage.setItem(
+          //         "savedResponses",
+          //         JSON.stringify(responses)
+          //       );
+          //     }
+          //   });
+          // });
         }
         // option = e.target.value;
       }
@@ -267,15 +282,7 @@ export default function Form(props: { id: number }) {
       ...state,
       formFields: existingData,
     });
-    // const responses = getLocalResponses();
-    // responses.forEach((response) => {
-    //   response.responses.forEach((res) => {
-    //     if (res.questionId === valueToUpdate?.id) {
-    //       res.question = valueToUpdate.label;
-    //       localStorage.setItem("savedResponses", JSON.stringify(responses));
-    //     }
-    //   });
-    // });
+
     console.log(existingData);
   };
 

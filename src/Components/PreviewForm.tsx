@@ -5,7 +5,7 @@ import { DropdownField, RadioType, TextField } from "../types/formTypes";
 import RadioField from "./RadioField";
 import { useNavigate } from "raviger";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import CustomInputField from "./CustomInputField";
@@ -102,12 +102,11 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     }
     if (mounted) {
-      // alert("Your responses are automatically saved");
       notify();
+    } else {
+      setMounted(true);
     }
-
-    console.log("from change", selectedOptions);
-  });
+  }, [mounted, state]);
 
   //increments the currentField value
   const handleNext = () => {
@@ -115,6 +114,7 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     }
     if (currentField <= state.formFields.length - 1) {
+      setUserRes("");
       setCurrentField(currentField + 1);
     }
   };
@@ -122,20 +122,10 @@ export default function PreviewQuestion(props: { id: number }) {
   //decrements the currentField value
   const handlePrev = () => {
     if (currentField > 0) {
+      setUserRes("");
       setCurrentField(currentField - 1);
     }
   };
-
-  useEffect(() => {
-    if (!state) {
-      return;
-    }
-    if (mounted) {
-      alert("Your responses are automatically saved");
-    } else {
-      setMounted(true);
-    }
-  }, [mounted, state]);
 
   //saves selected options in dropdown
   useEffect(() => {
@@ -234,37 +224,198 @@ export default function PreviewQuestion(props: { id: number }) {
     setUserRes(e.target.value);
   };
   return state ? (
-    <div className=" h-72">
-      <button
-        className=" py-2 px-3 mt-5 border-2 border-gray-300 "
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {Array.isArray(selectedOptions) && selectedOptions.length > 0
-          ? selectedOptions.join(" , ")
-          : "No options selected"}
-      </button>
-      {isOpen && (
-        <ul className=" shadow-lg bg-gray-300 w-full">
-          {(state.formFields[currentField] as DropdownField).options.map(
-            (option) => (
-              <li key={option}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedOptions.includes(option)}
-                    onChange={() => {
-                      handleCheckboxChange(option);
-                    }}
+    <div className=" w-4/5 mx-auto">
+      <h1 className="text-2xl font-semibold text-center capitalize">
+        {state.title}
+      </h1>
+
+      <div className="m-5 mt-8">
+        {state.formFields.length > 0 ? (
+          <>
+            {state.formFields[currentField]?.kind === "text" ? (
+              <>
+                <CustomHeader
+                  title={state.formFields[currentField]?.label}
+                  capitalize={true}
+                />
+                <CustomInputField
+                  type={
+                    (state.formFields[currentField] as TextField)?.fieldType
+                  }
+                  value={userRes as string}
+                  handleInputChangeCB={updateUserResponse}
+                />
+              </>
+            ) : (
+              <div>
+                <>
+                  {state.formFields[currentField].kind === "radio" ? (
+                    <div>
+                      <CustomHeader
+                        title={state.formFields[currentField]?.label}
+                        capitalize={true}
+                      />
+                      <div className="  overflow-y-auto h-36 m-5">
+                        {(state.formFields[currentField] as RadioType).options
+                          .length > 0 ? (
+                          <>
+                            {(
+                              state.formFields[currentField] as RadioType
+                            ).options?.map((option, index) => (
+                              <RadioField
+                                type={
+                                  (state.formFields[currentField] as RadioType)
+                                    ?.fieldType
+                                }
+                                value={option}
+                                id={state.formFields[currentField]?.id}
+                                key={index}
+                                checked={userRes === option}
+                                handleChangeCB={(e) => {
+                                  setUserRes(e.target.value);
+                                  console.log(userRes);
+                                }}
+                                label={option}
+                              />
+                            ))}
+                          </>
+                        ) : (
+                          <div>No options are added</div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <CustomHeader
+                        title={state.formFields[currentField]?.label}
+                        capitalize={true}
+                      />
+                      <div className="ml-4  w-1/3">
+                        {(state.formFields[currentField] as DropdownField)
+                          .options.length > 0 ? (
+                          <>
+                            <button
+                              className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              {Array.isArray(selectedOptions) &&
+                              selectedOptions.length > 0
+                                ? selectedOptions.join(" , ")
+                                : "No options selected"}
+                            </button>
+                            {isOpen && (
+                              <ul className=" shadow-lg bg-gray-300 w-full">
+                                {(
+                                  state.formFields[
+                                    currentField
+                                  ] as DropdownField
+                                ).options.map((option) => (
+                                  <li key={option}>
+                                    <label>
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedOptions.includes(
+                                          option
+                                        )}
+                                        onChange={() => {
+                                          handleCheckboxChange(option);
+                                        }}
+                                      />
+                                      {option}
+                                    </label>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </>
+                        ) : (
+                          <p className="block">No options are added</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              </div>
+            )}
+          </>
+        ) : (
+          <div>No questions</div>
+        )}
+      </div>
+
+      <div className="flex justify-between h-48">
+        {currentField === 0 ? (
+          <div></div>
+        ) : (
+          <button
+            className="bg-yellow-500 text-white rounded-lg py-2 px-2 h-10"
+            onClick={handlePrev}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </button>
+        )}
+        {currentField === state.formFields.length - 1 ? (
+          ""
+        ) : (
+          <>
+            {state.formFields.length > 0 ? (
+              <button
+                className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
+                onClick={handleNext}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
                   />
-                  {option}
-                </label>
-              </li>
-            )
-          )}
-        </ul>
+                </svg>
+              </button>
+            ) : (
+              <></>
+            )}
+          </>
+        )}
+      </div>
+      {currentField === state.formFields.length - 1 ? (
+        <div className="flex justify-center mb-5">
+          <button
+            className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"
+            onClick={(_) => {
+              if (responseState) {
+                saveResponseData(responseState);
+                navigate("/");
+              }
+            }}
+          >
+            Submit
+          </button>
+        </div>
+      ) : (
+        ""
       )}
     </div>
   ) : (
-    <div>hi</div>
+    <div>Form with this Id doesn't exist</div>
   );
 }

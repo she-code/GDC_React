@@ -34,7 +34,6 @@ export default function FormsList() {
     const filteredResponses = responses.filter(
       (response: responseData) => response.formId !== id
     );
-    console.log({ filteredResponses }, { responses });
     localStorage.setItem("savedResponses", JSON.stringify(filteredResponses));
     setFormsList(filteredForms);
   };

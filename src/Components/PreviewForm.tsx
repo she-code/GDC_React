@@ -56,7 +56,6 @@ export default function PreviewQuestion(props: { id: number }) {
         (response) => response.formId === id
       );
       if (selectedResponse) {
-        console.log("initial", selectedResponse);
         return selectedResponse;
       } else {
         const newResponse = {
@@ -146,7 +145,6 @@ export default function PreviewQuestion(props: { id: number }) {
       });
     }
 
-    console.log("from chek ude", valueToUpdate, { selectedOptions });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOptions]);
 
@@ -166,7 +164,6 @@ export default function PreviewQuestion(props: { id: number }) {
       ...responseState,
       responses: existingData,
     });
-    console.log("updating", userRes, responseState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRes]);
 
@@ -179,7 +176,6 @@ export default function PreviewQuestion(props: { id: number }) {
         (res) => res.questionId === state.formFields[currentField]?.id
       );
       if (existingRes) {
-        console.log("if", responseState);
         setUserRes(responseState.responses[currentField]?.response || "");
         if (state.formFields[currentField]?.kind === "dropdown") {
           setSelectedOptions(
@@ -202,7 +198,6 @@ export default function PreviewQuestion(props: { id: number }) {
       });
       setUserRes("");
       setSelectedOptions([]);
-      console.log("ädded", { selectedOptions });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentField]);
@@ -290,7 +285,6 @@ export default function PreviewQuestion(props: { id: number }) {
                                     checked={userRes === option}
                                     handleChangeCB={(e) => {
                                       setUserRes(e.target.value);
-                                      console.log(userRes);
                                     }}
                                     label={option}
                                   />

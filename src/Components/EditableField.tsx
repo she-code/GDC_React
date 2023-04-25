@@ -13,19 +13,19 @@ export default function EditableField(props: {
         <div className="w-2 h-2 rounded-full bg-green-600"></div>
         {field.kind === "dropdown" ? (
           <p className="capitalize  text-base text-gray-500">
-            <span className="mx-1 font-semibold text-lg  text-black">(</span>
+            <span className="mx-1 font-semibold text-base  text-black">(</span>
             Multi-Select
             <span className=" font-semibold text-xl mx-1  text-black">)</span>
           </p>
         ) : (
           <p className="capitalize  text-base text-gray-500">
-            <span className="mx-1 font-semibold text-lg  text-black">(</span>
+            <span className="mx-1 font-semibold text-base  text-black">(</span>
             {(field as TextField).fieldType}
             <span className=" font-semibold text-xl mx-1  text-black">)</span>
           </p>
         )}
         <input
-          className="border-0 border-l-blue-500 rounded-lg py-3  font-semibold text-xl
+          className="border-0 border-l-blue-500 rounded-lg py-3  font-semibold text-lg
       my-2  w-min focus:outline-none focus:border-l-green-500 focus:border-l-8 h-10 capitalize"
           type="text"
           value={field.label}

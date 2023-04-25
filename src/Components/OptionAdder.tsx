@@ -18,9 +18,6 @@ export default function OptionAdder(props: {
       if (option !== "") {
         fieldToUpdate.options = [...fieldToUpdate.options, option];
         setState({ ...state, formFields: previousState });
-        console.log("updated state", { state }, fieldToUpdate.options, {
-          option,
-        });
       }
     }
     setOption("");
@@ -38,10 +35,11 @@ export default function OptionAdder(props: {
 
       <button
         onClick={(_) => {
-          if (option) {
-            addOption(id);
+          if (!option) {
+            emptyFieldAlertCB();
+            return;
           }
-          emptyFieldAlertCB();
+          addOption(id);
         }}
         className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
       >

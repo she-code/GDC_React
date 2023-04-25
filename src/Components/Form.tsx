@@ -221,11 +221,9 @@ export default function Form(props: { id: number }) {
       | React.ChangeEvent<HTMLSelectElement>,
     id: number
   ) => {
-    console.log("called");
     const existingData = [...state.formFields];
     let valueToUpdate = existingData.find((field) => field.id === id);
     valueToUpdate!.label = e.target.value;
-    console.log(valueToUpdate);
     setState({
       ...state,
       formFields: existingData,
@@ -251,6 +249,7 @@ export default function Form(props: { id: number }) {
       }
     });
   };
+  const responses = getLocalResponses();
   const updateOptions = (
     e: React.ChangeEvent<HTMLInputElement>,
     id: number,
@@ -264,37 +263,32 @@ export default function Form(props: { id: number }) {
         if (index === i) {
           (valueToUpdate as DropdownField | RadioType).options[i] =
             e.target.value;
-          console.log({ option }, e.target.value);
-          // responses.forEach((response) => {
-          //   response.responses.forEach((res) => {
-          //     if (
-          //       res.question ===
-          //       (valueToUpdate as DropdownField | RadioType).options[i]
-          //     ) {
-          //       res.question = e.target.value;
-          //       localStorage.setItem(
-          //         "savedResponses",
-          //         JSON.stringify(responses)
-          //       );
-          //     }
-          //   });
-          // });
+          responses.forEach((response) => {
+            response.responses.forEach((res) => {
+              if (
+                res.response ===
+                (valueToUpdate as DropdownField | RadioType).options[i]
+              ) {
+                res.response = option;
+              }
+            });
+          });
         }
         // option = e.target.value;
       }
     );
-    // valueToUpdate!.label = e.target.value;
-    // console.log(valueToUpdate);
+    localStorage.setItem("savedResponses", JSON.stringify(responses));
     setState({
       ...state,
       formFields: existingData,
     });
-
-    console.log(existingData);
   };
 
   return (
-    <div className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5  scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+    <div
+      className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
+    "
+    >
       <div className=" w-11/12 mr-6">
         <div className="mb-3">
           <CustomInputField
@@ -316,7 +310,6 @@ export default function Form(props: { id: number }) {
             className="px-2 focus:outline-none font-light "
             onChange={(e) => {
               setType(e.target.value as textFieldTypes);
-              console.log(type);
             }}
           >
             <option value="text">text</option>
@@ -369,6 +362,7 @@ export default function Form(props: { id: number }) {
                 case "dropdown":
                   return (
                     <CustomFieldWithOption
+                      key={field.id}
                       field={field}
                       handleChangeCB={handleChange}
                       id={field.id}
@@ -382,6 +376,7 @@ export default function Form(props: { id: number }) {
                 case "radio":
                   return (
                     <CustomFieldWithOption
+                      key={field.id}
                       field={field}
                       handleChangeCB={handleChange}
                       id={field.id}

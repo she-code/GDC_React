@@ -2,14 +2,28 @@ import { useState } from "react";
 import { RadioType, formField } from "../types/formTypes";
 import CustomHeader from "./CustomHeader";
 
-function ColorPicker(props: {
+export default function ColorPicker(props: {
   value: string;
   field: formField;
   setColorCB: (color: string) => void;
 }) {
   const [color, setColor] = useState("");
   const { value, setColorCB, field } = props;
+  const defaultColor = "green";
 
+  //check if the color is valid css color
+  function isValidColor(str: string) {
+    const s = new Option().style;
+    s.color = str;
+    return s.color !== "";
+  }
+  //if the color is not valid return default color
+  function formatColor(str: string) {
+    if (!isValidColor(str)) {
+      return defaultColor;
+    }
+    return str;
+  }
   return (
     <div>
       <CustomHeader title={field?.label} capitalize={true} />
@@ -33,7 +47,7 @@ function ColorPicker(props: {
                 className={`w-6 h-6 rounded-full mr-2 cursor-pointer focus:outline-none ${
                   color === c ? "ring ring-green-500" : ""
                 }`}
-                style={{ backgroundColor: c }}
+                style={{ backgroundColor: formatColor(c) }}
               ></button>
             ))}
           </div>
@@ -42,5 +56,3 @@ function ColorPicker(props: {
     </div>
   );
 }
-
-export default ColorPicker;

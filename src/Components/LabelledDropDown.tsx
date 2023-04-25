@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DropdownField, formData, formField } from "../types/formTypes";
+import { formData, formField } from "../types/formTypes";
 
 export default function LabelledDropDown(props: {
   field: formField;
@@ -11,6 +11,7 @@ export default function LabelledDropDown(props: {
   const { field, state, setState, removeFieldCB, label } = props;
   const [option, setOption] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   //adds dropdown option
@@ -43,7 +44,6 @@ export default function LabelledDropDown(props: {
       });
       setState({ ...state, formFields: previousState });
     }
-    console.log("why", { fieldToUpdate }, { selectedOption }, e.target.value);
   };
   return (
     <div className="flex " key={field.id}>
@@ -59,25 +59,6 @@ export default function LabelledDropDown(props: {
             value={selectedOption}
             onChange={(e) => updateSelectedOption(e, field.id)}
           />
-
-          {/* <select
-            className="focus:outline-none"
-            key={field.id}
-            value={field.value}
-            onChange={(e) => {
-              setSelectedOption(e.target.value);
-              setSelectedIndex(e.target.selectedIndex);
-            }}
-          >
-            <option>Select an option to edit</option>
-            {(field as DropdownField).options.map(
-              (option: string, index: number) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              )
-            )}
-          </select> */}
         </div>
       </div>
       <div className=" flex w-3/4 ml-5 pl-5">

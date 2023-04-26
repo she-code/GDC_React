@@ -1,0 +1,100 @@
+import { DropdownField, RadioType, formData } from "../types/formTypes";
+import { FormActions } from "../types/stateReducerTypes";
+import { getNewField } from "../utils/newField";
+
+//Action reducer
+export const reducer = (state: formData, action: FormActions) => {
+  switch (action.type) {
+    case "add_field": {
+      const newField = getNewField(action.fieldType, action.label);
+      if (newField.label.length > 0) {
+        action.callback();
+        return {
+          ...state,
+          formFields: [...state.formFields, newField],
+        };
+      }
+      return state;
+    }
+    case "remove_field": {
+      return {
+        ...state,
+        formFields: state.formFields.filter((field) => field.id !== action.id),
+      };
+    }
+    case "update_title": {
+      return {
+        ...state,
+        title: action.title,
+      };
+    }
+    case "add_option": {
+      return {
+        ...state,
+        formFields: state.formFields?.map((field) => {
+          if (field.id === action.fieldId && field.kind !== "text") {
+            return {
+              ...field,
+              options: [
+                ...(field as DropdownField | RadioType).options,
+                action.option,
+              ],
+            };
+          }
+          return field;
+        }),
+      };
+    }
+    case "remove_option": {
+      return {
+        ...state,
+        formFields: state.formFields.map((field) => {
+          if (field.id === action.fieldId && field.kind !== "text") {
+            return {
+              ...field,
+              options: (field as DropdownField | RadioType).options.filter(
+                (option: string, index: number) => index !== action.optionId
+              ),
+            };
+          }
+          return field;
+        }),
+      };
+    }
+    case "update_label": {
+      return {
+        ...state,
+        formFields: state.formFields.map((field) => {
+          if (field.id === action.id) {
+            return {
+              ...field,
+              label: action.value,
+            };
+          }
+          return field;
+        }),
+      };
+    }
+    case "update_option": {
+      return {
+        ...state,
+        formFields: state.formFields?.map((field) => {
+          if (field.id === action.fieldId && field.kind !== "text") {
+            return {
+              ...field,
+              options: (field as DropdownField | RadioType).options?.map(
+                (option: string, index: number) => {
+                  if (index === action.index) {
+                    return action.option;
+                  }
+                  return option;
+                }
+              ),
+            };
+          }
+          return field;
+        }),
+      };
+    }
+  }
+};

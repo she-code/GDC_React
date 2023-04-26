@@ -2,26 +2,12 @@ import React, { useState } from "react";
 import { formData } from "../types/formTypes";
 
 export default function OptionAdder(props: {
-  state: formData;
-  setState: (state: formData) => void;
-  id: number;
   emptyFieldAlertCB: () => void;
+  addOptionCB: (option: string) => void;
 }) {
-  const { state, setState, id, emptyFieldAlertCB } = props;
+  const { emptyFieldAlertCB, addOptionCB } = props;
   const [option, setOption] = useState("");
 
-  //adds option to radio  and dropdown
-  const addOption = (id: number) => {
-    const previousState = [...state.formFields];
-    const fieldToUpdate = previousState.filter((field) => field.id === id)[0];
-    if (fieldToUpdate && "options" in fieldToUpdate) {
-      if (option !== "") {
-        fieldToUpdate.options = [...fieldToUpdate.options, option];
-        setState({ ...state, formFields: previousState });
-      }
-    }
-    setOption("");
-  };
   return (
     <div className=" flex w-4/5 ml-5 pl-5 items-center">
       <input
@@ -39,7 +25,7 @@ export default function OptionAdder(props: {
             emptyFieldAlertCB();
             return;
           }
-          addOption(id);
+          addOptionCB(option);
         }}
         className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
       >

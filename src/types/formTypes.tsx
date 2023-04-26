@@ -20,6 +20,7 @@ export type formData = {
   formFields: formField[];
 };
 
+export type FormFieldKind = "text" | "dropdown" | "radio";
 //unions
 export type textFieldTypes =
   | "text"
@@ -35,21 +36,21 @@ export type textFieldTypes =
 /***descriminated unions */
 export type TextField = {
   id: number;
-  kind: "text";
+  kind: FormFieldKind;
   label: string;
   fieldType: textFieldTypes;
   value: string;
 };
 export type DropdownField = {
   id: number;
-  kind: "dropdown";
+  kind: FormFieldKind;
   label: string;
   options: string[];
   value: string;
 };
 export type RadioType = {
   id: number;
-  kind: "radio";
+  kind: FormFieldKind;
   label: string;
   fieldType: textFieldTypes;
   value: string;

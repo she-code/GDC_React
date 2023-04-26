@@ -1,51 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Link, navigate } from "raviger";
-import { getLocalForms, getLocalResponses } from "../utils/storageUtils";
-import {
-  DropdownField,
-  RadioType,
-  formData,
-  formField,
-  textFieldTypes,
-} from "../types/formTypes";
+import { getLocalForms } from "../utils/storageUtils";
+import { formData, textFieldTypes } from "../types/formTypes";
 import EditableField from "./EditableField";
 
 import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
 import CustomFieldWithOption from "./CustomFieldWithOption";
 import Divider from "./Divider";
-
-const initialFormFields: formField[] = [
-  { kind: "text", id: 1, label: "First Name", fieldType: "text", value: "" },
-  { kind: "text", id: 2, label: "Last Name", fieldType: "text", value: "" },
-  { kind: "text", id: 3, label: "Email", fieldType: "email", value: "" },
-  {
-    kind: "dropdown",
-    id: 4,
-    label: "Priority",
-    options: ["High", "Low"],
-    value: "",
-  },
-  {
-    kind: "radio",
-    id: 5,
-    label: "Easy",
-    options: ["Yes", "No"],
-    value: "",
-    fieldType: "radio",
-  },
-  {
-    kind: "radio",
-    id: 6,
-    label: "Choose color",
-    options: ["red", "#ffff00", "rgb(45,67,247)"],
-    value: "",
-    fieldType: "color",
-  },
-];
+import { initialFormFields } from "../utils/intialFormFields";
+import { reducer } from "../reducers/stateReducer";
 
 const initialState: (id: number) => formData = (id) => {
   const localForms = getLocalForms();
@@ -79,10 +46,15 @@ const saveFormData = (currentState: formData) => {
     saveLocalForms(updatedLocalForms);
   }
 };
+
 export default function Form(props: { id: number }) {
-  const [state, setState] = useState(() => initialState(props.id!));
+  const [state, dispatch] = useReducer(reducer, null, () =>
+    initialState(props.id!)
+  );
   const [newField, setNewField] = useState("");
   const [type, setType] = useState<textFieldTypes>("text");
+  // const [kind, setKind] = useState<FormFieldKind>("text");
+
   const titleRef = useRef<HTMLInputElement>(null);
   //programatically updates the form Id in the url
   useEffect(() => {
@@ -110,84 +82,6 @@ export default function Form(props: { id: number }) {
     };
   }, [state]);
 
-  //creates field
-  const addField = () => {
-    if (newField) {
-      if (type === "select") {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              value: "",
-              kind: "dropdown",
-              options: [],
-            },
-          ],
-        });
-      } else if (type === "radio" || type === "color") {
-        //queues triger
-        if (newField) {
-          setState({
-            ...state,
-            formFields: [
-              ...state.formFields,
-              {
-                id: Number(new Date()),
-                label: newField,
-                fieldType: type,
-                value: "",
-                kind: "radio",
-                options: [],
-              },
-            ],
-          });
-        }
-      } else {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              fieldType: type,
-              value: "",
-              kind: "text",
-            },
-          ],
-        });
-      }
-      //setNewField("");
-    } else {
-      emptyFieldAlert();
-    }
-
-    setNewField("");
-
-    //when you want to update use clousers
-    //state=>
-    //clousers give the value at the time of trigger
-  };
-
-  //removes field
-  const removeField = (id: number) => {
-    setState({
-      ...state,
-      formFields: state.formFields.filter((field) => field.id !== id),
-    });
-    //removes the field from the saved responses
-    const responses = getLocalResponses();
-    responses.forEach((response) => {
-      response.responses = response.responses.filter(
-        (r) => r.questionId !== id
-      );
-    });
-    localStorage.setItem("savedResponses", JSON.stringify(responses));
-  };
-
   // creates toast
   const notify = () =>
     toast.info("The form is up-to-date", {
@@ -214,76 +108,6 @@ export default function Form(props: { id: number }) {
       theme: "light",
     });
 
-  //updates the label
-  const handleChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLSelectElement>,
-    id: number
-  ) => {
-    const existingData = [...state.formFields];
-    let valueToUpdate = existingData.find((field) => field.id === id);
-    valueToUpdate!.label = e.target.value;
-    setState({
-      ...state,
-      formFields: existingData,
-    });
-    const responses = getLocalResponses();
-    responses.forEach((response) => {
-      response.responses.forEach((res) => {
-        if (res.questionId === valueToUpdate?.id) {
-          res.question = valueToUpdate.label;
-          localStorage.setItem("savedResponses", JSON.stringify(responses));
-        }
-      });
-    });
-  };
-
-  const updateFormTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, title: e.target.value });
-    const responses = getLocalResponses();
-    responses.forEach((response) => {
-      if (response.formId === state.id) {
-        response.formTitle = state.title;
-        localStorage.setItem("savedResponses", JSON.stringify(responses));
-      }
-    });
-  };
-  const responses = getLocalResponses();
-  const updateOptions = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: number,
-    index: number
-  ) => {
-    const existingData = [...state.formFields];
-
-    let valueToUpdate = existingData.find((field) => field.id === id);
-    (valueToUpdate as DropdownField | RadioType).options.forEach(
-      (option: string, i: number) => {
-        if (index === i) {
-          (valueToUpdate as DropdownField | RadioType).options[i] =
-            e.target.value;
-          responses.forEach((response) => {
-            response.responses.forEach((res) => {
-              if (
-                res.response ===
-                (valueToUpdate as DropdownField | RadioType).options[i]
-              ) {
-                res.response = option;
-              }
-            });
-          });
-        }
-        // option = e.target.value;
-      }
-    );
-    localStorage.setItem("savedResponses", JSON.stringify(responses));
-    setState({
-      ...state,
-      formFields: existingData,
-    });
-  };
-
   return (
     <div
       className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
@@ -293,7 +117,12 @@ export default function Form(props: { id: number }) {
         <div className="mb-3">
           <CustomInputField
             value={state.title}
-            handleInputChangeCB={updateFormTitle}
+            handleInputChangeCB={(e) => {
+              dispatch({
+                type: "update_title",
+                title: e.target.value,
+              });
+            }}
             type="text"
             elementRef={titleRef}
             key={state.id}
@@ -335,7 +164,14 @@ export default function Form(props: { id: number }) {
         />
         <button
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-green-500"
-          onClick={addField}
+          onClick={(_) =>
+            dispatch({
+              type: "add_field",
+              label: newField,
+              fieldType: type,
+              callback: () => setNewField(""),
+            })
+          }
         >
           Add Field
         </button>
@@ -353,8 +189,16 @@ export default function Form(props: { id: number }) {
                       <EditableField
                         key={field.id}
                         field={field}
-                        handleChangeCB={handleChange}
-                        removeFieldCB={removeField}
+                        handleChangeCB={(e) => {
+                          dispatch({
+                            type: "update_label",
+                            value: e.target.value,
+                            id: field.id,
+                          });
+                        }}
+                        removeFieldCB={(id) =>
+                          dispatch({ type: "remove_field", id: id })
+                        }
                       />
                       <Divider />
                     </div>
@@ -364,12 +208,39 @@ export default function Form(props: { id: number }) {
                     <CustomFieldWithOption
                       key={field.id}
                       field={field}
-                      handleChangeCB={handleChange}
+                      handleChangeCB={(e) => {
+                        dispatch({
+                          type: "update_label",
+                          value: e.target.value,
+                          id: field.id,
+                        });
+                      }}
                       id={field.id}
-                      removeFieldCB={removeField}
-                      setState={setState}
-                      state={state}
-                      updateOptionCB={updateOptions}
+                      removeFieldCB={(id) =>
+                        dispatch({ type: "remove_field", id: id })
+                      }
+                      addOptionCB={(option) =>
+                        dispatch({
+                          type: "add_option",
+                          fieldId: field.id,
+                          option: option,
+                        })
+                      }
+                      removeOptionCB={(index) =>
+                        dispatch({
+                          type: "remove_option",
+                          fieldId: field.id,
+                          optionId: index,
+                        })
+                      }
+                      updateOptionCB={(option, index) => {
+                        dispatch({
+                          type: "update_option",
+                          fieldId: field.id,
+                          option: option,
+                          index: index,
+                        });
+                      }}
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
@@ -378,12 +249,39 @@ export default function Form(props: { id: number }) {
                     <CustomFieldWithOption
                       key={field.id}
                       field={field}
-                      handleChangeCB={handleChange}
+                      handleChangeCB={(e) => {
+                        dispatch({
+                          type: "update_label",
+                          value: e.target.value,
+                          id: field.id,
+                        });
+                      }}
                       id={field.id}
-                      removeFieldCB={removeField}
-                      setState={setState}
-                      state={state}
-                      updateOptionCB={updateOptions}
+                      removeFieldCB={(id) =>
+                        dispatch({ type: "remove_field", id: id })
+                      }
+                      addOptionCB={(option) =>
+                        dispatch({
+                          type: "add_option",
+                          fieldId: field.id,
+                          option: option,
+                        })
+                      }
+                      removeOptionCB={(index) =>
+                        dispatch({
+                          type: "remove_option",
+                          fieldId: field.id,
+                          optionId: index,
+                        })
+                      }
+                      updateOptionCB={(option, index) => {
+                        dispatch({
+                          type: "update_option",
+                          fieldId: field.id,
+                          option: option,
+                          index: index,
+                        });
+                      }}
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );

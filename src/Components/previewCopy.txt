@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { responseData } from "../types/responseTypes";
 import { initialState } from "../utils/storageUtils";
 import { DropdownField, RadioType, TextField } from "../types/formTypes";
@@ -12,8 +12,6 @@ import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
 import ColorPicker from "./ColorPicker";
 import NotFound from "./NotFound";
-
-import { reducer } from "../reducers/responseReducer";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -39,7 +37,6 @@ const saveResponseData = (currentState: responseData) => {
     saveLocalResponses(updatedLocalResponses);
   }
 };
-
 export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -71,11 +68,7 @@ export default function PreviewQuestion(props: { id: number }) {
       }
     }
   };
-
-  const [responseState, dispatch] = useReducer(reducer, null, () =>
-    initialResponse(id)
-  );
-
+  const [responseState, setResponse] = useState(initialResponse(id));
   const [userRes, setUserRes] = useState(
     responseState?.responses[currentField]?.response || ""
   );
@@ -136,78 +129,78 @@ export default function PreviewQuestion(props: { id: number }) {
   };
 
   //saves selected options in dropdown
-  // useEffect(() => {
-  //   if (!state || !responseState) {
-  //     return;
-  //   }
-  //   const existingData = [...responseState.responses];
-  //   let valueToUpdate = existingData.find(
-  //     (field) => field.question === state.formFields[currentField]?.label
-  //   );
-  //   if (valueToUpdate) {
-  //     valueToUpdate.response = [...selectedOptions];
-  //     setResponse({
-  //       ...responseState,
-  //       responses: existingData,
-  //     });
-  //   }
+  useEffect(() => {
+    if (!state || !responseState) {
+      return;
+    }
+    const existingData = [...responseState.responses];
+    let valueToUpdate = existingData.find(
+      (field) => field.question === state.formFields[currentField]?.label
+    );
+    if (valueToUpdate) {
+      valueToUpdate.response = [...selectedOptions];
+      setResponse({
+        ...responseState,
+        responses: existingData,
+      });
+    }
 
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [selectedOptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOptions]);
 
   //updates the user response when input changes
-  // useEffect(() => {
-  //   if (!state || !responseState || !userRes) {
-  //     return;
-  //   }
-  //   const existingData = [...responseState.responses];
-  //   let valueToUpdate = existingData.find(
-  //     (field) => field.questionId === state.formFields[currentField]?.id
-  //   );
-  //   if (valueToUpdate !== undefined) {
-  //     valueToUpdate.response = userRes;
-  //   }
-  //   setResponse({
-  //     ...responseState,
-  //     responses: existingData,
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [userRes]);
+  useEffect(() => {
+    if (!state || !responseState || !userRes) {
+      return;
+    }
+    const existingData = [...responseState.responses];
+    let valueToUpdate = existingData.find(
+      (field) => field.questionId === state.formFields[currentField]?.id
+    );
+    if (valueToUpdate !== undefined) {
+      valueToUpdate.response = userRes;
+    }
+    setResponse({
+      ...responseState,
+      responses: existingData,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userRes]);
 
-  // //updates or creates response
-  // useEffect(() => {
-  //   if (!responseState || !state?.formFields?.length) {
-  //     return;
-  //   } else {
-  //     let existingRes = responseState.responses.find(
-  //       (res) => res.questionId === state.formFields[currentField]?.id
-  //     );
-  //     if (existingRes) {
-  //       setUserRes(responseState.responses[currentField]?.response || "");
-  //       if (state.formFields[currentField]?.kind === "dropdown") {
-  //         setSelectedOptions(
-  //           (responseState?.responses[currentField]?.response as string[]) || []
-  //         );
-  //       }
+  //updates or creates response
+  useEffect(() => {
+    if (!responseState || !state?.formFields?.length) {
+      return;
+    } else {
+      let existingRes = responseState.responses.find(
+        (res) => res.questionId === state.formFields[currentField]?.id
+      );
+      if (existingRes) {
+        setUserRes(responseState.responses[currentField]?.response || "");
+        if (state.formFields[currentField]?.kind === "dropdown") {
+          setSelectedOptions(
+            (responseState?.responses[currentField]?.response as string[]) || []
+          );
+        }
 
-  //       return;
-  //     }
-  //     setResponse({
-  //       ...responseState,
-  //       responses: [
-  //         ...responseState.responses,
-  //         {
-  //           question: state.formFields[currentField]?.label,
-  //           response: userRes,
-  //           questionId: state.formFields[currentField]?.id,
-  //         },
-  //       ],
-  //     });
-  //     setUserRes("");
-  //     setSelectedOptions([]);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentField]);
+        return;
+      }
+      setResponse({
+        ...responseState,
+        responses: [
+          ...responseState.responses,
+          {
+            question: state.formFields[currentField]?.label,
+            response: userRes,
+            questionId: state.formFields[currentField]?.id,
+          },
+        ],
+      });
+      setUserRes("");
+      setSelectedOptions([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentField]);
 
   //saves the response automatically in localstorage
   useEffect(() => {

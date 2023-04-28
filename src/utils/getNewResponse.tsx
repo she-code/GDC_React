@@ -2,11 +2,12 @@ import { responseType } from "../types/responseTypes";
 
 export const getNewResponse: (
   question: string,
-  response: string | string[]
-) => responseType = (question, response) => {
+  response: string | string[],
+  questionId: number
+) => responseType = (question, response, questionId) => {
   return {
     question: question,
-    questionId: Number(new Date()),
+    questionId: questionId,
     response: response,
   };
 };

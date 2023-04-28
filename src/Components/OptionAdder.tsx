@@ -26,6 +26,7 @@ export default function OptionAdder(props: {
             return;
           }
           addOptionCB(option);
+          setOption("");
         }}
         className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
       >

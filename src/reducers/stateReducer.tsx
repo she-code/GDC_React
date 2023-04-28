@@ -1,6 +1,8 @@
 import { DropdownField, RadioType, formData } from "../types/formTypes";
 import { FormActions } from "../types/stateReducerTypes";
 import { getNewField } from "../utils/newField";
+import { getLocalResponses } from "../utils/storageUtils";
+const responses = getLocalResponses();
 
 //Action reducer
 export const reducer = (state: formData, action: FormActions) => {
@@ -17,6 +19,12 @@ export const reducer = (state: formData, action: FormActions) => {
       return state;
     }
     case "remove_field": {
+      responses.forEach((response) => {
+        response.responses = response.responses.filter(
+          (r) => r.questionId !== action.id
+        );
+      });
+      localStorage.setItem("savedResponses", JSON.stringify(responses));
       return {
         ...state,
         formFields: state.formFields.filter((field) => field.id !== action.id),
@@ -36,7 +44,7 @@ export const reducer = (state: formData, action: FormActions) => {
             return {
               ...field,
               options: [
-                ...(field as DropdownField | RadioType).options,
+                ...((field as DropdownField | RadioType)?.options ?? []),
                 action.option,
               ],
             };
@@ -66,6 +74,17 @@ export const reducer = (state: formData, action: FormActions) => {
         ...state,
         formFields: state.formFields.map((field) => {
           if (field.id === action.id) {
+            responses.forEach((response) => {
+              response.responses.forEach((res) => {
+                if (res.questionId === field?.id) {
+                  res.question = action.value;
+                  localStorage.setItem(
+                    "savedResponses",
+                    JSON.stringify(responses)
+                  );
+                }
+              });
+            });
             return {
               ...field,
               label: action.value,
@@ -85,6 +104,17 @@ export const reducer = (state: formData, action: FormActions) => {
               options: (field as DropdownField | RadioType).options?.map(
                 (option: string, index: number) => {
                   if (index === action.index) {
+                    responses.forEach((response) => {
+                      response.responses.forEach((res) => {
+                        if (
+                          res.response ===
+                          (field as DropdownField | RadioType).options[index]
+                        ) {
+                          res.response = action.option;
+                        }
+                      });
+                    });
+
                     return action.option;
                   }
                   return option;

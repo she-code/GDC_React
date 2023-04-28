@@ -12,6 +12,7 @@ import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
 import ColorPicker from "./ColorPicker";
 import NotFound from "./NotFound";
+
 import { reducer } from "../reducers/responseReducer";
 
 const getLocalResponses: () => responseData[] = () => {
@@ -25,7 +26,7 @@ const saveLocalResponses = (localForms: responseData[]) => {
 
 const saveResponseData = (currentState: responseData) => {
   const localResponses = getLocalResponses();
-  const index = localResponses.findIndex(
+  const index = localResponses?.findIndex(
     (response) => response.id === currentState.id
   );
   if (index !== -1) {
@@ -38,6 +39,7 @@ const saveResponseData = (currentState: responseData) => {
     saveLocalResponses(updatedLocalResponses);
   }
 };
+
 export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,11 +56,12 @@ export default function PreviewQuestion(props: { id: number }) {
     if (state?.formFields?.length) {
       const localResponses = getLocalResponses();
       const selectedResponse = localResponses?.find(
-        (response) => response.formId === id
+        (response) => response?.formId === id
       );
       if (selectedResponse) {
         return selectedResponse;
       } else {
+        console.log("new response");
         const newResponse = {
           id: Number(new Date()),
           formId: state.id,
@@ -69,7 +72,11 @@ export default function PreviewQuestion(props: { id: number }) {
       }
     }
   };
-  const [responseState, dispatch] = useReducer(reducer, initialResponse(id));
+
+  const [responseState, dispatch] = useReducer(reducer, null, () =>
+    initialResponse(id)
+  );
+
   const [userRes, setUserRes] = useState(
     responseState?.responses[currentField]?.response || ""
   );
@@ -81,7 +88,7 @@ export default function PreviewQuestion(props: { id: number }) {
 
   //handles the checkbox input change
   const handleCheckboxChange = (option: string) => {
-    if (selectedOptions.includes(option)) {
+    if (selectedOptions?.includes(option)) {
       setSelectedOptions(selectedOptions.filter((item) => item !== option));
     } else {
       setSelectedOptions([...selectedOptions, option]);
@@ -130,81 +137,102 @@ export default function PreviewQuestion(props: { id: number }) {
   };
 
   //saves selected options in dropdown
-  useEffect(() => {
-    if (!state || !responseState) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!state || !responseState) {
+  //     return;
+  //   }
+  //   const existingData = [...responseState.responses];
+  //   let valueToUpdate = existingData.find(
+  //     (field) => field.question === state.formFields[currentField]?.label
+  //   );
+  //   if (valueToUpdate) {
+  //     valueToUpdate.response = [...selectedOptions];
+  //     setResponse({
+  //       ...responseState,
+  //       responses: existingData,
+  //     });
+  //   }
 
-    dispatch({
-      type: "UPDATE_BY_SELECTED",
-      selectedOptions: selectedOptions,
-      state: state,
-      currentField: currentField,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOptions]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedOptions]);
 
   //updates the user response when input changes
-  useEffect(() => {
-    if (!state || !responseState || !userRes) {
-      return;
-    }
-
-    dispatch({
-      type: "UPDATE_BY_USER_RES",
-      userRes: userRes,
-      currentField: currentField,
-      state: state,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRes]);
+  // useEffect(() => {
+  //   if (!state || !responseState || !userRes) {
+  //     return;
+  //   }
+  //   const existingData = [...responseState.responses];
+  //   let valueToUpdate = existingData.find(
+  //     (field) => field.questionId === state.formFields[currentField]?.id
+  //   );
+  //   if (valueToUpdate !== undefined) {
+  //     valueToUpdate.response = userRes;
+  //   }
+  //   // setResponse({
+  //   //   ...responseState,
+  //   //   responses: existingData,
+  //   // });
+  //   dispatch({
+  //     type: "UPDATE_RESPONSE",
+  //     questionId: state.formFields[currentField]?.id,
+  //     response: userRes,
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [userRes]);
 
   //updates or creates response
-  useEffect(() => {
-    if (!responseState || !state?.formFields?.length) {
-      return;
-    } else {
-      let existingRes = responseState.responses.find(
-        (res) => res.questionId === state.formFields[currentField]?.id
-      );
-      console.log({ existingRes });
-      if (existingRes) {
-        setUserRes(responseState.responses[currentField]?.response || "");
-        if (state.formFields[currentField]?.kind === "dropdown") {
-          setSelectedOptions(
-            (responseState?.responses[currentField]?.response as string[]) || []
-          );
-        }
-        console.log("exisiting block", { userRes, selectedOptions });
-        return;
-      }
+  // useEffect(() => {
+  //   if (!responseState || !state?.formFields?.length) {
+  //     return;
+  //   } else {
+  //     let existingRes = responseState.responses.find(
+  //       (res) => res.questionId === state.formFields[currentField]?.id
+  //     );
+  //     if (existingRes) {
+  //       setUserRes(responseState.responses[currentField]?.response || "");
+  //       if (state.formFields[currentField]?.kind === "dropdown") {
+  //         setSelectedOptions(
+  //           (responseState?.responses[currentField]?.response as string[]) || []
+  //         );
+  //       }
 
-      dispatch({
-        type: "ADD_RESPONSE",
-        question: state.formFields[currentField]?.label,
-        response: userRes,
-        questionId: state.formFields[currentField]?.id,
-        state: state,
-        currentField: currentField,
-        id: id,
-        updateSelectedCB: () =>
-          setSelectedOptions(
-            (responseState?.responses[currentField]?.response as string[]) || []
-          ),
-        updateUserResCB: () =>
-          setUserRes(responseState.responses[currentField]?.response || ""),
-      });
-      console.log("dispatch block", { userRes, selectedOptions });
+  //       return;
+  //     }
+  //     // setResponse({
+  //     //   ...responseState,
+  //     //   responses: [
+  //     //     ...responseState.responses,
+  //     //     {
+  //     //       question: state.formFields[currentField]?.label,
+  //     //       response: userRes,
+  //     //       questionId: state.formFields[currentField]?.id,
+  //     //     },
+  //     //   ],
+  //     // });
+  //     dispatch({
+  //       type: "UPDATE_RESPONSE",
+  //       questionId: state.formFields[currentField]?.id,
+  //       response: userRes,
+  //     });
+  //     console.log(responseState);
+  //     setUserRes("");
+  //     setSelectedOptions([]);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentField]);
+  // useEffect(() => {
+  //   dispatch({ type: "SET_USER_RES", payload: "" });
+  //   dispatch({ type: "SET_SELECTED_OPTIONS", payload: [] });
+  // }, [currentField]);
 
-      dispatch({ type: "SET_USER_RES", updateUserResCB: () => setUserRes("") });
-      dispatch({
-        type: "SET_SELECTED",
-        updateSelectedCB: () => setSelectedOptions([]),
-      });
-      // setUserRes(""),
-      // setSelectedOptions([]);
-    }
-  }, [currentField]);
+  // useEffect(() => {
+  //   if (responseState && state?.formFields?.length) {
+  //     dispatch({
+  //       type: "UPDATE_RESPONSE",
+  //       payload: { currentField, formFields: state.formFields },
+  //     });
+  //   }
+  // }, [currentField, responseState, state?.formFields]);
 
   //saves the response automatically in localstorage
   useEffect(() => {
@@ -270,7 +298,7 @@ export default function PreviewQuestion(props: { id: number }) {
                           />
                           <div className="  overflow-y-auto h-36 m-5">
                             {(state.formFields[currentField] as RadioType)
-                              .options.length > 0 ? (
+                              .options?.length > 0 ? (
                               <>
                                 {(
                                   state.formFields[currentField] as RadioType
@@ -309,14 +337,14 @@ export default function PreviewQuestion(props: { id: number }) {
                       />
                       <div className="ml-4  w-1/3">
                         {(state.formFields[currentField] as DropdownField)
-                          .options.length > 0 ? (
+                          .options?.length > 0 ? (
                           <>
                             <button
                               className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
                               onClick={() => setIsOpen(!isOpen)}
                             >
                               {Array.isArray(selectedOptions) &&
-                              selectedOptions.length > 0
+                              selectedOptions?.length > 0
                                 ? selectedOptions.join(" , ")
                                 : "No options selected"}
                             </button>
@@ -331,7 +359,7 @@ export default function PreviewQuestion(props: { id: number }) {
                                     <label>
                                       <input
                                         type="checkbox"
-                                        checked={selectedOptions.includes(
+                                        checked={selectedOptions?.includes(
                                           option
                                         )}
                                         onChange={() => {
@@ -384,11 +412,11 @@ export default function PreviewQuestion(props: { id: number }) {
             </svg>
           </button>
         )}
-        {currentField === state.formFields.length - 1 ? (
+        {currentField === state.formFields?.length - 1 ? (
           ""
         ) : (
           <>
-            {state.formFields.length > 0 ? (
+            {state.formFields?.length > 0 ? (
               <button
                 className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
                 onClick={handleNext}
@@ -414,7 +442,7 @@ export default function PreviewQuestion(props: { id: number }) {
           </>
         )}
       </div>
-      {currentField === state.formFields.length - 1 ? (
+      {currentField === state.formFields?.length - 1 ? (
         <div className="flex justify-center mb-5">
           <button
             className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"

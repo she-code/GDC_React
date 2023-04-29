@@ -1,4 +1,4 @@
-import { formData, formField } from "./formTypes";
+import { formData } from "./formTypes";
 
 type AddResponse = {
   type: "ADD_RESPONSE";
@@ -20,10 +20,7 @@ type UpdateResponse = {
   updateUserResCB: () => void;
   updateSelectedCB: () => void;
   state: formData;
-  // userRes: string;
   currentField: number;
-  // response: string|string[];
-  // formFields: formField[];
 };
 type UpdateByUserRes = {
   type: "UPDATE_BY_USER_RES";

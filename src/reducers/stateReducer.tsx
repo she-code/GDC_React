@@ -20,14 +20,14 @@ export const reducer = (state: formData, action: FormActions) => {
     }
     case "remove_field": {
       responses.forEach((response) => {
-        response.responses = response.responses.filter(
+        response.responses = response.responses?.filter(
           (r) => r.questionId !== action.id
         );
       });
       localStorage.setItem("savedResponses", JSON.stringify(responses));
       return {
         ...state,
-        formFields: state.formFields.filter((field) => field.id !== action.id),
+        formFields: state.formFields?.filter((field) => field.id !== action.id),
       };
     }
     case "update_title": {
@@ -56,11 +56,11 @@ export const reducer = (state: formData, action: FormActions) => {
     case "remove_option": {
       return {
         ...state,
-        formFields: state.formFields.map((field) => {
+        formFields: state.formFields?.map((field) => {
           if (field.id === action.fieldId && field.kind !== "text") {
             return {
               ...field,
-              options: (field as DropdownField | RadioType).options.filter(
+              options: (field as DropdownField | RadioType).options?.filter(
                 (option: string, index: number) => index !== action.optionId
               ),
             };
@@ -72,10 +72,10 @@ export const reducer = (state: formData, action: FormActions) => {
     case "update_label": {
       return {
         ...state,
-        formFields: state.formFields.map((field) => {
+        formFields: state.formFields?.map((field) => {
           if (field.id === action.id) {
-            responses.forEach((response) => {
-              response.responses.forEach((res) => {
+            responses?.forEach((response) => {
+              response.responses?.forEach((res) => {
                 if (res.questionId === field?.id) {
                   res.question = action.value;
                   localStorage.setItem(
@@ -108,7 +108,7 @@ export const reducer = (state: formData, action: FormActions) => {
                       response.responses.forEach((res) => {
                         if (
                           res.response ===
-                          (field as DropdownField | RadioType).options[index]
+                          (field as DropdownField | RadioType)?.options[index]
                         ) {
                           res.response = action.option;
                         }

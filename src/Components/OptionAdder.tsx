@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { formData } from "../types/formTypes";
 
 export default function OptionAdder(props: {
   emptyFieldAlertCB: () => void;

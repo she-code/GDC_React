@@ -73,6 +73,15 @@ export const reducer = (
       }
       return responseState;
     }
+    case "SET_CURRENT_FIELD": {
+      if (action.currentField) {
+        return {
+          ...responseState,
+          currentField: action.currentField,
+        };
+      }
+      return responseState;
+    }
   }
 };
 // case "UPDATE_RESPONSE": {

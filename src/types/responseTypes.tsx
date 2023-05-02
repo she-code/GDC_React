@@ -8,4 +8,6 @@ export interface responseData {
   formId: number;
   formTitle: string;
   responses: responseType[];
+  currentField?: number;
+  userRes?: string | string[];
 }

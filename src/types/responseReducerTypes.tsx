@@ -43,10 +43,15 @@ type SetSelectedOption = {
   type: "SET_SELECTED";
   updateSelectedCB: () => void;
 };
+type SetCurrentField = {
+  type: "SET_CURRENT_FIELD";
+  currentField: number;
+};
 export type ResponeActions =
   | AddResponse
   | UpdateResponse
   | SetUserRes
   | UpdateByUserRes
   | UpdateBySelectedOption
+  | SetCurrentField
   | SetSelectedOption;

@@ -23,21 +23,6 @@ const saveLocalResponses = (localForms: responseData[]) => {
   localStorage.setItem("savedResponses", JSON.stringify(localForms));
 };
 
-// const saveResponseData = (currentState: responseData) => {
-//   const localResponses = getLocalResponses();
-//   const index = localResponses.findIndex(
-//     (response) => response.id === currentState.id
-//   );
-//   if (index !== -1) {
-//     // update the existing response
-//     localResponses[index] = currentState;
-//     saveLocalResponses(localResponses);
-//   } else {
-//     // add a new response
-//     const updatedLocalResponses = [...localResponses, currentState];
-//     saveLocalResponses(updatedLocalResponses);
-//   }
-// };
 const saveResponseData = (currentState: responseData) => {
   const localResponses = getLocalResponses();
   const index = localResponses.findIndex(
@@ -45,27 +30,42 @@ const saveResponseData = (currentState: responseData) => {
   );
   if (index !== -1) {
     // update the existing response
-    localResponses[index] = {
-      id: currentState.id,
-      formId: currentState.formId,
-      formTitle: currentState.formTitle,
-      responses: currentState.responses,
-    };
+    localResponses[index] = currentState;
     saveLocalResponses(localResponses);
   } else {
     // add a new response
-    const updatedLocalResponses = [
-      ...localResponses,
-      {
-        id: currentState.id,
-        formId: currentState.formId,
-        formTitle: currentState.formTitle,
-        responses: currentState.responses,
-      },
-    ];
+    const updatedLocalResponses = [...localResponses, currentState];
     saveLocalResponses(updatedLocalResponses);
   }
 };
+// const saveResponseData = (currentState: responseData) => {
+//   const localResponses = getLocalResponses();
+//   const index = localResponses.findIndex(
+//     (response) => response.id === currentState.id
+//   );
+//   if (index !== -1) {
+//     // update the existing response
+//     localResponses[index] = {
+//       id: currentState.id,
+//       formId: currentState.formId,
+//       formTitle: currentState.formTitle,
+//       responses: currentState.responses,
+//     };
+//     saveLocalResponses(localResponses);
+//   } else {
+//     // add a new response
+//     const updatedLocalResponses = [
+//       ...localResponses,
+//       {
+//         id: currentState.id,
+//         formId: currentState.formId,
+//         formTitle: currentState.formTitle,
+//         responses: currentState.responses,
+//       },
+//     ];
+//     saveLocalResponses(updatedLocalResponses);
+//   }
+// };
 
 export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
@@ -93,8 +93,8 @@ export default function PreviewQuestion(props: { id: number }) {
           formId: state.id,
           formTitle: state.title,
           responses: [],
-          currentField: 0,
-          userRes: "",
+          // currentField: 0,
+          // userRes: "",
         };
         console.log("newResponse", newResponse);
         return newResponse;

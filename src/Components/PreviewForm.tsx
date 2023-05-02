@@ -71,7 +71,7 @@ export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [state, setState] = useState(() => initialState(id!));
-  const [currentField, setCurrentField] = useState(0);
+  //const [fieldIndex, setCurrentField] = useState(0);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
 
@@ -102,12 +102,13 @@ export default function PreviewQuestion(props: { id: number }) {
     }
   };
   const [responseState, dispatch] = useReducer(reducer, initialResponse(id));
+  const fieldIndex = responseState?.currentField ?? 0;
   const [userRes, setUserRes] = useState(
-    responseState?.responses[currentField]?.response || ""
+    responseState?.responses[fieldIndex]?.response || ""
   );
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    state?.formFields[currentField]?.kind === "dropdown"
-      ? (responseState?.responses[currentField]?.response as string[])
+    state?.formFields[fieldIndex]?.kind === "dropdown"
+      ? (responseState?.responses[fieldIndex]?.response as string[])
       : []
   );
 
@@ -141,23 +142,35 @@ export default function PreviewQuestion(props: { id: number }) {
       setMounted(true);
     }
   }, [mounted, state]);
+  useEffect(() => {
+    dispatch({ type: "SET_CURRENT_FIELD", currentField: 0 });
+    console.log(responseState?.currentField, "ji");
+  }, []);
 
   //increments the currentField value
   const handleNext = () => {
+    console.log({ fieldIndex });
+
     if (!state) {
       return;
     }
-    if (currentField <= state.formFields.length - 1) {
+    if (
+      responseState?.currentField &&
+      responseState?.currentField <= state.formFields.length - 1
+    ) {
       setUserRes("");
-      setCurrentField(currentField + 1);
+      // setCurrentField(currentField + 1);
+      dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex + 1 });
+      console.log({ fieldIndex });
     }
   };
 
   //decrements the currentField value
   const handlePrev = () => {
-    if (currentField > 0) {
+    if (responseState?.currentField && responseState?.currentField > 0) {
       setUserRes("");
-      setCurrentField(currentField - 1);
+      // setCurrentField(currentField - 1);
+      dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex - 1 });
     }
   };
 
@@ -171,7 +184,7 @@ export default function PreviewQuestion(props: { id: number }) {
       type: "UPDATE_BY_SELECTED",
       selectedOptions: selectedOptions,
       state: state,
-      currentField: currentField,
+      currentField: fieldIndex,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOptions]);
@@ -185,7 +198,7 @@ export default function PreviewQuestion(props: { id: number }) {
     dispatch({
       type: "UPDATE_BY_USER_RES",
       userRes: userRes,
-      currentField: currentField,
+      currentField: fieldIndex,
       state: state,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -197,14 +210,14 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     } else {
       let existingRes = responseState.responses.find(
-        (res) => res.questionId === state.formFields[currentField]?.id
+        (res) => res.questionId === state.formFields[fieldIndex]?.id
       );
       console.log({ existingRes });
       if (existingRes) {
-        setUserRes(responseState.responses[currentField]?.response || "");
-        if (state.formFields[currentField]?.kind === "dropdown") {
+        setUserRes(responseState.responses[fieldIndex]?.response || "");
+        if (state.formFields[fieldIndex]?.kind === "dropdown") {
           setSelectedOptions(
-            (responseState?.responses[currentField]?.response as string[]) || []
+            (responseState?.responses[fieldIndex]?.response as string[]) || []
           );
         }
         console.log("exisiting block", { userRes, selectedOptions });
@@ -213,18 +226,18 @@ export default function PreviewQuestion(props: { id: number }) {
 
       dispatch({
         type: "ADD_RESPONSE",
-        question: state.formFields[currentField]?.label,
+        question: state.formFields[fieldIndex]?.label,
         response: userRes,
-        questionId: state.formFields[currentField]?.id,
+        questionId: state.formFields[fieldIndex]?.id,
         state: state,
-        currentField: currentField,
+        currentField: fieldIndex,
         id: id,
         updateSelectedCB: () =>
           setSelectedOptions(
-            (responseState?.responses[currentField]?.response as string[]) || []
+            (responseState?.responses[fieldIndex]?.response as string[]) || []
           ),
         updateUserResCB: () =>
-          setUserRes(responseState.responses[currentField]?.response || ""),
+          setUserRes(responseState.responses[fieldIndex]?.response || ""),
       });
       console.log("dispatch block", { userRes, selectedOptions });
 
@@ -237,7 +250,7 @@ export default function PreviewQuestion(props: { id: number }) {
       // setSelectedOptions([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentField]);
+  }, [fieldIndex]);
 
   //saves the response automatically in localstorage
   useEffect(() => {
@@ -269,16 +282,14 @@ export default function PreviewQuestion(props: { id: number }) {
       <div className="m-5 mt-8">
         {state.formFields.length > 0 ? (
           <>
-            {state.formFields[currentField]?.kind === "text" ? (
+            {state.formFields[fieldIndex]?.kind === "text" ? (
               <>
                 <CustomHeader
-                  title={state.formFields[currentField]?.label}
+                  title={state.formFields[fieldIndex]?.label}
                   capitalize={true}
                 />
                 <CustomInputField
-                  type={
-                    (state.formFields[currentField] as TextField)?.fieldType
-                  }
+                  type={(state.formFields[fieldIndex] as TextField)?.fieldType}
                   value={userRes as string}
                   handleInputChangeCB={updateUserResponse}
                 />
@@ -286,38 +297,38 @@ export default function PreviewQuestion(props: { id: number }) {
             ) : (
               <div>
                 <>
-                  {state.formFields[currentField].kind === "radio" ? (
+                  {state.formFields[fieldIndex].kind === "radio" ? (
                     <>
-                      {(state.formFields[currentField] as RadioType)
-                        .fieldType === "color" ? (
+                      {(state.formFields[fieldIndex] as RadioType).fieldType ===
+                      "color" ? (
                         <ColorPicker
-                          field={state.formFields[currentField]}
+                          field={state.formFields[fieldIndex]}
                           value={userRes as string}
                           setColorCB={updateColor}
                         />
                       ) : (
                         <div>
                           <CustomHeader
-                            title={state.formFields[currentField]?.label}
+                            title={state.formFields[fieldIndex]?.label}
                             capitalize={true}
                           />
                           <div className="  overflow-y-auto h-36 m-5">
-                            {(state.formFields[currentField] as RadioType)
-                              .options.length > 0 ? (
+                            {(state.formFields[fieldIndex] as RadioType).options
+                              .length > 0 ? (
                               <>
                                 {(
-                                  state.formFields[currentField] as RadioType
+                                  state.formFields[fieldIndex] as RadioType
                                 ).options?.map((option, index) => (
                                   <RadioField
                                     type={
                                       (
                                         state.formFields[
-                                          currentField
+                                          fieldIndex
                                         ] as RadioType
                                       )?.fieldType
                                     }
                                     value={option}
-                                    id={state.formFields[currentField]?.id}
+                                    id={state.formFields[fieldIndex]?.id}
                                     key={index}
                                     checked={userRes === option}
                                     handleChangeCB={(e) => {
@@ -337,12 +348,12 @@ export default function PreviewQuestion(props: { id: number }) {
                   ) : (
                     <div className="flex items-center">
                       <CustomHeader
-                        title={state.formFields[currentField]?.label}
+                        title={state.formFields[fieldIndex]?.label}
                         capitalize={true}
                       />
                       <div className="ml-4  w-1/3">
-                        {(state.formFields[currentField] as DropdownField)
-                          .options.length > 0 ? (
+                        {(state.formFields[fieldIndex] as DropdownField).options
+                          .length > 0 ? (
                           <>
                             <button
                               className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
@@ -356,9 +367,7 @@ export default function PreviewQuestion(props: { id: number }) {
                             {isOpen && (
                               <ul className=" shadow-lg bg-gray-300 w-full">
                                 {(
-                                  state.formFields[
-                                    currentField
-                                  ] as DropdownField
+                                  state.formFields[fieldIndex] as DropdownField
                                 ).options.map((option) => (
                                   <li key={option}>
                                     <label>
@@ -394,7 +403,7 @@ export default function PreviewQuestion(props: { id: number }) {
       </div>
 
       <div className="flex justify-between h-48">
-        {currentField === 0 ? (
+        {fieldIndex === 0 ? (
           <div></div>
         ) : (
           <button
@@ -417,7 +426,7 @@ export default function PreviewQuestion(props: { id: number }) {
             </svg>
           </button>
         )}
-        {currentField === state.formFields.length - 1 ? (
+        {fieldIndex === state.formFields.length - 1 ? (
           ""
         ) : (
           <>
@@ -447,7 +456,7 @@ export default function PreviewQuestion(props: { id: number }) {
           </>
         )}
       </div>
-      {currentField === state.formFields.length - 1 ? (
+      {fieldIndex === state.formFields.length - 1 ? (
         <div className="flex justify-center mb-5">
           <button
             className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"

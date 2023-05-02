@@ -74,7 +74,7 @@ export const reducer = (
       return responseState;
     }
     case "SET_CURRENT_FIELD": {
-      if (action.currentField) {
+      if (action.currentField && responseState) {
         return {
           ...responseState,
           currentField: action.currentField,

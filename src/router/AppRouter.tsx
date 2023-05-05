@@ -7,6 +7,8 @@ import PreviewQuestion from "../Components/PreviewForm";
 import { ToastContainer } from "react-toastify";
 import NotFound from "../Components/NotFound";
 import CreateForm from "../Components/CreateForm";
+import Login from "../Components/Login";
+import { User } from "../types/userTypes";
 
 const routes = {
   "/": () => <Home />,
@@ -16,16 +18,18 @@ const routes = {
     <Form id={Number(formId)} />
   ),
   "/createForm": () => <CreateForm />,
+  "/login": () => <Login />,
+
   "/preview/:formId": ({ formId }: { formId: string }) => (
     <PreviewQuestion id={Number(formId)} />
   ),
   "*": () => <NotFound />,
 };
 
-export default function AppRouter() {
+export default function AppRouter(props: { currentUser: User }) {
   let routeResult = useRoutes(routes);
   return (
-    <AppContainer>
+    <AppContainer currentUser={props.currentUser}>
       {routeResult}
       <ToastContainer
         position="top-center"

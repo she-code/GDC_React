@@ -12,15 +12,23 @@ if(method === "GET"){
 }else{
     url = `${API_BASE_URL}${endpoint}`
     payload = data?JSON.stringify(data) : ""
-}           const auth = "Basic " + window.btoa("sheCode:fre123AB@");
-      try {
+}        
+//Basic Authentication  
+//  const auth = "Basic " + window.btoa("sheCode:fre123AB@");
+
+//Token Authentication
+const token = localStorage.getItem("token")
+const auth = token ? "Token " + localStorage.getItem("token") :""
+console.log({auth})
+  try {
         const response = await fetch(url, {
             method: method,
             headers: {
               "Content-Type": "application/json",
               Authorization: auth,
             },
-            body: payload,
+           
+            body:(method !== "GET")? payload:null,
           });
           if(response.ok){
             const json = await response.json()
@@ -30,11 +38,17 @@ if(method === "GET"){
             throw Error( errorJson)
           }
       } catch (error) {
-        
+        console.log(error)
       } 
    
 }
 
 export const createForm =(form:FormItem)=>{
     return request('forms',"POST",form)
+}
+export const login =(username:string,password:string)=>{
+  return request('auth-token/',"POST",{username,password})
+}
+export const me =()=>{
+  return request('users/me',"GET",{})
 }

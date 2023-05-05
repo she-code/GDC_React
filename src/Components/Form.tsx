@@ -21,9 +21,9 @@ const initialState: (id: number) => formData = (id) => {
     return selectedForm;
   } else {
     const newForm = {
-      id: Number(new Date()),
+      id: id,
       title: "Untitled",
-      formFields: initialFormFields,
+      formFields: [],
     };
     return newForm;
   }

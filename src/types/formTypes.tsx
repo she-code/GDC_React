@@ -20,6 +20,29 @@ export type formData = {
   formFields: formField[];
 };
 
+// export type FormItem = Omit<formData, "formFields">;
+
+export type FormItem = {
+  id?: number;
+  title: string;
+  description?: string;
+  is_public?: boolean;
+};
+
+//generic type
+export type Errors<T> = Partial<Record<keyof T, string>>;
+
+export const validateForm = (form: FormItem) => {
+  const { title } = form;
+  const errors: Errors<FormItem> = {};
+  if (title.length < 1) {
+    errors.title = "Title is required";
+  }
+  if (title.length > 100) {
+    errors.title = "Title must be less than 100 characters";
+  }
+  return errors;
+};
 export type FormFieldKind = "text" | "dropdown" | "radio" | "color";
 //unions
 export type textFieldTypes =

@@ -6,6 +6,7 @@ import Form from "../Components/Form";
 import PreviewQuestion from "../Components/PreviewForm";
 import { ToastContainer } from "react-toastify";
 import NotFound from "../Components/NotFound";
+import CreateForm from "../Components/CreateForm";
 
 const routes = {
   "/": () => <Home />,
@@ -14,6 +15,7 @@ const routes = {
   "/forms/:formId": ({ formId }: { formId: string }) => (
     <Form id={Number(formId)} />
   ),
+  "/createForm": () => <CreateForm />,
   "/preview/:formId": ({ formId }: { formId: string }) => (
     <PreviewQuestion id={Number(formId)} />
   ),

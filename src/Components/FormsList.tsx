@@ -1,25 +1,35 @@
 import React, { useEffect, useState } from "react";
-import Form from "./Form";
-import { Link, useQueryParams } from "raviger";
+import { useQueryParams } from "raviger";
 import { getLocalResponses } from "../utils/storageUtils";
 import CustomInputField from "./CustomInputField";
 import FormCard from "./FormCard";
-import { formData } from "../types/formTypes";
+import { FormItem, formData } from "../types/formTypes";
 import { responseData } from "../types/responseTypes";
+import Modal from "./common/Modal";
+import CreateForm from "./CreateForm";
 
+const fetchForms = async (setFormsListCB: (value: FormItem[]) => void) => {
+  const response = await fetch("https://tsapi.coronasafe.live/api/mock_test/");
+  const jsonData = await response.json();
+  setFormsListCB(jsonData);
+};
 export default function FormsList() {
-  const [formsListState, setFormsList] = useState([]);
+  const [formsListState, setFormsList] = useState<FormItem[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState("");
+  const [newForm, setNewForm] = useState(false);
   const savedForms = localStorage.getItem("savedForms");
 
-  useEffect(() => {
-    const savedFormsJson = JSON.parse(savedForms!);
-    setFormsList(savedFormsJson);
-  }, [savedForms]);
+  // useEffect(() => {
+  //   const savedFormsJson = JSON.parse(savedForms!);
+  //   setFormsList(savedFormsJson);
+  // }, [savedForms]);
 
+  useEffect(() => {
+    fetchForms(setFormsList);
+  }, []);
   const deleteForm = (id: number) => {
     //deletes the form from localStorage
     const savedFormsJson = JSON.parse(savedForms!);
@@ -46,8 +56,8 @@ export default function FormsList() {
       {formId === 0 ? (
         <>
           <div className="flex justify-between my-5">
-            <Link
-              href="/forms/0"
+            <button
+              onClick={(_) => setNewForm(true)}
               className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600"
             >
               <svg
@@ -65,7 +75,7 @@ export default function FormsList() {
                 />
               </svg>
               <span className="text-lg">New Form</span>
-            </Link>
+            </button>
           </div>
           <form
             className="mr-5"
@@ -100,10 +110,10 @@ export default function FormsList() {
           </form>
           <div className="mx-5">
             {formsListState
-              ?.filter((form: formData) =>
+              ?.filter((form: FormItem) =>
                 form.title.toLowerCase().includes(search?.toLowerCase() || "")
               )
-              .map((form: formData) => (
+              .map((form: FormItem) => (
                 <div
                   className="flex gap-2 justify-between my-2 items-center"
                   key={form.id}
@@ -111,16 +121,20 @@ export default function FormsList() {
                   <FormCard
                     title={form.title}
                     key={form.id}
-                    questions={form.formFields?.length}
-                    id={form.id}
+                    questions={0}
+                    id={form.id || 0}
                     handleDeleteEventCB={deleteForm}
                   />
                 </div>
               ))}
           </div>
+          <Modal open={newForm} closeCB={() => setNewForm(false)}>
+            <CreateForm />
+          </Modal>
         </>
       ) : (
-        <Form id={formId} />
+        //  <Form id={formId} />
+        <>kol</>
       )}
     </div>
   );

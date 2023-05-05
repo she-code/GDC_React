@@ -10,4 +10,5 @@ export interface responseData {
   responses: responseType[];
   currentField?: number;
   userRes?: string | string[];
+  selectedOptions?: string[];
 }

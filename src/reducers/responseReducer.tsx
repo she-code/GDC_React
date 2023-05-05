@@ -11,21 +11,17 @@ export const reducer = (
       const newResponse = getNewResponse(
         action.question,
         action.response,
-        action.questionId
+        action.questionId,
+        action.kind
       );
-      let existingRes = responseState?.responses.find(
-        (res) =>
-          res.questionId === action.state?.formFields[action.currentField]?.id
+      let existingQues = responseState?.responses?.find(
+        (ques) => ques.questionId === newResponse.questionId
       );
-      if (existingRes) {
-        action.updateUserResCB();
-
-        if (action.state.formFields[action.currentField]?.kind === "dropdown") {
-          action.updateSelectedCB();
-        }
-        return responseState;
-      }
-      if (newResponse?.question?.length > 0 && responseState?.responses) {
+      if (
+        newResponse?.question?.length > 0 &&
+        responseState?.responses &&
+        !existingQues
+      ) {
         return {
           ...responseState,
           responses: [...responseState.responses, newResponse],
@@ -33,14 +29,7 @@ export const reducer = (
       }
       return responseState;
     }
-    case "SET_USER_RES": {
-      action.updateUserResCB();
-      return responseState;
-    }
-    case "SET_SELECTED": {
-      action.updateSelectedCB();
-      return responseState;
-    }
+
     case "UPDATE_BY_USER_RES": {
       let valueToUpdate = responseState?.responses.find(
         (field: responseType) =>
@@ -74,88 +63,36 @@ export const reducer = (
       return responseState;
     }
     case "SET_CURRENT_FIELD": {
-      if (action.currentField && responseState) {
+      if (typeof action.currentField === "number" && responseState) {
         return {
           ...responseState,
           currentField: action.currentField,
+        };
+      }
+
+      return responseState;
+    }
+    case "SET_USER_RESPONSE": {
+      if (typeof action.userRes === "string" && responseState) {
+        return {
+          ...responseState,
+          userRes: action.userRes,
+        };
+      }
+      return responseState;
+    }
+    case "SET_SELECTED_RESPONSE": {
+      if (
+        Array.isArray(action.selectedOptions) &&
+        action.selectedOptions.every((option) => typeof option === "string") &&
+        responseState
+      ) {
+        return {
+          ...responseState,
+          selectedOptions: action.selectedOptions,
         };
       }
       return responseState;
     }
   }
 };
-// case "UPDATE_RESPONSE": {
-//   const {
-//     state,
-//     response,
-//     question,
-//     questionId,
-//     currentField,
-//     updateSelectedCB,
-//     updateUserResCB,
-//   } = action;
-// }
-//   ...responseState,
-//  responses:[...responseState?.responses ?? [], newResponse],
-//     responses: [...(responseState?.responses ?? []), newResponse],
-
-// case "UPDATE_RESPONSE": {
-//   return {
-//     ...responseState,
-//     responses: responseState?.responses?.map((response) => {
-//       if (response.questionId === action.questionId) {
-//         return {
-//           ...response,
-//           response: action.response,
-//         };
-//       }
-//       return response;
-//     }),
-//   };
-// }
-// case "ADD_RESPONSE": {
-//   const newResponse = getNewResponse(action.question, action.response);
-//   if (newResponse.question.length > 0) {
-//     action.updateUserResCB();
-//     return {
-//       ...responseState,
-//       responses: [...responseState.responses, newResponse],
-//     };
-//   }
-//   return responseState;
-// }
-/* This code block is handling the "UPDATE_RESPONSE" action in the reducer function. */
-//  const existingRes = responseState?.responses.find(
-//   (res) => res.questionId === state?.formFields[currentField]?.id
-// );
-// if (existingRes) {
-//   updateUserResCB();
-
-//   if (state.formFields[currentField]?.kind === "dropdown") {
-//     updateSelectedCB();
-//   }
-//   return responseState;
-// } else {
-//   // const newResponse = {
-//   //   question: state?.formFields[currentField]?.label,
-//   //   response: response,
-//   //   questionId: state.formFields[currentField]?.id,
-//   // };
-//   const newResponse = {
-//     question: question,
-//     response: response,
-//     questionId: questionId,
-//   };
-//   return {
-//   ...responseState,
-//   responses: [
-//     ...responseState.responses,
-//     {
-//       question: state.formFields[currentField]?.label,
-//       response: userRes,
-//       questionId: state.formFields[currentField]?.id,
-//     },
-//   ],
-//     },
-
-//   }

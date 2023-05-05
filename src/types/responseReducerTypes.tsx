@@ -3,8 +3,7 @@ import { formData } from "./formTypes";
 type AddResponse = {
   type: "ADD_RESPONSE";
   question: string;
-  updateUserResCB: () => void;
-  updateSelectedCB: () => void;
+  kind: string;
   response: string | string[];
   questionId: number;
   id: number;
@@ -35,23 +34,24 @@ type UpdateBySelectedOption = {
   currentField: number;
   selectedOptions: string[];
 };
-type SetUserRes = {
-  type: "SET_USER_RES";
-  updateUserResCB: () => void;
-};
-type SetSelectedOption = {
-  type: "SET_SELECTED";
-  updateSelectedCB: () => void;
-};
+
 type SetCurrentField = {
   type: "SET_CURRENT_FIELD";
   currentField: number;
 };
+type SetUserResponse = {
+  type: "SET_USER_RESPONSE";
+  userRes: string | string[];
+};
+type SetSelectedResponse = {
+  type: "SET_SELECTED_RESPONSE";
+  selectedOptions: string[];
+};
 export type ResponeActions =
   | AddResponse
   | UpdateResponse
-  | SetUserRes
   | UpdateByUserRes
   | UpdateBySelectedOption
   | SetCurrentField
-  | SetSelectedOption;
+  | SetUserResponse
+  | SetSelectedResponse;

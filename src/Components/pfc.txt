@@ -80,36 +80,27 @@ export default function PreviewQuestion(props: { id: number }) {
           responses: [],
           currentField: 0,
           userRes: "",
-          selectedOptions: [],
         };
+        console.log("newResponse", newResponse);
         return newResponse;
       }
     }
   };
-  const [responseState, dispatch] = useReducer(reducer, null, () =>
-    initialResponse(id)
-  );
+  const [responseState, dispatch] = useReducer(reducer, initialResponse(id));
   const fieldIndex = responseState?.currentField ?? 0;
+
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(
+    state?.formFields[fieldIndex]?.kind === "dropdown"
+      ? (responseState?.responses[fieldIndex]?.response as string[])
+      : []
+  );
 
   //handles the checkbox input change
   const handleCheckboxChange = (option: string) => {
-    if (responseState?.selectedOptions?.includes(option)) {
-      // setSelectedOptions(selectedOptions.filter((item) => item !== option));
-      dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: responseState?.selectedOptions?.filter(
-          (item) => item !== option
-        ),
-      });
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter((item) => item !== option));
     } else {
-      dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: [
-          ...(responseState?.selectedOptions as string[]),
-          option,
-        ],
-      });
-      // setSelectedOptions([...selectedOptions, option]);
+      setSelectedOptions([...selectedOptions, option]);
     }
   };
 
@@ -134,11 +125,13 @@ export default function PreviewQuestion(props: { id: number }) {
       setMounted(true);
     }
   }, [mounted, state]);
+
+  //sets initial value for field controls
   useEffect(() => {
     dispatch({ type: "SET_CURRENT_FIELD", currentField: 0 });
     dispatch({
       type: "SET_USER_RESPONSE",
-      userRes: (responseState?.responses[fieldIndex]?.response as string) || "",
+      userRes: responseState?.responses[fieldIndex]?.response || "",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -158,6 +151,7 @@ export default function PreviewQuestion(props: { id: number }) {
   const handlePrev = () => {
     if (responseState?.currentField && responseState.currentField > 0) {
       dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
+      console.log({ PRevuserRes: responseState?.userRes });
       dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex - 1 });
     }
   };
@@ -169,12 +163,12 @@ export default function PreviewQuestion(props: { id: number }) {
     }
     dispatch({
       type: "UPDATE_BY_SELECTED",
-      selectedOptions: responseState?.selectedOptions || [],
+      selectedOptions: selectedOptions,
       state: state,
       currentField: fieldIndex,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [responseState?.selectedOptions]);
+  }, [selectedOptions]);
 
   //updates the user response when input changes
   useEffect(() => {
@@ -198,22 +192,20 @@ export default function PreviewQuestion(props: { id: number }) {
       let existingRes = responseState.responses.find(
         (res) => res.questionId === state.formFields[fieldIndex]?.id
       );
+      console.log({ existingRes });
       if (existingRes) {
         dispatch({
           type: "SET_USER_RESPONSE",
-          userRes:
-            (responseState?.responses[fieldIndex]?.response as string) || "",
+          userRes: responseState?.responses[fieldIndex]?.response || "",
         });
         if (state.formFields[fieldIndex]?.kind === "dropdown") {
-          dispatch({
-            type: "SET_SELECTED_RESPONSE",
-            selectedOptions:
-              (responseState?.responses[fieldIndex]?.response as string[]) ||
-              [],
-          });
+          setSelectedOptions(
+            (responseState?.responses[fieldIndex]?.response as string[]) || []
+          );
         }
         return;
       }
+
       dispatch({
         type: "ADD_RESPONSE",
         question: state.formFields[fieldIndex]?.label,
@@ -221,15 +213,15 @@ export default function PreviewQuestion(props: { id: number }) {
         questionId: state.formFields[fieldIndex]?.id,
         state: state,
         currentField: fieldIndex,
-        kind: state.formFields[fieldIndex]?.kind,
         id: id,
       });
-
       dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
       dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: [],
+        type: "SET_SELECTED",
+        updateSelectedCB: () => setSelectedOptions([]),
       });
+
+      console.log({ userResUSeEffect: responseState?.userRes });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldIndex]);
@@ -345,10 +337,9 @@ export default function PreviewQuestion(props: { id: number }) {
                               className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
                               onClick={() => setIsOpen(!isOpen)}
                             >
-                              {Array.isArray(responseState?.selectedOptions) &&
-                              (responseState?.selectedOptions as string[])
-                                .length > 0
-                                ? responseState?.selectedOptions?.join(" , ")
+                              {Array.isArray(selectedOptions) &&
+                              selectedOptions.length > 0
+                                ? selectedOptions.join(" , ")
                                 : "No options selected"}
                             </button>
                             {isOpen && (
@@ -360,7 +351,7 @@ export default function PreviewQuestion(props: { id: number }) {
                                     <label>
                                       <input
                                         type="checkbox"
-                                        checked={responseState?.selectedOptions?.includes(
+                                        checked={selectedOptions.includes(
                                           option
                                         )}
                                         onChange={() => {

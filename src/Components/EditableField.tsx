@@ -11,16 +11,16 @@ export default function EditableField(props: {
     <div className="flex  items-center  justify-between" key={field.id}>
       <div className="flex items-center">
         <div className="w-2 h-2 rounded-full bg-green-600"></div>
-        {field.kind === "dropdown" ? (
+        {field.kind === "text" ? (
           <p className="capitalize  text-base text-gray-500">
             <span className="mx-1 font-semibold text-base  text-black">(</span>
-            Multi-Select
+            {(field as TextField).fieldType}
             <span className=" font-semibold text-xl mx-1  text-black">)</span>
           </p>
         ) : (
           <p className="capitalize  text-base text-gray-500">
             <span className="mx-1 font-semibold text-base  text-black">(</span>
-            {(field as TextField).fieldType}
+            {field.kind}
             <span className=" font-semibold text-xl mx-1  text-black">)</span>
           </p>
         )}

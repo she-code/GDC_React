@@ -17,14 +17,12 @@ export const initialFormFields: formField[] = [
     label: "Easy",
     options: ["Yes", "No"],
     value: "",
-    fieldType: "radio",
   },
   {
-    kind: "radio",
+    kind: "color",
     id: 6,
     label: "Choose color",
     options: ["red", "#ffff00", "rgb(45,67,247)"],
     value: "",
-    fieldType: "color",
   },
 ];

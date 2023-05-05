@@ -1,7 +1,12 @@
 import React from "react";
 import EditableField from "./EditableField";
 import OptionAdder from "./OptionAdder";
-import { DropdownField, RadioType, formField } from "../types/formTypes";
+import {
+  ColorField,
+  DropdownField,
+  RadioType,
+  formField,
+} from "../types/formTypes";
 import Divider from "./Divider";
 
 export default function CustomFieldWithOption(props: {
@@ -42,7 +47,7 @@ export default function CustomFieldWithOption(props: {
           className=" max-h-36 overflow-y-auto  border-3 border-gray-200 ml-3 divide divide-y-2 mb-3 w-3/4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
 "
         >
-          {(field as DropdownField | RadioType).options?.map(
+          {(field as DropdownField | RadioType | ColorField).options?.map(
             (option: string, index: number) => (
               <div key={index} className="flex  w-5/12 ml-3">
                 <input

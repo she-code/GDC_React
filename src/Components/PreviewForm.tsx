@@ -124,6 +124,8 @@ export default function PreviewQuestion(props: { id: number }) {
       progress: undefined,
       theme: "light",
     });
+
+  //displays info
   useEffect(() => {
     if (!state) {
       return;
@@ -134,6 +136,8 @@ export default function PreviewQuestion(props: { id: number }) {
       setMounted(true);
     }
   }, [mounted, state]);
+
+  //initalizes the currentField and userResponse
   useEffect(() => {
     dispatch({ type: "SET_CURRENT_FIELD", currentField: 0 });
     dispatch({
@@ -281,104 +285,105 @@ export default function PreviewQuestion(props: { id: number }) {
                 <>
                   {state.formFields[fieldIndex].kind === "radio" ? (
                     <>
-                      {(state.formFields[fieldIndex] as RadioType).fieldType ===
-                      "color" ? (
+                      <div>
+                        <CustomHeader
+                          title={state.formFields[fieldIndex]?.label}
+                          capitalize={true}
+                        />
+                        <div className="  overflow-y-auto h-36 m-5">
+                          {(state.formFields[fieldIndex] as RadioType).options
+                            .length > 0 ? (
+                            <>
+                              {(
+                                state.formFields[fieldIndex] as RadioType
+                              ).options?.map((option, index) => (
+                                <RadioField
+                                  type="radio"
+                                  value={option}
+                                  id={state.formFields[fieldIndex]?.id}
+                                  key={index}
+                                  checked={responseState?.userRes === option}
+                                  handleChangeCB={(e) => {
+                                    // setUserRes(e.target.value);
+                                    dispatch({
+                                      type: "SET_USER_RESPONSE",
+                                      userRes: e.target.value,
+                                    });
+                                  }}
+                                  label={option}
+                                />
+                              ))}
+                            </>
+                          ) : (
+                            <div>No options are added</div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {state.formFields[fieldIndex].kind === "color" ? (
                         <ColorPicker
                           field={state.formFields[fieldIndex]}
-                          value={responseState?.userRes as string}
                           setColorCB={updateColor}
+                          value={responseState?.userRes as string}
                         />
                       ) : (
-                        <div>
+                        <div className="flex items-center">
                           <CustomHeader
                             title={state.formFields[fieldIndex]?.label}
                             capitalize={true}
                           />
-                          <div className="  overflow-y-auto h-36 m-5">
-                            {(state.formFields[fieldIndex] as RadioType).options
-                              .length > 0 ? (
+                          <div className="ml-4  w-1/3">
+                            {(state.formFields[fieldIndex] as DropdownField)
+                              .options.length > 0 ? (
                               <>
-                                {(
-                                  state.formFields[fieldIndex] as RadioType
-                                ).options?.map((option, index) => (
-                                  <RadioField
-                                    type={
-                                      (
-                                        state.formFields[
-                                          fieldIndex
-                                        ] as RadioType
-                                      )?.fieldType
-                                    }
-                                    value={option}
-                                    id={state.formFields[fieldIndex]?.id}
-                                    key={index}
-                                    checked={responseState?.userRes === option}
-                                    handleChangeCB={(e) => {
-                                      // setUserRes(e.target.value);
-                                      dispatch({
-                                        type: "SET_USER_RESPONSE",
-                                        userRes: e.target.value,
-                                      });
-                                    }}
-                                    label={option}
-                                  />
-                                ))}
+                                <button
+                                  className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
+                                  onClick={() => setIsOpen(!isOpen)}
+                                >
+                                  {Array.isArray(
+                                    responseState?.selectedOptions
+                                  ) &&
+                                  (responseState?.selectedOptions as string[])
+                                    .length > 0
+                                    ? responseState?.selectedOptions?.join(
+                                        " , "
+                                      )
+                                    : "No options selected"}
+                                </button>
+                                {isOpen && (
+                                  <ul className=" shadow-lg bg-gray-300 w-full">
+                                    {(
+                                      state.formFields[
+                                        fieldIndex
+                                      ] as DropdownField
+                                    ).options.map((option) => (
+                                      <li key={option}>
+                                        <label>
+                                          <input
+                                            type="checkbox"
+                                            checked={responseState?.selectedOptions?.includes(
+                                              option
+                                            )}
+                                            onChange={() => {
+                                              handleCheckboxChange(option);
+                                            }}
+                                          />
+                                          {option}
+                                        </label>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
                               </>
                             ) : (
-                              <div>No options are added</div>
+                              <p className="block">No options are added</p>
                             )}
                           </div>
                         </div>
                       )}
                     </>
-                  ) : (
-                    <div className="flex items-center">
-                      <CustomHeader
-                        title={state.formFields[fieldIndex]?.label}
-                        capitalize={true}
-                      />
-                      <div className="ml-4  w-1/3">
-                        {(state.formFields[fieldIndex] as DropdownField).options
-                          .length > 0 ? (
-                          <>
-                            <button
-                              className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
-                              onClick={() => setIsOpen(!isOpen)}
-                            >
-                              {Array.isArray(responseState?.selectedOptions) &&
-                              (responseState?.selectedOptions as string[])
-                                .length > 0
-                                ? responseState?.selectedOptions?.join(" , ")
-                                : "No options selected"}
-                            </button>
-                            {isOpen && (
-                              <ul className=" shadow-lg bg-gray-300 w-full">
-                                {(
-                                  state.formFields[fieldIndex] as DropdownField
-                                ).options.map((option) => (
-                                  <li key={option}>
-                                    <label>
-                                      <input
-                                        type="checkbox"
-                                        checked={responseState?.selectedOptions?.includes(
-                                          option
-                                        )}
-                                        onChange={() => {
-                                          handleCheckboxChange(option);
-                                        }}
-                                      />
-                                      {option}
-                                    </label>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </>
-                        ) : (
-                          <p className="block">No options are added</p>
-                        )}
-                      </div>
-                    </div>
                   )}
                 </>
               </div>

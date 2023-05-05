@@ -8,6 +8,7 @@ export type RemoveAction = {
 export type AddAction = {
   type: "add_field";
   label: string;
+  kind: string;
   fieldType: textFieldTypes;
   callback: () => void;
 };

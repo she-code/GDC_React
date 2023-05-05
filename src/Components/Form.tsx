@@ -169,6 +169,7 @@ export default function Form(props: { id: number }) {
               type: "add_field",
               label: newField,
               fieldType: type,
+              kind: "",
               callback: () => setNewField(""),
             })
           }
@@ -187,7 +188,6 @@ export default function Form(props: { id: number }) {
                   return (
                     <div className="divide divide-x-2" key={field.id}>
                       <EditableField
-                        key={field.id}
                         field={field}
                         handleChangeCB={(e) => {
                           dispatch({
@@ -244,7 +244,8 @@ export default function Form(props: { id: number }) {
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
-                case "radio":
+
+                default:
                   return (
                     <CustomFieldWithOption
                       key={field.id}
@@ -285,8 +286,6 @@ export default function Form(props: { id: number }) {
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
-                default:
-                  return <div>no fields</div>;
               }
             })}
           </>

@@ -20,7 +20,7 @@ export type formData = {
   formFields: formField[];
 };
 
-export type FormFieldKind = "text" | "dropdown" | "radio";
+export type FormFieldKind = "text" | "dropdown" | "radio" | "color";
 //unions
 export type textFieldTypes =
   | "text"
@@ -52,8 +52,14 @@ export type RadioType = {
   id: number;
   kind: FormFieldKind;
   label: string;
-  fieldType: textFieldTypes;
   value: string;
   options: string[];
 };
-export type formField = TextField | DropdownField | RadioType;
+export type ColorField = {
+  id: number;
+  kind: FormFieldKind;
+  label: string;
+  value: string;
+  options: string[];
+};
+export type formField = TextField | DropdownField | RadioType | ColorField;

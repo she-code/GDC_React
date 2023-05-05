@@ -12,13 +12,21 @@ export const getNewField: (
       kind: "dropdown",
       options: [],
     };
-  } else if (fieldType === "radio" || fieldType === "color") {
+  } else if (fieldType === "radio") {
     return {
       id: Number(new Date()),
       label: label,
-      fieldType: fieldType,
       value: "",
       kind: "radio",
+      options: [],
+    };
+  } else if (fieldType === "color") {
+    return {
+      id: Number(new Date()),
+      label: label,
+      value: "",
+      kind: "color",
+      options: [],
     };
   } else
     return {

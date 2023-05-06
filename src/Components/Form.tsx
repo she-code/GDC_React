@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { Link, navigate } from "raviger";
 import { getLocalForms } from "../utils/storageUtils";
-import { formData, textFieldTypes } from "../types/formTypes";
+import { FormItem, formData, textFieldTypes } from "../types/formTypes";
 import EditableField from "./EditableField";
 
 import CustomInputField from "./CustomInputField";
@@ -12,23 +12,44 @@ import CustomHeader from "./CustomHeader";
 import CustomFieldWithOption from "./CustomFieldWithOption";
 import Divider from "./Divider";
 import { StateReducer } from "../reducers/stateReducer";
+import { getForm } from "../utils/apiUtils";
+import { FormIntialState } from "../types/formReducerTypes";
+import { FormReducer } from "../reducers/formReducer";
 
-const initialState: (id: number) => formData = (id) => {
-  // have  a function to fetch from the forms list
-  // if it exists, return it
-  // else return a new form
-  const localForms = getLocalForms();
-  const selectedForm = localForms!.find((form) => form.id === id);
-  if (selectedForm) {
-    return selectedForm;
-  } else {
-    const newForm = {
-      id: id,
-      title: "Untitled",
-      formFields: [],
-    };
-    return newForm;
+const fetchForm = (id: number) => async () => {
+  try {
+    const data: FormItem = await getForm(id);
+    // setFormsListCB(data.results);
+    console.log(data);
+    if (!data) {
+      throw Error("No data found");
+    }
+    return data;
+  } catch (error) {
+    console.error(error);
   }
+};
+
+// async function fetchForm(id: number): Promise<FormItem> {
+//   try {
+//     const data: FormItem = await getForm(id);
+//     console.log(data);
+//     if (!data) {
+//       throw Error("No data found");
+//     }
+//     return data;
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+// }
+
+const initialState: FormIntialState = {
+  form: {
+    title: "",
+  },
+  loading: false,
+  error: null,
 };
 
 const saveLocalForms = (localForms: formData[]) => {
@@ -50,9 +71,7 @@ const saveFormData = (currentState: formData) => {
 };
 
 export default function Form(props: { id: number }) {
-  const [state, dispatch] = useReducer(StateReducer, null, () =>
-    initialState(props.id!)
-  );
+  const [state, dispatch] = useReducer(FormReducer, initialState);
   const [newField, setNewField] = useState("");
   const [type, setType] = useState<textFieldTypes>("text");
   // const [kind, setKind] = useState<FormFieldKind>("text");
@@ -60,8 +79,12 @@ export default function Form(props: { id: number }) {
   const titleRef = useRef<HTMLInputElement>(null);
   //programatically updates the form Id in the url
   useEffect(() => {
-    state.id !== props.id && navigate(`/forms/${state.id}`);
-  }, [state.id, props.id]);
+    state?.id !== props.id && navigate(`/forms/${state?.id}`);
+  }, [state?.id, props.id]);
+
+  useEffect(() => {
+    fetchForm(props.id);
+  }, [props.id]);
 
   //updates the title
   useEffect(() => {
@@ -74,15 +97,15 @@ export default function Form(props: { id: number }) {
   }, []);
 
   //saves to localstorage with out button click
-  useEffect(() => {
-    let timeout = setTimeout(() => {
-      saveFormData(state);
-    }, 1000);
+  // useEffect(() => {
+  //   let timeout = setTimeout(() => {
+  //     saveFormData(state??[]);
+  //   }, 1000);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [state]);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, [state]);
 
   // creates toast
   const notify = () =>
@@ -118,16 +141,16 @@ export default function Form(props: { id: number }) {
       <div className=" w-11/12 mr-6">
         <div className="mb-3">
           <CustomInputField
-            value={state.title}
+            value={state?.title ?? ""}
             handleInputChangeCB={(e) => {
-              dispatch({
-                type: "update_title",
-                title: e.target.value,
-              });
+              // dispatch({
+              //   type: "update_title",
+              //   title: e.target.value,
+              // });
             }}
             type="text"
             elementRef={titleRef}
-            key={state.id}
+            key={state?.id}
           />
         </div>
       </div>
@@ -166,21 +189,22 @@ export default function Form(props: { id: number }) {
         />
         <button
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-green-500"
-          onClick={(_) =>
-            dispatch({
-              type: "add_field",
-              label: newField,
-              fieldType: type,
-              kind: "",
-              callback: () => setNewField(""),
-            })
+          onClick={
+            (_) => {}
+            // dispatch({
+            //   type: "add_field",
+            //   label: newField,
+            //   fieldType: type,
+            //   kind: "",
+            //   callback: () => setNewField(""),
+            // })
           }
         >
           Add Field
         </button>
       </div>
 
-      <CustomHeader title="Created Fields" margin={true} />
+      {/* <CustomHeader title="Created Fields" margin={true} />
       <div className="my-7 w-11/12  ">
         {state.formFields.length > 0 ? (
           <>
@@ -289,18 +313,19 @@ export default function Form(props: { id: number }) {
                     />
                   );
               }
-            })}
-          </>
+            })} */}
+      <div>wait</div>
+      {/* </>
         ) : (
           <div>No fields Created</div>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
 
       <div className="flex gap-4 w-11/12 items-start justify-between">
         <button
           className="bg-gray-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
           onClick={(_) => {
-            saveFormData(state);
+            // saveFormData(state);
             notify();
           }}
         >

@@ -1,4 +1,4 @@
-import { Pagination, PaginationParams } from "../types/common";
+import {  PaginationParams } from "../types/common";
 import { FormItem } from "../types/formTypes";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/"

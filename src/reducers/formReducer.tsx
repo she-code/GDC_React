@@ -6,7 +6,7 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       return {
         ...state,
         forms: action.fomrs,
-        error: null,
+        error: "",
         loading: false,
       };
     }

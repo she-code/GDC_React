@@ -48,8 +48,9 @@ const initialState: FormIntialState = {
   form: {
     title: "",
   },
+  forms: [],
   loading: false,
-  error: null,
+  error: "",
 };
 
 const saveLocalForms = (localForms: formData[]) => {

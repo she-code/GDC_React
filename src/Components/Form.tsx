@@ -12,7 +12,7 @@ import CustomHeader from "./CustomHeader";
 import CustomFieldWithOption from "./CustomFieldWithOption";
 import Divider from "./Divider";
 import { initialFormFields } from "../utils/intialFormFields";
-import { reducer } from "../reducers/stateReducer";
+import { StateReducer } from "../reducers/stateReducer";
 
 const initialState: (id: number) => formData = (id) => {
   const localForms = getLocalForms();
@@ -48,7 +48,7 @@ const saveFormData = (currentState: formData) => {
 };
 
 export default function Form(props: { id: number }) {
-  const [state, dispatch] = useReducer(reducer, null, () =>
+  const [state, dispatch] = useReducer(StateReducer, null, () =>
     initialState(props.id!)
   );
   const [newField, setNewField] = useState("");

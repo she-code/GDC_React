@@ -5,11 +5,11 @@ import { getLocalResponses } from "../utils/storageUtils";
 const responses = getLocalResponses();
 
 //Action reducer
-export const reducer = (state: formData, action: FormActions) => {
+export const StateReducer = (state: formData, action: FormActions) => {
   switch (action.type) {
     case "add_field": {
       const newField = getNewField(action.fieldType, action.label);
-      if (newField.label.length > 0) {
+      if (newField.label.length > 0 && state?.formFields) {
         action.callback();
         return {
           ...state,
@@ -27,7 +27,9 @@ export const reducer = (state: formData, action: FormActions) => {
       localStorage.setItem("savedResponses", JSON.stringify(responses));
       return {
         ...state,
-        formFields: state.formFields?.filter((field) => field.id !== action.id),
+        formFields: state?.formFields?.filter(
+          (field) => field.id !== action.id
+        ),
       };
     }
     case "update_title": {
@@ -39,7 +41,7 @@ export const reducer = (state: formData, action: FormActions) => {
     case "add_option": {
       return {
         ...state,
-        formFields: state.formFields?.map((field) => {
+        formFields: state?.formFields?.map((field) => {
           if (field.id === action.fieldId && field.kind !== "text") {
             return {
               ...field,
@@ -56,7 +58,7 @@ export const reducer = (state: formData, action: FormActions) => {
     case "remove_option": {
       return {
         ...state,
-        formFields: state.formFields?.map((field) => {
+        formFields: state?.formFields?.map((field) => {
           if (field.id === action.fieldId && field.kind !== "text") {
             return {
               ...field,
@@ -72,7 +74,7 @@ export const reducer = (state: formData, action: FormActions) => {
     case "update_label": {
       return {
         ...state,
-        formFields: state.formFields?.map((field) => {
+        formFields: state?.formFields?.map((field) => {
           if (field.id === action.id) {
             responses?.forEach((response) => {
               response.responses?.forEach((res) => {
@@ -97,7 +99,7 @@ export const reducer = (state: formData, action: FormActions) => {
     case "update_option": {
       return {
         ...state,
-        formFields: state.formFields?.map((field) => {
+        formFields: state?.formFields?.map((field) => {
           if (field.id === action.fieldId && field.kind !== "text") {
             return {
               ...field,

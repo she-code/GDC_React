@@ -1,11 +1,10 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { responseData } from "../types/responseTypes";
 import { initialState } from "../utils/storageUtils";
-import { DropdownField, RadioType, TextField } from "../types/formTypes";
+import { RadioType, TextField } from "../types/formTypes";
 import RadioField from "./RadioField";
 import { useNavigate } from "raviger";
 
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import CustomInputField from "./CustomInputField";
@@ -13,6 +12,7 @@ import CustomHeader from "./CustomHeader";
 import ColorPicker from "./ColorPicker";
 import NotFound from "./NotFound";
 import { reducer } from "../reducers/responseReducer";
+import SelectField from "./SelectField";
 
 const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
@@ -56,16 +56,13 @@ const saveResponseData = (currentState: responseData) => {
 export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [state, setState] = useState(() => initialState(id!));
-  const [mounted, setMounted] = useState(false);
-  const navigate = useNavigate();
 
-  //*************selectinput  */
-  const [isOpen, setIsOpen] = useState(false);
+  const formState = initialState(props.id!);
+  const navigate = useNavigate();
 
   //initializes the response value
   const initialResponse: (id: number) => responseData | undefined = (id) => {
-    if (state?.formFields?.length) {
+    if (formState?.formFields?.length) {
       const localResponses = getLocalResponses();
       const selectedResponse = localResponses?.find(
         (response) => response.formId === id
@@ -75,8 +72,8 @@ export default function PreviewQuestion(props: { id: number }) {
       } else {
         const newResponse = {
           id: Number(new Date()),
-          formId: state.id,
-          formTitle: state.title,
+          formId: formState.id,
+          formTitle: formState.title,
           responses: [],
           currentField: 0,
           userRes: "",
@@ -94,7 +91,6 @@ export default function PreviewQuestion(props: { id: number }) {
   //handles the checkbox input change
   const handleCheckboxChange = (option: string) => {
     if (responseState?.selectedOptions?.includes(option)) {
-      // setSelectedOptions(selectedOptions.filter((item) => item !== option));
       dispatch({
         type: "SET_SELECTED_RESPONSE",
         selectedOptions: responseState?.selectedOptions?.filter(
@@ -109,33 +105,8 @@ export default function PreviewQuestion(props: { id: number }) {
           option,
         ],
       });
-      // setSelectedOptions([...selectedOptions, option]);
     }
   };
-
-  const notify = () =>
-    toast.info("Your responses are automatically saved", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-
-  //displays info
-  useEffect(() => {
-    if (!state) {
-      return;
-    }
-    if (mounted) {
-      notify();
-    } else {
-      setMounted(true);
-    }
-  }, [mounted, state]);
 
   //initalizes the currentField and userResponse
   useEffect(() => {
@@ -144,15 +115,16 @@ export default function PreviewQuestion(props: { id: number }) {
       type: "SET_USER_RESPONSE",
       userRes: (responseState?.responses[fieldIndex]?.response as string) || "",
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //increments the currentField value
   const handleNext = () => {
-    if (!state) {
+    if (!formState) {
       return;
     }
-    if (fieldIndex <= state.formFields.length - 1) {
+    if (fieldIndex <= formState.formFields.length - 1) {
       dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
       dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex + 1 });
     }
@@ -168,13 +140,13 @@ export default function PreviewQuestion(props: { id: number }) {
 
   //saves selected options in dropdown
   useEffect(() => {
-    if (!state || !responseState) {
+    if (!formState || !responseState) {
       return;
     }
     dispatch({
       type: "UPDATE_BY_SELECTED",
       selectedOptions: responseState?.selectedOptions || [],
-      state: state,
+      state: formState,
       currentField: fieldIndex,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,25 +154,25 @@ export default function PreviewQuestion(props: { id: number }) {
 
   //updates the user response when input changes
   useEffect(() => {
-    if (!state || !responseState || !responseState.userRes) {
+    if (!formState || !responseState || !responseState.userRes) {
       return;
     }
     dispatch({
       type: "UPDATE_BY_USER_RES",
       userRes: responseState?.userRes,
       currentField: fieldIndex,
-      state: state,
+      state: formState,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState?.userRes]);
 
   //updates or creates response
   useEffect(() => {
-    if (!responseState || !state?.formFields?.length) {
+    if (!responseState || !formState?.formFields?.length) {
       return;
     } else {
       let existingRes = responseState.responses.find(
-        (res) => res.questionId === state.formFields[fieldIndex]?.id
+        (res) => res.questionId === formState.formFields[fieldIndex]?.id
       );
       if (existingRes) {
         dispatch({
@@ -208,7 +180,7 @@ export default function PreviewQuestion(props: { id: number }) {
           userRes:
             (responseState?.responses[fieldIndex]?.response as string) || "",
         });
-        if (state.formFields[fieldIndex]?.kind === "dropdown") {
+        if (formState.formFields[fieldIndex]?.kind === "dropdown") {
           dispatch({
             type: "SET_SELECTED_RESPONSE",
             selectedOptions:
@@ -220,12 +192,12 @@ export default function PreviewQuestion(props: { id: number }) {
       }
       dispatch({
         type: "ADD_RESPONSE",
-        question: state.formFields[fieldIndex]?.label,
+        question: formState.formFields[fieldIndex]?.label,
         response: responseState?.userRes || "",
-        questionId: state.formFields[fieldIndex]?.id,
-        state: state,
+        questionId: formState.formFields[fieldIndex]?.id,
+        state: formState,
         currentField: fieldIndex,
-        kind: state.formFields[fieldIndex]?.kind,
+        kind: formState.formFields[fieldIndex]?.kind,
         id: id,
       });
 
@@ -242,7 +214,7 @@ export default function PreviewQuestion(props: { id: number }) {
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
-    if (state?.formFields?.length) {
+    if (formState?.formFields?.length) {
       timeout = setTimeout(() => {
         saveResponseData(responseState as responseData);
       }, 1000);
@@ -259,52 +231,53 @@ export default function PreviewQuestion(props: { id: number }) {
   const updateColor = (color: string) => {
     dispatch({ type: "SET_USER_RESPONSE", userRes: color });
   };
-  return state ? (
+  return formState ? (
     <div className=" w-4/5 mx-auto">
       <h1 className="text-2xl font-semibold text-center capitalize">
-        {state.title}
+        {formState.title}
       </h1>
 
       <div className="m-5 mt-8">
-        {state.formFields.length > 0 ? (
+        {formState?.formFields?.length > 0 ? (
           <>
-            {state.formFields[fieldIndex]?.kind === "text" ? (
+            {formState?.formFields[fieldIndex]?.kind === "text" ? (
               <>
                 <CustomHeader
-                  title={state.formFields[fieldIndex]?.label}
+                  title={formState?.formFields[fieldIndex]?.label}
                   capitalize={true}
                 />
                 <CustomInputField
-                  type={(state.formFields[fieldIndex] as TextField)?.fieldType}
-                  value={responseState?.userRes as string}
+                  type={
+                    (formState?.formFields[fieldIndex] as TextField)?.fieldType
+                  }
+                  value={(responseState?.userRes as string) ?? ""}
                   handleInputChangeCB={updateUserResponse}
                 />
               </>
             ) : (
               <div>
                 <>
-                  {state.formFields[fieldIndex].kind === "radio" ? (
+                  {formState?.formFields[fieldIndex]?.kind === "radio" ? (
                     <>
                       <div>
                         <CustomHeader
-                          title={state.formFields[fieldIndex]?.label}
+                          title={formState.formFields[fieldIndex]?.label}
                           capitalize={true}
                         />
                         <div className="  overflow-y-auto h-36 m-5">
-                          {(state.formFields[fieldIndex] as RadioType).options
-                            .length > 0 ? (
+                          {(formState?.formFields[fieldIndex] as RadioType)
+                            .options.length > 0 ? (
                             <>
                               {(
-                                state.formFields[fieldIndex] as RadioType
+                                formState.formFields[fieldIndex] as RadioType
                               ).options?.map((option, index) => (
                                 <RadioField
                                   type="radio"
                                   value={option}
-                                  id={state.formFields[fieldIndex]?.id}
+                                  id={formState?.formFields[fieldIndex]?.id}
                                   key={index}
                                   checked={responseState?.userRes === option}
                                   handleChangeCB={(e) => {
-                                    // setUserRes(e.target.value);
                                     dispatch({
                                       type: "SET_USER_RESPONSE",
                                       userRes: e.target.value,
@@ -322,66 +295,19 @@ export default function PreviewQuestion(props: { id: number }) {
                     </>
                   ) : (
                     <>
-                      {state.formFields[fieldIndex].kind === "color" ? (
+                      {formState?.formFields[fieldIndex]?.kind === "color" ? (
                         <ColorPicker
-                          field={state.formFields[fieldIndex]}
+                          field={formState?.formFields[fieldIndex]}
                           setColorCB={updateColor}
-                          value={responseState?.userRes as string}
+                          value={(responseState?.userRes as string) ?? ""}
                         />
                       ) : (
-                        <div className="flex items-center">
-                          <CustomHeader
-                            title={state.formFields[fieldIndex]?.label}
-                            capitalize={true}
-                          />
-                          <div className="ml-4  w-1/3">
-                            {(state.formFields[fieldIndex] as DropdownField)
-                              .options.length > 0 ? (
-                              <>
-                                <button
-                                  className=" py-2 px-3 mt-5 border-2 border-gray-300 w-full "
-                                  onClick={() => setIsOpen(!isOpen)}
-                                >
-                                  {Array.isArray(
-                                    responseState?.selectedOptions
-                                  ) &&
-                                  (responseState?.selectedOptions as string[])
-                                    .length > 0
-                                    ? responseState?.selectedOptions?.join(
-                                        " , "
-                                      )
-                                    : "No options selected"}
-                                </button>
-                                {isOpen && (
-                                  <ul className=" shadow-lg bg-gray-300 w-full">
-                                    {(
-                                      state.formFields[
-                                        fieldIndex
-                                      ] as DropdownField
-                                    ).options.map((option) => (
-                                      <li key={option}>
-                                        <label>
-                                          <input
-                                            type="checkbox"
-                                            checked={responseState?.selectedOptions?.includes(
-                                              option
-                                            )}
-                                            onChange={() => {
-                                              handleCheckboxChange(option);
-                                            }}
-                                          />
-                                          {option}
-                                        </label>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </>
-                            ) : (
-                              <p className="block">No options are added</p>
-                            )}
-                          </div>
-                        </div>
+                        <SelectField
+                          fieldIndex={fieldIndex}
+                          handleCheckboxChangeCB={handleCheckboxChange}
+                          responseState={(responseState as responseData) || []}
+                          state={formState}
+                        />
                       )}
                     </>
                   )}
@@ -418,11 +344,11 @@ export default function PreviewQuestion(props: { id: number }) {
             </svg>
           </button>
         )}
-        {fieldIndex === state.formFields.length - 1 ? (
+        {fieldIndex === formState?.formFields?.length - 1 ? (
           ""
         ) : (
           <>
-            {state.formFields.length > 0 ? (
+            {formState?.formFields?.length > 0 ? (
               <button
                 className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
                 onClick={handleNext}
@@ -448,7 +374,7 @@ export default function PreviewQuestion(props: { id: number }) {
           </>
         )}
       </div>
-      {fieldIndex === state.formFields.length - 1 ? (
+      {fieldIndex === formState?.formFields?.length - 1 ? (
         <div className="flex justify-center mb-5">
           <button
             className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"

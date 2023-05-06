@@ -11,10 +11,12 @@ import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
 import CustomFieldWithOption from "./CustomFieldWithOption";
 import Divider from "./Divider";
-import { initialFormFields } from "../utils/intialFormFields";
 import { reducer } from "../reducers/stateReducer";
 
 const initialState: (id: number) => formData = (id) => {
+  // have  a function to fetch from the forms list
+  // if it exists, return it
+  // else return a new form
   const localForms = getLocalForms();
   const selectedForm = localForms!.find((form) => form.id === id);
   if (selectedForm) {

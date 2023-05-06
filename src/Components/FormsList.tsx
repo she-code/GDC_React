@@ -7,11 +7,16 @@ import { FormItem, formData } from "../types/formTypes";
 import { responseData } from "../types/responseTypes";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
+import { listForms } from "../utils/apiUtils";
+import { Pagination } from "../types/common";
 
 const fetchForms = async (setFormsListCB: (value: FormItem[]) => void) => {
-  const response = await fetch("https://tsapi.coronasafe.live/api/mock_test/");
-  const jsonData = await response.json();
-  setFormsListCB(jsonData);
+  try {
+    const data: Pagination<FormItem> = await listForms({ offset: 0, limit: 2 });
+    setFormsListCB(data.results);
+  } catch (error) {
+    console.error(error);
+  }
 };
 export default function FormsList() {
   const [formsListState, setFormsList] = useState<FormItem[]>([]);

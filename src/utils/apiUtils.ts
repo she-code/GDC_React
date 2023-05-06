@@ -1,3 +1,4 @@
+import { Pagination, PaginationParams } from "../types/common";
 import { FormItem } from "../types/formTypes";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/"
@@ -52,3 +53,18 @@ export const login =(username:string,password:string)=>{
 export const me =()=>{
   return request('users/me',"GET",{})
 }
+
+export const listForms = (pageParams:PaginationParams)=>{
+  return request('forms/',"GET",pageParams)
+}
+
+// get form
+export const getForm = (formId:number)=>{
+  return request(`forms/${formId}`,"GET",{})
+}
+//update form 
+// delete form
+// create formFields
+//get formFields
+//update formFields
+//delete formFields

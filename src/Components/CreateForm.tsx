@@ -1,30 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import { Errors, FormItem, validateForm } from "../types/formTypes";
 import { navigate } from "raviger";
 import CustomInputField from "./CustomInputField";
 import { createForm } from "../utils/apiUtils";
+import { FormReducer } from "../reducers/formReducer";
+import { initialState } from "../types/formReducerTypes";
 
 export default function CreateForm() {
-  const [form, setForm] = useState<FormItem>({
-    title: "",
-    description: "",
-    is_public: false,
-  });
+  const [formState, dispatch] = useReducer(FormReducer, initialState);
   const [errors, setErrors] = useState<Errors<FormItem>>({});
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validationErrors = validateForm(form);
+    const validationErrors = validateForm(formState?.form);
+    console.log({ form: formState?.form });
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const data = await createForm(form);
-        navigate(`/forms/${data.id}`);
+        const data = await createForm(formState?.form);
+        console.log({ data });
+
+        if (data?.id) {
+          dispatch({ type: "CREATE_FORM", form: data });
+          navigate(`/forms/${data.id}`);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -39,9 +38,14 @@ export default function CreateForm() {
               Title
             </label>
             <CustomInputField
-              handleInputChangeCB={handleChange}
+              handleInputChangeCB={(event) => {
+                dispatch({
+                  type: "SET_FORM_TITLE",
+                  title: event.target.value,
+                });
+              }}
               type="text"
-              value={form.title}
+              value={formState?.form.title || ""}
               name="title"
             />
           </div>
@@ -53,10 +57,15 @@ export default function CreateForm() {
               description
             </label>
             <CustomInputField
-              handleInputChangeCB={handleChange}
+              handleInputChangeCB={(event) => {
+                dispatch({
+                  type: "SET_FORM_DESCRIPTION",
+                  description: event.target.value,
+                });
+              }}
               type="text"
               name="description"
-              value={form.description || ""}
+              value={formState.form.description || ""}
             />
           </div>
           {errors.description && (
@@ -67,10 +76,15 @@ export default function CreateForm() {
           <div className="flex items-center justify-start">
             <input
               className="mr-2"
-              onChange={handleChange}
+              onChange={(event) => {
+                dispatch({
+                  type: "SET_FORM_VISIBILITY",
+                  is_public: event.target.checked,
+                });
+              }}
               type="checkbox"
               name="is_public"
-              value={form.is_public ? "true" : "false"}
+              value={formState.form.is_public ? "true" : "false"}
             />
             <label htmlFor="is_public" className="text-lg font-semibold mr-2">
               Is Public

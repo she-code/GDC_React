@@ -2,25 +2,20 @@ import React, { useState, useEffect, useRef, useReducer } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Link, navigate } from "raviger";
-import { getLocalForms } from "../utils/storageUtils";
-import { FormItem, formData, textFieldTypes } from "../types/formTypes";
-import EditableField from "./EditableField";
+import { Link } from "raviger";
+import { FormItem, textFieldTypes } from "../types/formTypes";
 
 import CustomInputField from "./CustomInputField";
-import CustomHeader from "./CustomHeader";
-import CustomFieldWithOption from "./CustomFieldWithOption";
-import Divider from "./Divider";
-import { StateReducer } from "../reducers/stateReducer";
-import { getForm } from "../utils/apiUtils";
-import { FormIntialState } from "../types/formReducerTypes";
+
+import { getForm, getFormFields, updateForm } from "../utils/apiUtils";
+import { initialState } from "../types/formReducerTypes";
 import { FormReducer } from "../reducers/formReducer";
 
-const fetchForm = (id: number) => async () => {
+const fetchForm = async (id: number) => {
   try {
     const data: FormItem = await getForm(id);
     // setFormsListCB(data.results);
-    console.log(data);
+    console.log({ data });
     if (!data) {
       throw Error("No data found");
     }
@@ -30,45 +25,14 @@ const fetchForm = (id: number) => async () => {
   }
 };
 
-// async function fetchForm(id: number): Promise<FormItem> {
-//   try {
-//     const data: FormItem = await getForm(id);
-//     console.log(data);
-//     if (!data) {
-//       throw Error("No data found");
-//     }
-//     return data;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
-
-const initialState: FormIntialState = {
-  form: {
-    title: "",
-  },
-  forms: [],
-  loading: false,
-  error: "",
-};
-
-const saveLocalForms = (localForms: formData[]) => {
-  localStorage.setItem("savedForms", JSON.stringify(localForms));
-};
-
-const saveFormData = (currentState: formData) => {
-  const localForms = getLocalForms();
-  const index = localForms.findIndex((form) => form.id === currentState.id);
-  if (index !== -1) {
-    // update the existing form
-    localForms[index] = currentState;
-    saveLocalForms(localForms);
-  } else {
-    // add a new form
-    const updatedLocalForms = [...localForms, currentState];
-    saveLocalForms(updatedLocalForms);
-  }
+const update_Form = async (id: number, form: FormItem) => {
+  try {
+    const updatedForm: FormItem = await updateForm(id, form);
+    if (!updatedForm) {
+      throw Error("No data found");
+    }
+    return updatedForm;
+  } catch (error) {}
 };
 
 export default function Form(props: { id: number }) {
@@ -79,13 +43,24 @@ export default function Form(props: { id: number }) {
 
   const titleRef = useRef<HTMLInputElement>(null);
   //programatically updates the form Id in the url
-  useEffect(() => {
-    state?.id !== props.id && navigate(`/forms/${state?.id}`);
-  }, [state?.id, props.id]);
+  // useEffect(() => {
+  //   state?.id !== props.id && navigate(`/forms/${state?.id}`);
+  // }, [state?.id, props.id]);
 
   useEffect(() => {
-    fetchForm(props.id);
-  }, [props.id]);
+    console.log("useEffect");
+    const getForm = async () => {
+      const form = await fetchForm(props.id);
+      dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
+      if (form?.id) {
+        const formFields = await getFormFields(form?.id);
+        console.log({ formFields });
+        dispatch({ type: "FETCH_FORM_FIELDS", formFields: formFields.results });
+      }
+      console.log({ form });
+    };
+    getForm();
+  }, []);
 
   //updates the title
   useEffect(() => {
@@ -96,17 +71,6 @@ export default function Form(props: { id: number }) {
       document.title = oldTitle;
     };
   }, []);
-
-  //saves to localstorage with out button click
-  // useEffect(() => {
-  //   let timeout = setTimeout(() => {
-  //     saveFormData(state??[]);
-  //   }, 1000);
-
-  //   return () => {
-  //     clearTimeout(timeout);
-  //   };
-  // }, [state]);
 
   // creates toast
   const notify = () =>
@@ -142,7 +106,7 @@ export default function Form(props: { id: number }) {
       <div className=" w-11/12 mr-6">
         <div className="mb-3">
           <CustomInputField
-            value={state?.title ?? ""}
+            value={state?.form?.title ?? ""}
             handleInputChangeCB={(e) => {
               // dispatch({
               //   type: "update_title",
@@ -151,7 +115,7 @@ export default function Form(props: { id: number }) {
             }}
             type="text"
             elementRef={titleRef}
-            key={state?.id}
+            key={state?.form?.id}
           />
         </div>
       </div>
@@ -191,7 +155,9 @@ export default function Form(props: { id: number }) {
         <button
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-green-500"
           onClick={
-            (_) => {}
+            (_) => {
+              // const form = createFormFields(state?.form?.id, newField, type);
+            }
             // dispatch({
             //   type: "add_field",
             //   label: newField,
@@ -204,7 +170,11 @@ export default function Form(props: { id: number }) {
           Add Field
         </button>
       </div>
-
+      <div>
+        {state?.formFields?.map((formField) => {
+          return <div>{formField.label}</div>;
+        })}
+      </div>
       {/* <CustomHeader title="Created Fields" margin={true} />
       <div className="my-7 w-11/12  ">
         {state.formFields.length > 0 ? (

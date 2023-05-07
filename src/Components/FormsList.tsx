@@ -1,57 +1,50 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { useQueryParams } from "raviger";
-import { getLocalResponses } from "../utils/storageUtils";
 import CustomInputField from "./CustomInputField";
 import FormCard from "./FormCard";
-import { FormItem, formData } from "../types/formTypes";
-import { responseData } from "../types/responseTypes";
+import { FormItem } from "../types/formTypes";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import { listForms } from "../utils/apiUtils";
+import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import { FormReducer } from "../reducers/formReducer";
+import { initialState } from "../types/formReducerTypes";
 
-const fetchForms = async (setFormsListCB: (value: FormItem[]) => void) => {
+const fetchForms = async () => {
   try {
     const data: Pagination<FormItem> = await listForms({ offset: 0, limit: 2 });
-    setFormsListCB(data.results);
+    if (!data) {
+      throw Error("No data found");
+    }
+    return data;
   } catch (error) {
     console.error(error);
   }
 };
 export default function FormsList() {
-  const [formsListState, setFormsList] = useState<FormItem[]>([]);
+  const [formsListState, dispatch] = useReducer(FormReducer, initialState);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState("");
   const [newForm, setNewForm] = useState(false);
-  const savedForms = localStorage.getItem("savedForms");
-
-  // useEffect(() => {
-  //   const savedFormsJson = JSON.parse(savedForms!);
-  //   setFormsList(savedFormsJson);
-  // }, [savedForms]);
 
   useEffect(() => {
-    fetchForms(setFormsList);
+    fetchForms().then((data) => {
+      dispatch({
+        type: "FETCH_FORMS_SUCCESS",
+        forms: data?.results ? data?.results : [],
+      });
+    });
   }, []);
-  const deleteForm = (id: number) => {
-    //deletes the form from localStorage
-    const savedFormsJson = JSON.parse(savedForms!);
-    const filteredForms = savedFormsJson.filter(
-      (form: formData) => form.id !== id
-    );
-    localStorage.removeItem("savedForms");
-    localStorage.setItem("savedForms", JSON.stringify(filteredForms));
-
-    //deletes the form responses from localStorage
-    const responses = getLocalResponses();
-    const filteredResponses = responses.filter(
-      (response: responseData) => response.formId !== id
-    );
-    localStorage.setItem("savedResponses", JSON.stringify(filteredResponses));
-    setFormsList(filteredForms);
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteForm(id);
+      dispatch({ type: "DELETE_FORM", formId: id });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const updateSearchString = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +108,7 @@ export default function FormsList() {
             </div>
           </form>
           <div className="mx-5">
-            {formsListState
+            {formsListState?.forms
               ?.filter((form: FormItem) =>
                 form.title.toLowerCase().includes(search?.toLowerCase() || "")
               )
@@ -129,7 +122,7 @@ export default function FormsList() {
                     key={form.id}
                     questions={0}
                     id={form.id || 0}
-                    handleDeleteEventCB={deleteForm}
+                    handleDeleteEventCB={handleDelete}
                   />
                 </div>
               ))}

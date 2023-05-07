@@ -1,8 +1,9 @@
 import {  PaginationParams } from "../types/common";
+import { FormFieldType } from "../types/formReducerTypes";
 import { FormItem } from "../types/formTypes";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/"
-type RequestMethod = 'GET' | 'POST' | 'DELETE' | 'PUT'
+type RequestMethod = 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH';
 export const request = async(endpoint:string,method:RequestMethod="GET",data:any={})=>{
     let url;
     let payload:string;
@@ -45,7 +46,7 @@ console.log({auth})
 }
 
 export const createForm =(form:FormItem)=>{
-    return request('forms',"POST",form)
+    return request('forms/',"POST",form)
 }
 export const login =(username:string,password:string)=>{
   return request('auth-token/',"POST",{username,password})
@@ -65,6 +66,19 @@ export const getForm = (formId:number)=>{
 //update form 
 // delete form
 // create formFields
+export const createFormFields = (formId:number,formFields:FormFieldType)=>{
+return request(`forms/${formId}/fields/`,"POST",formFields)
+}
 //get formFields
+export const getFormFields = (formId:number)=>{
+  return request(`forms/${formId}/fields/`,"GET",{})
+}
+export const updateForm = (formId:number,form:FormItem)=>{
+  return request(`forms/${formId}/`,"PATCH",{form})
+}
+
+export const deleteForm = (formId:number,)=>{
+  return request(`forms/${formId}/`,"DELETE",{})
+}
 //update formFields
 //delete formFields

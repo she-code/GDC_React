@@ -9,7 +9,7 @@ export const getNewField: (
       id: Number(new Date()),
       label: label,
       value: "",
-      kind: "dropdown",
+      kind: "DROPDOWN",
       options: [],
     };
   } else if (fieldType === "radio") {
@@ -17,7 +17,7 @@ export const getNewField: (
       id: Number(new Date()),
       label: label,
       value: "",
-      kind: "radio",
+      kind: "RADIO",
       options: [],
     };
   } else if (fieldType === "color") {
@@ -25,13 +25,13 @@ export const getNewField: (
       id: Number(new Date()),
       label: label,
       value: "",
-      kind: "color",
+      kind: "COLOR",
       options: [],
     };
   } else
     return {
       id: Number(new Date()),
-      kind: "text",
+      kind: "TEXT",
       label: label,
       fieldType: fieldType,
       value: "",

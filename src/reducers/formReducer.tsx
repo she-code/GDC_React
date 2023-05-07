@@ -100,11 +100,40 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
         formField: { ...state.formField, label: action.label },
       };
     }
+    case "CLEAR_FORM_FIELD": {
+      return {
+        ...state,
+        formField: {
+          ...state.formField,
+          label: action.label,
+          kind: action.kind,
+        },
+      };
+    }
     case "ADD_FORM_FIELD": {
+      action.callBack();
       return {
         ...state,
         formFields: [...state.formFields, action.formField],
       };
+    }
+    case "DELETE_FORM_FIELD": {
+      return {
+        ...state,
+        formFields: state?.formFields?.filter(
+          (product) => product.id !== action.formFieldId
+        ),
+      };
+    }
+    case "GET_FORM": {
+      let form = state?.forms?.find((form) => form.id === action.formId);
+      if (form) {
+        return {
+          ...state,
+          form: form,
+        };
+      }
+      return state;
     }
   }
 };

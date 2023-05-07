@@ -180,7 +180,7 @@ export default function PreviewQuestion(props: { id: number }) {
           userRes:
             (responseState?.responses[fieldIndex]?.response as string) || "",
         });
-        if (formState.formFields[fieldIndex]?.kind === "dropdown") {
+        if (formState.formFields[fieldIndex]?.kind === "DROPDOWN") {
           dispatch({
             type: "SET_SELECTED_RESPONSE",
             selectedOptions:
@@ -240,7 +240,7 @@ export default function PreviewQuestion(props: { id: number }) {
       <div className="m-5 mt-8">
         {formState?.formFields?.length > 0 ? (
           <>
-            {formState?.formFields[fieldIndex]?.kind === "text" ? (
+            {formState?.formFields[fieldIndex]?.kind === "TEXT" ? (
               <>
                 <CustomHeader
                   title={formState?.formFields[fieldIndex]?.label}
@@ -257,7 +257,7 @@ export default function PreviewQuestion(props: { id: number }) {
             ) : (
               <div>
                 <>
-                  {formState?.formFields[fieldIndex]?.kind === "radio" ? (
+                  {formState?.formFields[fieldIndex]?.kind === "RADIO" ? (
                     <>
                       <div>
                         <CustomHeader
@@ -295,7 +295,7 @@ export default function PreviewQuestion(props: { id: number }) {
                     </>
                   ) : (
                     <>
-                      {formState?.formFields[fieldIndex]?.kind === "color" ? (
+                      {formState?.formFields[fieldIndex]?.kind === "COLOR" ? (
                         <ColorPicker
                           field={formState?.formFields[fieldIndex]}
                           setColorCB={updateColor}

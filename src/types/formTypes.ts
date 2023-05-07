@@ -43,7 +43,7 @@ export const validateForm = (form: FormItem) => {
   }
   return errors;
 };
-export type FormFieldKind = "text" | "dropdown" | "radio" | "color";
+export type FormFieldKind = "TEXT" | "DROPDOWN" | "RADIO" | "COLOR";
 //unions
 export type textFieldTypes =
   | "text"

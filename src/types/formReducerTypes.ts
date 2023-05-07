@@ -20,6 +20,10 @@ export type SetFormTitle = {
     type: "SET_FORM_TITLE";
     title: string;
 }
+export type GetForm = {
+    type:"GET_FORM";
+    formId:number;
+}
 export type SetFormDescription = {
     type: "SET_FORM_DESCRIPTION";
     description: string;
@@ -68,6 +72,17 @@ export type SetFieldLabel ={
 export type AddFormField ={
     type: "ADD_FORM_FIELD";
     formField: FormFieldType;
+    callBack: () => void;
+}
+export type ClearFormField ={
+    type: "CLEAR_FORM_FIELD";
+    kind: FormFieldKind;
+    label: string;
+}
+
+export type DeleteFormField ={
+    type: "DELETE_FORM_FIELD";
+    formFieldId: number;
 }
 export type FormFieldType = {
     id?: number;
@@ -89,7 +104,9 @@ export const initialState: FormIntialState = {
     loading: false,
     error: "",
     formFields: [],
-    formField:{label:'',kind:"text"} as FormFieldType,
+    formField:{label:'',kind:"TEXT"} as FormFieldType,
   };
-export type FormAction = FetchFormsSucess | FetchFormsError | FetchForm | SetError  | DeleteForm | UpdateForm | AddFormField |
-FetchFormFields | SetFormTitle | SetFormDescription | SetFormVisibility | CreateForm | SetFieldKind | SetFieldLabel;
+export type FormAction = FetchFormsSucess | FetchFormsError | FetchForm | SetError  | DeleteForm | UpdateForm | AddFormField | ClearFormField|
+FetchFormFields | SetFormTitle | SetFormDescription 
+| SetFormVisibility | GetForm | DeleteFormField
+| CreateForm | SetFieldKind | SetFieldLabel;

@@ -1,14 +1,14 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { useQueryParams } from "raviger";
+import { navigate, useQueryParams } from "raviger";
 import CustomInputField from "./CustomInputField";
 import FormCard from "./FormCard";
-import { FormItem } from "../types/formTypes";
+import { Errors, FormItem, validateForm } from "../types/formTypes";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { Pagination } from "../types/common";
 import { FormReducer } from "../reducers/formReducer";
 import { initialState } from "../types/formReducerTypes";
-import { deleteForm, listForms } from "../utils/apiUtils";
+import { createForm, deleteForm, listForms } from "../utils/apiUtils";
 
 const fetchForms = async () => {
   try {
@@ -22,7 +22,7 @@ const fetchForms = async () => {
   }
 };
 export default function FormsList() {
-  const [formsListState, dispatch] = useReducer(FormReducer, initialState);
+  const [formState, dispatch] = useReducer(FormReducer, initialState);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
@@ -108,7 +108,7 @@ export default function FormsList() {
             </div>
           </form>
           <div className="mx-5">
-            {formsListState?.forms
+            {formState?.forms
               ?.filter((form: FormItem) =>
                 form.title.toLowerCase().includes(search?.toLowerCase() || "")
               )

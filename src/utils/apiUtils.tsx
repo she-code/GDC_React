@@ -70,23 +70,27 @@ export const listForms = (pageParams: PaginationParams) => {
 export const getForm = (formId: number) => {
   return request(`forms/${formId}`, "GET", {});
 };
+
 //update form
+export const updateForm = (formId: number, form: FormItem) => {
+  return request(`forms/${formId}/`, "PATCH", form);
+};
 // delete form
+export const deleteForm = (formId: number) => {
+  return request(`forms/${formId}/`, "DELETE", {});
+};
 // create formFields
 export const createFormFields = (formId: number, formField: FormFieldType) => {
   return request(`forms/${formId}/fields/`, "POST", formField);
 };
 
 //get formFields
-export const getFormFields = (formId: number) => {
-  return request(`forms/${formId}/fields/`, "GET", {});
-};
-export const updateForm = (formId: number, form: FormItem) => {
-  return request(`forms/${formId}/`, "PATCH", { form });
-};
-
-export const deleteForm = (formId: number) => {
-  return request(`forms/${formId}/`, "DELETE", {});
+export const getFormFields = (pageParams: PaginationParams, formId: number) => {
+  return request(`forms/${formId}/fields/`, "GET", pageParams);
 };
 //update formFields
+
 //delete formFields
+export const deleteFormField = (formId: number, formFieldId: number) => {
+  return request(`forms/${formId}/fields/${formFieldId}/`, "DELETE", {});
+};

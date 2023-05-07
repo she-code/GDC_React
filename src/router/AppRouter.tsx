@@ -17,7 +17,6 @@ const routes = {
   "/forms/:formId": ({ formId }: { formId: string }) => (
     <Form id={Number(formId)} />
   ),
-  "/createForm": () => <CreateForm />,
   "/login": () => <Login />,
 
   "/preview/:formId": ({ formId }: { formId: string }) => (

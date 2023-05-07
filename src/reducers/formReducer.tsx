@@ -88,5 +88,23 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
         forms: state.forms.filter((product) => product.id !== action.formId),
       };
     }
+    case "SET_FIELD_KIND": {
+      return {
+        ...state,
+        formField: { ...state.formField, kind: action.kind },
+      };
+    }
+    case "SET_FIELD_LABEL": {
+      return {
+        ...state,
+        formField: { ...state.formField, label: action.label },
+      };
+    }
+    case "ADD_FORM_FIELD": {
+      return {
+        ...state,
+        formFields: [...state.formFields, action.formField],
+      };
+    }
   }
 };

@@ -2,9 +2,9 @@ import React, { useState, useReducer } from "react";
 import { Errors, FormItem, validateForm } from "../types/formTypes";
 import { navigate } from "raviger";
 import CustomInputField from "./CustomInputField";
-import { createForm } from "../utils/apiUtils";
 import { FormReducer } from "../reducers/formReducer";
 import { initialState } from "../types/formReducerTypes";
+import { createForm } from "../utils/apiUtils";
 
 export default function CreateForm() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);

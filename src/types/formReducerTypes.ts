@@ -1,5 +1,4 @@
-import { type } from "os";
-import { FormItem } from "./formTypes";
+import { FormFieldKind, FormItem } from "./formTypes";
 
 export type FetchFormsSucess = {
     type: "FETCH_FORMS_SUCCESS";
@@ -39,6 +38,7 @@ export type  FormIntialState = {
     loading :boolean
     error : string
     formFields:FormFieldType[]
+    formField:FormFieldType
 }
 export type SetError={
     type: "SET_ERROR";
@@ -56,10 +56,23 @@ export type DeleteForm = {
     type: "DELETE_FORM";
     formId: number;
 }
+
+export type SetFieldKind ={
+    type: "SET_FIELD_KIND";
+    kind: FormFieldKind;
+}
+export type SetFieldLabel ={
+    type: "SET_FIELD_LABEL";
+    label: string;
+}
+export type AddFormField ={
+    type: "ADD_FORM_FIELD";
+    formField: FormFieldType;
+}
 export type FormFieldType = {
     id?: number;
     label:string;
-    kind: string;
+    kind: FormFieldKind;
     options?: string[];
     value?: string;
     meta?: {
@@ -67,6 +80,7 @@ export type FormFieldType = {
         x_nullable:boolean;
     };
 }
+
 export const initialState: FormIntialState = {
     form: {
       title: "",
@@ -75,6 +89,7 @@ export const initialState: FormIntialState = {
     loading: false,
     error: "",
     formFields: [],
+    formField:{label:'',kind:"text"} as FormFieldType,
   };
-export type FormAction = FetchFormsSucess | FetchFormsError | FetchForm | SetError  | DeleteForm | UpdateForm |
-FetchFormFields | SetFormTitle | SetFormDescription | SetFormVisibility | CreateForm;
+export type FormAction = FetchFormsSucess | FetchFormsError | FetchForm | SetError  | DeleteForm | UpdateForm | AddFormField |
+FetchFormFields | SetFormTitle | SetFormDescription | SetFormVisibility | CreateForm | SetFieldKind | SetFieldLabel;

@@ -3,13 +3,13 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Link } from "raviger";
-import { FormItem, textFieldTypes } from "../types/formTypes";
+import { FormFieldKind, FormItem, textFieldTypes } from "../types/formTypes";
 
 import CustomInputField from "./CustomInputField";
 
-import { getForm, getFormFields, updateForm } from "../utils/apiUtils";
-import { initialState } from "../types/formReducerTypes";
+import { FormFieldType, initialState } from "../types/formReducerTypes";
 import { FormReducer } from "../reducers/formReducer";
+import { getForm, getFormFields, updateForm } from "../utils/apiUtils";
 
 const fetchForm = async (id: number) => {
   try {
@@ -35,11 +35,13 @@ const update_Form = async (id: number, form: FormItem) => {
   } catch (error) {}
 };
 
+// create FormFields
+const createFormFields = async (id: number, formFields: FormFieldType) => {
+  //get kind
+  // get name
+};
 export default function Form(props: { id: number }) {
   const [state, dispatch] = useReducer(FormReducer, initialState);
-  const [newField, setNewField] = useState("");
-  const [type, setType] = useState<textFieldTypes>("text");
-  // const [kind, setKind] = useState<FormFieldKind>("text");
 
   const titleRef = useRef<HTMLInputElement>(null);
   //programatically updates the form Id in the url
@@ -98,6 +100,20 @@ export default function Form(props: { id: number }) {
       theme: "light",
     });
 
+  const handleFieldCreate = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      if (state.form.id === undefined) throw Error("Form Id is undefined");
+      console.log({ field: state?.formField }, state.form.id);
+      const newField = await createFormFields(
+        state?.form?.id,
+        state?.formField
+      );
+      console.log({ newField });
+      // dispatch({ type: "ADD_FORM_FIELD", formField: newField,  });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div
       className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
@@ -119,60 +135,48 @@ export default function Form(props: { id: number }) {
           />
         </div>
       </div>
+      <form onSubmit={handleFieldCreate}>
+        <div className="flex gap-2 w-11/12 items-center">
+          <div className="flex rounded-lg shadow-lg h-14 items-center p-3">
+            <span className="font-semibold mr-1">Kind:</span>
+            <select
+              name="KindSelecter"
+              id=""
+              className="px-2 focus:outline-none font-light "
+              onChange={(e) => {
+                dispatch({
+                  type: "SET_FIELD_KIND",
+                  kind: e.target.value as FormFieldKind,
+                });
+              }}
+            >
+              <option value="text">text</option>
+              <option value="radio">radio</option>
+              <option value="dropdown">dropdown</option>
+              <option value="color">color</option>
+            </select>
+          </div>
 
-      <div className="flex gap-2 w-11/12 items-center">
-        <div className="flex rounded-lg shadow-lg h-14 items-center p-3">
-          <span className="font-semibold mr-1">Type:</span>
-          <select
-            name="typeSelecter"
-            id=""
-            className="px-2 focus:outline-none font-light "
+          <input
+            type="text"
+            value={state.formField.label ?? ""}
+            className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2  w-2/3 focus:outline-none focus:border-l-green-500 focus:border-l-8"
             onChange={(e) => {
-              setType(e.target.value as textFieldTypes);
+              dispatch({ type: "SET_FIELD_LABEL", label: e.target.value });
             }}
+          />
+          <button
+            type="submit"
+            className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44
+             hover:bg-green-500"
           >
-            <option value="text">text</option>
-            <option value="tel">tel</option>
-            <option value="password">password</option>
-            <option value="email">email</option>
-            <option value="date">date</option>
-            <option value="number">number</option>
-            <option value="textarea">textarea</option>
-            <option value="radio">radio</option>
-            <option value="select">multi-select</option>
-            <option value="color">color-picker</option>
-          </select>
+            Add Field
+          </button>
         </div>
-
-        <input
-          type="text"
-          value={newField}
-          className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2  w-2/3 focus:outline-none focus:border-l-green-500 focus:border-l-8"
-          onChange={(e) => {
-            setNewField(e.target.value);
-          }}
-        />
-        <button
-          className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-green-500"
-          onClick={
-            (_) => {
-              // const form = createFormFields(state?.form?.id, newField, type);
-            }
-            // dispatch({
-            //   type: "add_field",
-            //   label: newField,
-            //   fieldType: type,
-            //   kind: "",
-            //   callback: () => setNewField(""),
-            // })
-          }
-        >
-          Add Field
-        </button>
-      </div>
+      </form>
       <div>
         {state?.formFields?.map((formField) => {
-          return <div>{formField.label}</div>;
+          return <div key={formField?.id}>{formField.label}</div>;
         })}
       </div>
       {/* <CustomHeader title="Created Fields" margin={true} />

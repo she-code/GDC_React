@@ -5,10 +5,10 @@ import FormCard from "./FormCard";
 import { FormItem } from "../types/formTypes";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import { FormReducer } from "../reducers/formReducer";
 import { initialState } from "../types/formReducerTypes";
+import { deleteForm, listForms } from "../utils/apiUtils";
 
 const fetchForms = async () => {
   try {

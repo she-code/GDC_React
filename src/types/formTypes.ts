@@ -27,6 +27,9 @@ export type FormItem = {
   title: string;
   description?: string;
   is_public?: boolean;
+  created_date?: string;
+  modified_date?: string;
+  created_by?: number;
 };
 
 //generic type
@@ -43,7 +46,7 @@ export const validateForm = (form: FormItem) => {
   }
   return errors;
 };
-export type FormFieldKind = "TEXT" | "DROPDOWN" | "RADIO" | "COLOR";
+export type FormFieldKind = "TEXT" | "DROPDOWN" | "RADIO" | "COLOR" | "GENERIC";
 //unions
 export type textFieldTypes =
   | "text"

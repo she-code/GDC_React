@@ -14,6 +14,7 @@ import {
   deleteFormField,
   getForm,
   getFormFields,
+  updateFormField,
 } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import Modal from "./common/Modal";
@@ -22,15 +23,12 @@ import CustomFieldWithOption from "./CustomFieldWithOption";
 import Divider from "./Divider";
 import EditableField from "./EditableField";
 import CustomHeader from "./CustomHeader";
+import NotFound from "./NotFound";
+import Loading from "./common/Loading";
 
 const fetchForm = async (id: number) => {
   try {
     const data: FormItem = await getForm(id);
-    // setFormsListCB(data.results);
-    console.log({ data });
-    if (!data) {
-      throw Error("No data found");
-    }
     return data;
   } catch (error) {
     console.error(error);
@@ -43,24 +41,26 @@ export default function Form(props: { id: number }) {
   const [state, dispatch] = useReducer(FormReducer, initialState);
   const [newForm, setNewForm] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
-  //programatically updates the form Id in the url
-  // useEffect(() => {
-  //   state?.id !== props.id && navigate(`/forms/${state?.id}`);
-  // }, [state?.id, props.id]);
 
   useEffect(() => {
     console.log("useEffect");
     const getForm = async () => {
       const form = await fetchForm(props.id);
-      dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
       if (form?.id) {
+        dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
         const formFields: Pagination<FormFieldType> = await getFormFields(
           { offset: 0, limit: 10 },
           form?.id
         );
-
-        console.log({ formFields });
-        dispatch({ type: "FETCH_FORM_FIELDS", formFields: formFields.results });
+        if (formFields.results) {
+          dispatch({
+            type: "FETCH_FORM_FIELDS",
+            formFields: formFields.results,
+          });
+        }
+      } else {
+        dispatch({ type: "FETCH_FORM_FAILURE", error: "Something went wrong" });
+        console.log(state?.error);
       }
       console.log({ formFields: state.formFields });
     };
@@ -144,7 +144,26 @@ export default function Form(props: { id: number }) {
       console.error(error);
     }
   };
-  return (
+  const handleOptionDelete = async (id: number, field: FormFieldType) => {
+    try {
+      if (state?.form?.id === undefined) throw Error("Form Id is undefined");
+
+      const updatedFormField = await updateFormField(
+        state?.form.id as number,
+        field?.id as number,
+        field
+      );
+      if (updatedFormField) {
+        console.log({ updatedFormField });
+        navigate(`/forms/${state?.form?.id}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return state?.loading ? (
+    <Loading />
+  ) : state.form.id ? (
     <div
       className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
     "
@@ -213,15 +232,10 @@ export default function Form(props: { id: number }) {
                     <div className="divide divide-x-2" key={field.id}>
                       <EditableField
                         field={field}
+                        formId={state.form.id as number}
                         handleChangeCB={(
                           e: React.ChangeEvent<HTMLInputElement>
-                        ) => {
-                          // dispatch({
-                          //   type: "update_label",
-                          //   value: e.target.value,
-                          //   id: field.id,
-                          // });
-                        }}
+                        ) => {}}
                         removeFieldCB={
                           (id: number) => {
                             handleFieldDelete(id);
@@ -237,50 +251,26 @@ export default function Form(props: { id: number }) {
                     <CustomFieldWithOption
                       key={field.id}
                       field={field}
-                      handleChangeCB={(e) => {
-                        // dispatch({
-                        //   type: "update_label",
-                        //   value: e.target.value,
-                        //   id: field.id,
-                        // });
-                        dispatch({
-                          type: "SET_FIELD_LABEL",
-                          label: e.target.value,
-                        });
-                      }}
+                      formId={state.form.id as number}
+                      handleChangeCB={(e) => {}}
                       id={field?.id as number}
                       removeFieldCB={
-                        (id) => {
-                          handleFieldDelete(id);
-                        }
+                        (id) => {}
                         // dispatch({ type: "remove_field", id: id })
                       }
-                      addOptionCB={
-                        (option) => {}
-                        // dispatch({
-                        //   type: "add_option",
-                        //   fieldId: field.id,
-                        //   option: option,
-                        // })
-                      }
-                      removeOptionCB={
-                        (id: number) => {
-                          handleFieldDelete(id);
-                        }
-                        // dispatch({
-                        //   type: "remove_option",
-                        //   fieldId: field.id,
-                        //   optionId: index,
-                        // })
-                      }
-                      updateOptionCB={(option, index) => {
-                        // dispatch({
-                        //   type: "update_option",
-                        //   fieldId: field.id,
-                        //   option: option,
-                        //   index: index,
-                        // });
+                      removeOptionCB={(id: number) => {
+                        dispatch({
+                          type: "DELETE_OPTION",
+                          fieldId: field.id as number,
+                          index: id,
+                        });
+                        console.log({
+                          field,
+                          options: state?.formField.options,
+                        });
+                        handleOptionDelete(field.id as number, field);
                       }}
+                      updateOptionCB={(option, index) => {}}
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
@@ -290,48 +280,31 @@ export default function Form(props: { id: number }) {
                     <CustomFieldWithOption
                       key={field.id}
                       field={field}
-                      handleChangeCB={(e) => {
-                        // dispatch({
-                        //   type: "update_label",
-                        //   value: e.target.value,
-                        //   id: field.id,
-                        // });
-                      }}
+                      formId={state.form.id as number}
+                      handleChangeCB={(e) => {}}
                       id={field?.id as number}
                       removeFieldCB={
                         (id) => {}
                         // dispatch({ type: "remove_field", id: id })
                       }
-                      addOptionCB={
-                        (option) => {}
-                        // dispatch({
-                        //   type: "add_option",
-                        //   fieldId: field.id,
-                        //   option: option,
-                        // })
-                      }
-                      removeOptionCB={
-                        (index) => {}
-                        // dispatch({
-                        //   type: "remove_option",
-                        //   fieldId: field.id,
-                        //   optionId: index,
-                        // })
-                      }
-                      updateOptionCB={(option, index) => {
-                        // dispatch({
-                        //   type: "update_option",
-                        //   fieldId: field.id,
-                        //   option: option,
-                        //   index: index,
-                        // });
+                      removeOptionCB={(id: number) => {
+                        dispatch({
+                          type: "DELETE_OPTION",
+                          fieldId: field.id as number,
+                          index: id,
+                        });
+                        console.log({
+                          field,
+                          options: state?.formField.options,
+                        });
+                        handleOptionDelete(field.id as number, field);
                       }}
+                      updateOptionCB={(option, index) => {}}
                       emptyFieldAlertCB={emptyFieldAlert}
                     />
                   );
               }
             })}
-            <div>wait</div>
           </>
         ) : (
           <div>No fields Created</div>
@@ -361,10 +334,12 @@ export default function Form(props: { id: number }) {
           Update Form
         </button>
         <Modal open={newForm} closeCB={() => setNewForm(false)}>
-          <UpdateForm formId={state?.form?.id ?? 0} />
+          <UpdateForm form={state?.form as FormItem} />
         </Modal>
         {/* <Button name={"Clear Form"} handleEvent={clearForm} /> */}
       </div>
     </div>
+  ) : (
+    <NotFound />
   );
 }

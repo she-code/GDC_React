@@ -1,6 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { responseData } from "../types/responseTypes";
-import { initialState } from "../utils/storageUtils";
+import { Submission, submissionIntialState } from "../types/responseTypes";
 import { RadioType, TextField } from "../types/formTypes";
 import RadioField from "./RadioField";
 import { useNavigate } from "raviger";
@@ -11,111 +10,83 @@ import CustomInputField from "./CustomInputField";
 import CustomHeader from "./CustomHeader";
 import ColorPicker from "./ColorPicker";
 import NotFound from "./NotFound";
-import { reducer } from "../reducers/responseReducer";
-import SelectField from "./SelectField";
-
-const getLocalResponses: () => responseData[] = () => {
-  const savedResponses = localStorage.getItem("savedResponses");
-  return savedResponses ? JSON.parse(savedResponses) : [];
-};
-
-const saveLocalResponses = (localForms: responseData[]) => {
-  localStorage.setItem("savedResponses", JSON.stringify(localForms));
-};
-
-//saves data to localstorage
-const saveResponseData = (currentState: responseData) => {
-  const localResponses = getLocalResponses();
-  const index = localResponses.findIndex(
-    (response) => response.id === currentState.id
-  );
-  if (index !== -1) {
-    // update the existing response
-    localResponses[index] = {
-      id: currentState.id,
-      formId: currentState.formId,
-      formTitle: currentState.formTitle,
-      responses: currentState.responses,
-    };
-    saveLocalResponses(localResponses);
-  } else {
-    // add a new response
-    const updatedLocalResponses = [
-      ...localResponses,
-      {
-        id: currentState.id,
-        formId: currentState.formId,
-        formTitle: currentState.formTitle,
-        responses: currentState.responses,
-      },
-    ];
-    saveLocalResponses(updatedLocalResponses);
-  }
-};
+import { submissionReducer } from "../reducers/submissionReducer";
+import { getForm, getFormFields } from "../utils/apiUtils";
+import { FormReducer } from "../reducers/formReducer";
+import { FormFieldType, initialState } from "../types/formReducerTypes";
+import { Pagination } from "../types/common";
 
 export default function PreviewQuestion(props: { id: number }) {
   const { id } = props;
+  const [formState, dispatchForm] = useReducer(FormReducer, initialState);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-  const formState = initialState(props.id!);
+  useEffect(() => {
+    console.log("useEffect");
+    const get_Form = async () => {
+      const form = await getForm(id);
+      if (form?.id) {
+        dispatchForm({
+          type: "FETCH_FORM",
+          form: formState?.form ? formState?.form : { title: "" },
+        });
+        const formFields: Pagination<FormFieldType> = await getFormFields(
+          { offset: 0, limit: 10 },
+          form?.id
+        );
+        if (formFields.results) {
+          dispatchForm({
+            type: "FETCH_FORM_FIELDS",
+            formFields: formFields.results,
+          });
+        }
+      } else {
+        dispatchForm({
+          type: "FETCH_FORM_FAILURE",
+          error: "Something went wrong",
+        });
+        console.log(formState?.error);
+      }
+      console.log({ formFields: formState.formFields });
+    };
+    get_Form();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const navigate = useNavigate();
 
-  //initializes the response value
-  const initialResponse: (id: number) => responseData | undefined = (id) => {
-    if (formState?.formFields?.length) {
-      const localResponses = getLocalResponses();
-      const selectedResponse = localResponses?.find(
-        (response) => response.formId === id
-      );
-      if (selectedResponse) {
-        return selectedResponse;
-      } else {
-        const newResponse = {
-          id: Number(new Date()),
-          formId: formState.id,
-          formTitle: formState.title,
-          responses: [],
-          currentField: 0,
-          userRes: "",
-          selectedOptions: [],
-        };
-        return newResponse;
-      }
-    }
-  };
-  const [responseState, dispatch] = useReducer(reducer, null, () =>
-    initialResponse(id)
+  const [responseState, dispatch] = useReducer(
+    submissionReducer,
+    submissionIntialState
   );
   const fieldIndex = responseState?.currentField ?? 0;
 
   //handles the checkbox input change
   const handleCheckboxChange = (option: string) => {
     if (responseState?.selectedOptions?.includes(option)) {
-      dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: responseState?.selectedOptions?.filter(
-          (item) => item !== option
-        ),
-      });
+      // dispatch({
+      //   type: "SET_SELECTED_RESPONSE",
+      //   selectedOptions: responseState?.selectedOptions?.filter(
+      //     (item) => item !== option
+      //   ),
+      // });
     } else {
-      dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: [
-          ...(responseState?.selectedOptions as string[]),
-          option,
-        ],
-      });
+      // dispatch({
+      //   type: "SET_SELECTED_RESPONSE",
+      //   selectedOptions: [
+      //     ...(responseState?.selectedOptions as string[]),
+      //     option,
+      //   ],
+      // });
     }
   };
 
   //initalizes the currentField and userResponse
   useEffect(() => {
-    dispatch({ type: "SET_CURRENT_FIELD", currentField: 0 });
     dispatch({
-      type: "SET_USER_RESPONSE",
-      userRes: (responseState?.responses[fieldIndex]?.response as string) || "",
+      type: "SET_FIELDS",
+      currentField: 0,
+      userRes: (responseState?.answers[fieldIndex]?.value as string) || "",
     });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -125,16 +96,22 @@ export default function PreviewQuestion(props: { id: number }) {
       return;
     }
     if (fieldIndex <= formState.formFields.length - 1) {
-      dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
-      dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex + 1 });
+      dispatch({
+        type: "SET_FIELDS",
+        currentField: fieldIndex + 1,
+        userRes: "",
+      });
     }
   };
 
   //decrements the currentField value
   const handlePrev = () => {
     if (responseState?.currentField && responseState.currentField > 0) {
-      dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
-      dispatch({ type: "SET_CURRENT_FIELD", currentField: fieldIndex - 1 });
+      dispatch({
+        type: "SET_FIELDS",
+        currentField: fieldIndex - 1,
+        userRes: "",
+      });
     }
   };
 
@@ -143,12 +120,12 @@ export default function PreviewQuestion(props: { id: number }) {
     if (!formState || !responseState) {
       return;
     }
-    dispatch({
-      type: "UPDATE_BY_SELECTED",
-      selectedOptions: responseState?.selectedOptions || [],
-      state: formState,
-      currentField: fieldIndex,
-    });
+    // dispatch({
+    //   type: "UPDATE_BY_SELECTED",
+    //   selectedOptions: responseState?.selectedOptions || [],
+    //   state: formState,
+    //   currentField: fieldIndex,
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState?.selectedOptions]);
 
@@ -157,12 +134,12 @@ export default function PreviewQuestion(props: { id: number }) {
     if (!formState || !responseState || !responseState.userRes) {
       return;
     }
-    dispatch({
-      type: "UPDATE_BY_USER_RES",
-      userRes: responseState?.userRes,
-      currentField: fieldIndex,
-      state: formState,
-    });
+    // dispatch({
+    //   type: "UPDATE_BY_USER_RES",
+    //   userRes: responseState?.userRes,
+    //   currentField: fieldIndex,
+    //   state: formState,
+    // });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseState?.userRes]);
 
@@ -171,41 +148,40 @@ export default function PreviewQuestion(props: { id: number }) {
     if (!responseState || !formState?.formFields?.length) {
       return;
     } else {
-      let existingRes = responseState.responses.find(
-        (res) => res.questionId === formState.formFields[fieldIndex]?.id
+      let existingRes = responseState?.answers.find(
+        (res: any) => res.questionId === formState.formFields[fieldIndex]?.id
       );
       if (existingRes) {
         dispatch({
           type: "SET_USER_RESPONSE",
-          userRes:
-            (responseState?.responses[fieldIndex]?.response as string) || "",
+          userRes: (responseState?.answers[fieldIndex]?.value as string) || "",
         });
         if (formState.formFields[fieldIndex]?.kind === "DROPDOWN") {
-          dispatch({
-            type: "SET_SELECTED_RESPONSE",
-            selectedOptions:
-              (responseState?.responses[fieldIndex]?.response as string[]) ||
-              [],
-          });
+          // dispatch({
+          //   type: "SET_SELECTED_RESPONSE",
+          //   selectedOptions:
+          //     (responseState?.responses[fieldIndex]?.response as string[]) ||
+          //     [],
+          // });
         }
         return;
       }
-      dispatch({
-        type: "ADD_RESPONSE",
-        question: formState.formFields[fieldIndex]?.label,
-        response: responseState?.userRes || "",
-        questionId: formState.formFields[fieldIndex]?.id,
-        state: formState,
-        currentField: fieldIndex,
-        kind: formState.formFields[fieldIndex]?.kind,
-        id: id,
-      });
+      // dispatch({
+      //   type: "ADD_RESPONSE",
+      //   question: formState.formFields[fieldIndex]?.label,
+      //   response: responseState?.userRes || "",
+      //   questionId: formState.formFields[fieldIndex]?.id,
+      //   state: formState,
+      //   currentField: fieldIndex,
+      //   kind: formState.formFields[fieldIndex]?.kind,
+      //   id: id,
+      // });
 
-      dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
-      dispatch({
-        type: "SET_SELECTED_RESPONSE",
-        selectedOptions: [],
-      });
+      // dispatch({ type: "SET_USER_RESPONSE", userRes: "" });
+      // dispatch({
+      //   type: "SET_SELECTED_RESPONSE",
+      //   selectedOptions: [],
+      // });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldIndex]);
@@ -216,7 +192,7 @@ export default function PreviewQuestion(props: { id: number }) {
 
     if (formState?.formFields?.length) {
       timeout = setTimeout(() => {
-        saveResponseData(responseState as responseData);
+        // saveResponseData(responseState as responseData);
       }, 1000);
     }
     return () => {
@@ -234,7 +210,7 @@ export default function PreviewQuestion(props: { id: number }) {
   return formState ? (
     <div className=" w-4/5 mx-auto">
       <h1 className="text-2xl font-semibold text-center capitalize">
-        {formState.title}
+        {/* {formState.title} */}
       </h1>
 
       <div className="m-5 mt-8">
@@ -274,7 +250,10 @@ export default function PreviewQuestion(props: { id: number }) {
                                 <RadioField
                                   type="radio"
                                   value={option}
-                                  id={formState?.formFields[fieldIndex]?.id}
+                                  id={
+                                    formState?.formFields[fieldIndex]
+                                      ?.id as number
+                                  }
                                   key={index}
                                   checked={responseState?.userRes === option}
                                   handleChangeCB={(e) => {
@@ -296,18 +275,20 @@ export default function PreviewQuestion(props: { id: number }) {
                   ) : (
                     <>
                       {formState?.formFields[fieldIndex]?.kind === "COLOR" ? (
-                        <ColorPicker
-                          field={formState?.formFields[fieldIndex]}
-                          setColorCB={updateColor}
-                          value={(responseState?.userRes as string) ?? ""}
-                        />
+                        // <ColorPicker
+                        //   field={formState?.formFields[fieldIndex]}
+                        //   setColorCB={updateColor}
+                        //   value={(responseState?.userRes as string) ?? ""}
+                        // />
+                        <>Color</>
                       ) : (
-                        <SelectField
-                          fieldIndex={fieldIndex}
-                          handleCheckboxChangeCB={handleCheckboxChange}
-                          responseState={(responseState as responseData) || []}
-                          state={formState}
-                        />
+                        // <SelectField
+                        //   fieldIndex={fieldIndex}
+                        //   handleCheckboxChangeCB={handleCheckboxChange}
+                        //   responseState={(responseState as Submission) || []}
+                        //   state={formState}
+                        // />
+                        <> Select</>
                       )}
                     </>
                   )}
@@ -380,7 +361,7 @@ export default function PreviewQuestion(props: { id: number }) {
             className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"
             onClick={(_) => {
               if (responseState) {
-                saveResponseData(responseState);
+                // saveResponseData(responseState);
                 navigate("/");
               }
             }}

@@ -3,22 +3,15 @@ import { Errors, FormItem, validateForm } from "../types/formTypes";
 import CustomInputField from "./CustomInputField";
 import { FormReducer } from "../reducers/formReducer";
 import { initialState } from "../types/formReducerTypes";
-import { getForm, updateForm } from "../utils/apiUtils";
+import { updateForm } from "../utils/apiUtils";
 
-export default function UpdateForm(props: { formId: number }) {
+export default function UpdateForm(props: { form: FormItem }) {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
   const [errors, setErrors] = useState<Errors<FormItem>>({});
-
+  const { form } = props;
   useEffect(() => {
-    const get_Form = async () => {
-      const form = await getForm(props.formId);
-      dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
-
-      console.log({ form });
-    };
-    get_Form();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
+  }, [form]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,8 +19,8 @@ export default function UpdateForm(props: { formId: number }) {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
       try {
-        if (props.formId === undefined) throw Error("Form Id is undefined");
-        const data = await updateForm(props.formId, formState?.form);
+        if (form === undefined) throw Error("Form Id is undefined");
+        const data = await updateForm(form?.id as number, formState?.form);
         console.log({ data, func: formState?.form });
 
         if (data?.id) {

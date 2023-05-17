@@ -8,7 +8,6 @@ type AddResponse = {
   questionId: number;
   id: number;
   state: formData;
-
   currentField: number;
 };
 type UpdateResponse = {

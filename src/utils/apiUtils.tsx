@@ -89,8 +89,27 @@ export const getFormFields = (pageParams: PaginationParams, formId: number) => {
   return request(`forms/${formId}/fields/`, "GET", pageParams);
 };
 //update formFields
-
+export const updateFormField = (
+  formId: number,
+  formFieldId: number,
+  formField: FormFieldType
+) => {
+  return request(`forms/${formId}/fields/${formFieldId}/`, "PATCH", formField);
+};
 //delete formFields
 export const deleteFormField = (formId: number, formFieldId: number) => {
   return request(`forms/${formId}/fields/${formFieldId}/`, "DELETE", {});
 };
+
+//add options
+// export const addOptions = (
+//   formId: number,
+//   formFieldId: number,
+//   option: string
+// ) => {
+//   return request(
+//     `forms/${formId}/fields/${formFieldId}/`,
+//     "PATCH",
+//     option
+//   );
+// };

@@ -1,18 +1,18 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { navigate, useQueryParams } from "raviger";
+import { useQueryParams } from "raviger";
 import CustomInputField from "./CustomInputField";
 import FormCard from "./FormCard";
-import { Errors, FormItem, validateForm } from "../types/formTypes";
+import { FormItem } from "../types/formTypes";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { Pagination } from "../types/common";
 import { FormReducer } from "../reducers/formReducer";
 import { initialState } from "../types/formReducerTypes";
-import { createForm, deleteForm, listForms } from "../utils/apiUtils";
-
+import { deleteForm, listForms } from "../utils/apiUtils";
+import Loading from "./common/Loading";
 const fetchForms = async () => {
   try {
-    const data: Pagination<FormItem> = await listForms({ offset: 0, limit: 2 });
+    const data: Pagination<FormItem> = await listForms({ offset: 0, limit: 5 });
     if (!data) {
       throw Error("No data found");
     }
@@ -31,12 +31,19 @@ export default function FormsList() {
   const [newForm, setNewForm] = useState(false);
 
   useEffect(() => {
-    fetchForms().then((data) => {
-      dispatch({
-        type: "FETCH_FORMS_SUCCESS",
-        forms: data?.results ? data?.results : [],
+    fetchForms()
+      .then((data) => {
+        dispatch({
+          type: "FETCH_FORMS_SUCCESS",
+          forms: data?.results ? data?.results : [],
+        });
+      })
+      .catch((error) => {
+        dispatch({
+          type: "FETCH_FORMS_FAILURE",
+          error: "Failed to fetch data",
+        });
       });
-    });
   }, []);
   const handleDelete = async (id: number) => {
     try {
@@ -107,26 +114,35 @@ export default function FormsList() {
               />
             </div>
           </form>
-          <div className="mx-5">
-            {formState?.forms
-              ?.filter((form: FormItem) =>
-                form.title.toLowerCase().includes(search?.toLowerCase() || "")
-              )
-              .map((form: FormItem) => (
-                <div
-                  className="flex gap-2 justify-between my-2 items-center"
-                  key={form.id}
-                >
-                  <FormCard
-                    title={form.title}
-                    key={form.id}
-                    questions={0}
-                    id={form.id || 0}
-                    handleDeleteEventCB={handleDelete}
-                  />
-                </div>
-              ))}
+          <div>
+            {formState?.loading ? (
+              <Loading />
+            ) : (
+              <div className="mx-5">
+                {formState?.forms
+                  ?.filter((form: FormItem) =>
+                    form.title
+                      .toLowerCase()
+                      .includes(search?.toLowerCase() || "")
+                  )
+                  .map((form: FormItem) => (
+                    <div
+                      className="flex gap-2 justify-between my-2 items-center"
+                      key={form.id}
+                    >
+                      <FormCard
+                        title={form.title}
+                        key={form.id}
+                        questions={0}
+                        id={form.id || 0}
+                        handleDeleteEventCB={handleDelete}
+                      />
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
+
           <Modal open={newForm} closeCB={() => setNewForm(false)}>
             <CreateForm />
           </Modal>

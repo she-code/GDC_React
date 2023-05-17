@@ -1,4 +1,5 @@
 import { FormAction, FormIntialState } from "../types/formReducerTypes";
+import { DropdownField, RadioType } from "../types/formTypes";
 
 export const FormReducer = (state: FormIntialState, action: FormAction) => {
   switch (action.type) {
@@ -26,10 +27,28 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
         loading: false,
       };
     }
+    case "FETCH_FORM_FAILURE": {
+      return {
+        ...state,
+        form: { title: "" },
+        error: action.error,
+        loading: false,
+      };
+    }
+    case "FETCH_FORM_FIELD": {
+      return {
+        ...state,
+        formField: action.formField,
+        error: "",
+        loading: false,
+      };
+    }
     case "FETCH_FORM_FIELDS": {
       return {
         ...state,
         formFields: action.formFields,
+        error: "",
+        loading: false,
       };
     }
     case "SET_FORM_TITLE": {
@@ -134,6 +153,63 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
         };
       }
       return state;
+    }
+    // case "ADD_OPTION": {
+    //   return {
+    //     ...state,
+    //     formFields: state?.formFields?.map((field) => {
+    //       if (field.id === action.fieldId && field.kind !== "TEXT") {
+    //         return {
+    //           ...field,
+    //           options: [
+    //             ...((field as DropdownField | RadioType)?.options ?? []),
+    //             action.option,
+    //           ],
+    //         };
+    //       }
+    //       return field;
+    //     }),
+    //   };
+    // }
+    case "UPDATE_FORM_FIELD": {
+      let formField = state.formFields.find(
+        (formField) => formField.id === action.formField.id
+      );
+      if (formField) {
+        formField = action.formField;
+        return {
+          ...state,
+          formFields: [...state.formFields, formField],
+        };
+      }
+      return state;
+    }
+    case "SET_OPTION": {
+      if (typeof action.option === "string" && state) {
+        return {
+          ...state,
+          userRes: action.option,
+        };
+      }
+      return state;
+    }
+    case "DELETE_OPTION": {
+      console.log({ action });
+      return {
+        ...state,
+        formFields: state?.formFields?.map((field) => {
+          if (field.id === action.fieldId && field.kind !== "TEXT") {
+            console.log({ field }, "drop");
+            return {
+              ...field,
+              options: (field as DropdownField | RadioType).options?.filter(
+                (option: string, index: number) => index !== action.index
+              ),
+            };
+          }
+          return field;
+        }),
+      };
     }
   }
 };

@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { FormFieldType } from "../types/formReducerTypes";
+import Modal from "./common/Modal";
+import UpdateFormField from "./UpdateFormField";
 
 export default function EditableField(props: {
   field: FormFieldType;
+  formId: number;
   handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>, id: number) => void;
   removeFieldCB: (id: number, label: string) => void;
 }) {
-  const { handleChangeCB, removeFieldCB, field } = props;
+  const { handleChangeCB, removeFieldCB, field, formId } = props;
+  const [newForm, setNewForm] = useState(false);
+
   return (
     <div className="flex  items-center  justify-between" key={field.id}>
       <div className="flex items-center">
@@ -49,6 +54,7 @@ export default function EditableField(props: {
       <button
         className=" py-2 px-3 text-green-500"
         // onClick={(_) => removeFieldCB(field?.id as number, field.label)}
+        onClick={(_) => setNewForm(true)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -65,6 +71,9 @@ export default function EditableField(props: {
           />
         </svg>
       </button>
+      <Modal open={newForm} closeCB={() => setNewForm(false)}>
+        <UpdateFormField formId={formId} formField={field} />
+      </Modal>
     </div>
   );
 }

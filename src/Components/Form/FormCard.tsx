@@ -1,22 +1,20 @@
 import { Link } from "raviger";
-import React from "react";
 
 export default function FormCard(props: {
   title: string;
-  questions: number;
   id: number;
   handleDeleteEventCB: (id: number) => void;
 }) {
-  const { title, questions, id, handleDeleteEventCB } = props;
+  const { title, id, handleDeleteEventCB } = props;
   return (
     <div className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white">
       <div>
         <p className="capitalize text-lg font-semibold text-gray-500 mb-1">
           {title}
         </p>
-        <p className="text-md text-gray-500 border-2 border-yellow-200 px-2 py-1">
+        {/* <p className="text-md text-gray-500 border-2 border-yellow-200 px-2 py-1">
           {questions ? `${questions} Questions` : "No questions"}
-        </p>
+        </p> */}
       </div>
       <div className=" flex items-start">
         <Link

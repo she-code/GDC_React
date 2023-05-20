@@ -1,4 +1,4 @@
-import { FormFieldKind, FormItem } from "./formTypes";
+import { FormFieldKind, FormFieldType, FormItem } from "../types/formTypes";
 
 export type FetchFormsSucess = {
   type: "FETCH_FORMS_SUCCESS";
@@ -102,18 +102,6 @@ export type DeleteOption = {
   index: number;
   fieldId: number;
 };
-export type FormFieldType = {
-  id?: number;
-  label: string;
-  kind: FormFieldKind;
-  options?: string[];
-  value?: string;
-  meta?: {
-    description: string;
-    x_nullable: boolean;
-  };
-};
-
 export type FormAction =
   | FetchFormsSucess
   | FetchFormsError
@@ -137,24 +125,3 @@ export type FormAction =
   | SetFieldKind
   | FetchFormFailure
   | SetFieldLabel;
-
-export type FormIntialState = {
-  form: FormItem;
-  forms: FormItem[];
-  loading: boolean;
-  error: string;
-  userRes: string;
-  formFields: FormFieldType[];
-  formField: FormFieldType;
-};
-export const initialState: FormIntialState = {
-  form: {
-    title: "",
-  },
-  forms: [],
-  loading: true,
-  error: "",
-  userRes: "",
-  formFields: [],
-  formField: { label: "", kind: "TEXT", options: [] } as FormFieldType,
-};

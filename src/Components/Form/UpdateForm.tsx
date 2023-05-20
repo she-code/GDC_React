@@ -1,9 +1,13 @@
 import React, { useState, useReducer, useEffect } from "react";
-import { Errors, FormItem, validateForm } from "../types/formTypes";
-import CustomInputField from "./CustomInputField";
-import { FormReducer } from "../reducers/formReducer";
-import { initialState } from "../types/formReducerTypes";
-import { updateForm } from "../utils/apiUtils";
+import {
+  Errors,
+  FormItem,
+  initialState,
+  validateForm,
+} from "../../types/formTypes";
+import CustomInputField from "../common/CustomInputField";
+import { FormReducer } from "../../reducers/formReducer";
+import { updateForm } from "../../utils/apiUtils";
 
 export default function UpdateForm(props: { form: FormItem }) {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
@@ -21,16 +25,11 @@ export default function UpdateForm(props: { form: FormItem }) {
       try {
         if (form === undefined) throw Error("Form Id is undefined");
         const data = await updateForm(form?.id as number, formState?.form);
-        console.log({ data, func: formState?.form });
 
         if (data?.id) {
-          console.log("navigate");
-          // navigate(`/forms`);
-          window.location.reload();
+          window.location.href = `/forms/${data.id}`;
         }
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
   };
   return (
@@ -88,6 +87,7 @@ export default function UpdateForm(props: { form: FormItem }) {
               }}
               type="checkbox"
               name="is_public"
+              checked={formState?.form?.is_public ?? false}
               value={formState.form.is_public ? "true" : "false"}
             />
             <label htmlFor="is_public" className="text-lg font-semibold mr-2">

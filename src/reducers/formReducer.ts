@@ -1,5 +1,5 @@
-import { FormAction, FormIntialState } from "../types/formReducerTypes";
-import { DropdownField, RadioType } from "../types/formTypes";
+import { FormAction } from "../actions/formReducerActions";
+import { DropdownField, FormIntialState, RadioType } from "../types/formTypes";
 
 export const FormReducer = (state: FormIntialState, action: FormAction) => {
   switch (action.type) {
@@ -70,13 +70,16 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       };
     }
     case "SET_FORM_VISIBILITY": {
-      return {
-        ...state,
-        form: {
-          ...state.form,
-          is_public: action.is_public,
-        },
-      };
+      if (typeof action.is_public === "boolean" && state) {
+        return {
+          ...state,
+          form: {
+            ...state.form,
+            is_public: Boolean(action.is_public),
+          },
+        };
+      }
+      return state;
     }
     case "SET_ERROR": {
       return {
@@ -194,12 +197,10 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       return state;
     }
     case "DELETE_OPTION": {
-      console.log({ action });
       return {
         ...state,
         formFields: state?.formFields?.map((field) => {
           if (field.id === action.fieldId && field.kind !== "TEXT") {
-            console.log({ field }, "drop");
             return {
               ...field,
               options: (field as DropdownField | RadioType).options?.filter(

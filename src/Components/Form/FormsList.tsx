@@ -1,18 +1,22 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { useQueryParams } from "raviger";
-import CustomInputField from "./CustomInputField";
+import { navigate, useQueryParams } from "raviger";
+import CustomInputField from "../common/CustomInputField";
 import FormCard from "./FormCard";
-import { FormItem } from "../types/formTypes";
-import Modal from "./common/Modal";
+import { FormItem, initialState } from "../../types/formTypes";
+import Modal from "../common/Modal";
 import CreateForm from "./CreateForm";
-import { Pagination } from "../types/common";
-import { FormReducer } from "../reducers/formReducer";
-import { initialState } from "../types/formReducerTypes";
-import { deleteForm, listForms } from "../utils/apiUtils";
-import Loading from "./common/Loading";
+import { Pagination } from "../../types/common";
+import { FormReducer } from "../../reducers/formReducer";
+import { deleteForm, listForms } from "../../utils/apiUtils";
+import Loading from "../common/Loading";
+import { getAuthToken } from "../../utils/storageUtils";
+import { toast } from "react-toastify";
 const fetchForms = async () => {
   try {
-    const data: Pagination<FormItem> = await listForms({ offset: 0, limit: 5 });
+    const data: Pagination<FormItem> = await listForms({
+      offset: 0,
+      limit: 5,
+    });
     if (!data) {
       throw Error("No data found");
     }
@@ -45,7 +49,22 @@ export default function FormsList() {
         });
       });
   }, []);
+  const loginAlert = () =>
+    toast.info("Please Login", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   const handleDelete = async (id: number) => {
+    if (getAuthToken() === null) {
+      loginAlert();
+      return;
+    }
     try {
       await deleteForm(id);
       dispatch({ type: "DELETE_FORM", formId: id });
@@ -57,13 +76,16 @@ export default function FormsList() {
   const updateSearchString = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchString(e.target.value);
   };
+
   return (
     <div>
       {formId === 0 ? (
         <>
           <div className="flex justify-between my-5">
             <button
-              onClick={(_) => setNewForm(true)}
+              onClick={(_) =>
+                getAuthToken() === null ? navigate("/login") : setNewForm(true)
+              }
               className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600"
             >
               <svg
@@ -131,10 +153,9 @@ export default function FormsList() {
                       key={form.id}
                     >
                       <FormCard
-                        title={form.title}
-                        key={form.id}
-                        questions={0}
-                        id={form.id || 0}
+                        title={form?.title}
+                        key={form?.id}
+                        id={form?.id || 0}
                         handleDeleteEventCB={handleDelete}
                       />
                     </div>
@@ -148,8 +169,7 @@ export default function FormsList() {
           </Modal>
         </>
       ) : (
-        //  <Form id={formId} />
-        <>kol</>
+        <></>
       )}
     </div>
   );

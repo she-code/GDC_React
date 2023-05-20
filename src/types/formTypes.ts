@@ -46,6 +46,28 @@ export const validateForm = (form: FormItem) => {
   }
   return errors;
 };
+export const validateFormField = (formField: FormFieldType) => {
+  const { label, kind } = formField;
+  const errors: Errors<FormFieldType> = {};
+  if (label.length < 1) {
+    errors.label = "Label is required";
+  }
+  if (label.length > 100) {
+    errors.label = "Label must be less than 100 characters";
+  }
+  if (kind.length < 1) {
+    errors.kind = "Kind is required";
+  }
+  if (
+    kind !== "DROPDOWN" &&
+    kind !== "RADIO" &&
+    kind !== "GENERIC" &&
+    kind !== "TEXT"
+  ) {
+    errors.kind = "Kind can only be TEXT,RADIO,DROPDOWN or GENERIC type";
+  }
+  return errors;
+};
 export type FormFieldKind = "TEXT" | "DROPDOWN" | "RADIO" | "COLOR" | "GENERIC";
 //unions
 export type textFieldTypes =
@@ -89,3 +111,34 @@ export type ColorField = {
   options: string[];
 };
 export type formField = TextField | DropdownField | RadioType | ColorField;
+export type FormFieldType = {
+  id?: number;
+  label: string;
+  kind: FormFieldKind;
+  options?: string[];
+  value?: string;
+  meta?: {
+    description: string;
+    x_nullable: boolean;
+  };
+};
+export type FormIntialState = {
+  form: FormItem;
+  forms: FormItem[];
+  loading: boolean;
+  error: string;
+  userRes: string;
+  formFields: FormFieldType[];
+  formField: FormFieldType;
+};
+export const initialState: FormIntialState = {
+  form: {
+    title: "",
+  },
+  forms: [],
+  loading: true,
+  error: "",
+  userRes: "",
+  formFields: [],
+  formField: { label: "", kind: "TEXT", options: [] } as FormFieldType,
+};

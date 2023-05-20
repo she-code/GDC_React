@@ -1,6 +1,6 @@
 import { navigate } from "raviger";
 import React, { useState, useEffect } from "react";
-import CustomInputField from "./CustomInputField";
+import CustomInputField from "./common/CustomInputField";
 import { login } from "../utils/apiUtils";
 
 export default function Login() {
@@ -10,7 +10,6 @@ export default function Login() {
     event.preventDefault();
     try {
       const data = await login(username, password);
-      console.log({ data });
       localStorage.setItem("token", data.token);
       navigate("/");
     } catch (error) {}

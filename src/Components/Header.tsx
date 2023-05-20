@@ -1,6 +1,7 @@
 import logo from "../logo.svg";
 import { ActiveLink } from "raviger";
 import { User } from "../types/userTypes";
+import { getAuthToken } from "../utils/storageUtils";
 
 export default function Header(props: { title: string; currentUser: User }) {
   return (
@@ -15,7 +16,8 @@ export default function Header(props: { title: string; currentUser: User }) {
         {[
           { page: "HOME", url: "/" },
           { page: "ABOUT", url: "/about" },
-          ...(props.currentUser?.username?.length > 0
+          // ...(props.currentUser?.username?.length > 0
+          ...(getAuthToken()
             ? [
                 {
                   page: "LOGOUT",
@@ -51,16 +53,6 @@ export default function Header(props: { title: string; currentUser: User }) {
             </button>
           )
         )}
-        {/* {links.map((link) => (
-          <ActiveLink
-            href={link.url}
-            key={link.url}
-            exactActiveClass="text-green-500"
-            className="p-3 shadow-md text-lg mx-2 font-semibold "
-          >
-            {link.page}
-          </ActiveLink>
-        ))} */}
       </div>
     </div>
   );

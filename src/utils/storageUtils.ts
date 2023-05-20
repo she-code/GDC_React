@@ -17,3 +17,8 @@ export const getLocalResponses: () => responseData[] = () => {
   const savedResponses = localStorage.getItem("savedResponses");
   return savedResponses ? JSON.parse(savedResponses) : [];
 };
+
+export const getAuthToken = (): string | null => {
+  const token = localStorage.getItem("token");
+  return token;
+};

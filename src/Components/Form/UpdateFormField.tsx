@@ -1,9 +1,14 @@
-import React, { useEffect, useReducer } from "react";
-import CustomInputField from "./CustomInputField";
-import { updateFormField } from "../utils/apiUtils";
-import { FormReducer } from "../reducers/formReducer";
-import { FormFieldType, initialState } from "../types/formReducerTypes";
-import { FormFieldKind } from "../types/formTypes";
+import React, { useEffect, useReducer, useState } from "react";
+import { FormReducer } from "../../reducers/formReducer";
+import {
+  FormFieldType,
+  initialState,
+  FormFieldKind,
+  Errors,
+  validateFormField,
+} from "../../types/formTypes";
+import { updateFormField } from "../../utils/apiUtils";
+import CustomInputField from "../common/CustomInputField";
 
 export default function UpdateFormField(props: {
   formId: number;
@@ -11,7 +16,7 @@ export default function UpdateFormField(props: {
 }) {
   const { formField, formId } = props;
   const [formState, dispatch] = useReducer(FormReducer, initialState);
-  // const [errors, setErrors] = useState<Errors<FormItem>>({});
+  const [errors, setErrors] = useState<Errors<FormFieldType>>({});
 
   useEffect(() => {
     dispatch({
@@ -22,21 +27,21 @@ export default function UpdateFormField(props: {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // const validationErrors = validateForm(formState?.form);
-    // setErrors(validationErrors);
-    // if (Object.keys(validationErrors).length === 0) {
+
     try {
-      if (formState.formField.id === undefined)
+      if (formState?.formField?.id === undefined)
         throw Error("Form Id is undefined");
-      const data = await updateFormField(
-        formId,
-        formState?.formField?.id,
-        formState?.formField
-      );
-      console.log({ data, func: formState?.form });
-      if (data?.id) {
-        console.log("navigate");
-        window.location.reload();
+      const validationErrors = validateFormField(formState?.formField);
+      setErrors(validationErrors);
+      if (Object.keys(validationErrors).length === 0) {
+        const data = await updateFormField(
+          formId,
+          formState?.formField?.id,
+          formState?.formField
+        );
+        if (data?.id) {
+          window.location.reload();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -63,7 +68,7 @@ export default function UpdateFormField(props: {
               name="label"
             />
           </div>
-          {/* {errors.title && <p className="text-red-500">{errors.title}</p>} */}
+          {errors.label && <p className="text-red-500">{errors.label}</p>}
         </div>
         <div className="p-2  ">
           <div className="flex items-center">
@@ -78,13 +83,11 @@ export default function UpdateFormField(props: {
                 });
               }}
               type="text"
-              name="description"
+              name="kind"
               value={formState?.formField.kind || ""}
             />
           </div>
-          {/* {errors.description && (
-            <p className="text-red-500">{errors.description}</p> */}
-          {/* )} */}
+          {errors.kind && <p className="text-red-500">{errors.kind}</p>}
         </div>
 
         <button

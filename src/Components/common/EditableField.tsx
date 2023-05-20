@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { FormFieldType } from "../types/formReducerTypes";
-import Modal from "./common/Modal";
-import UpdateFormField from "./UpdateFormField";
+import Modal from "./Modal";
+import { FormFieldType } from "../../types/formTypes";
+import UpdateFormField from "../Form/UpdateFormField";
 
 export default function EditableField(props: {
   field: FormFieldType;

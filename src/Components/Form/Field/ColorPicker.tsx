@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { RadioType, formField } from "../types/formTypes";
-import CustomHeader from "./CustomHeader";
+import { RadioType, formField } from "../../../types/formTypes";
+import CustomHeader from "../../common/CustomHeader";
 
 export default function ColorPicker(props: {
   value: string;

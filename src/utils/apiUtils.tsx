@@ -1,6 +1,6 @@
 import { PaginationParams } from "../types/common";
-import { FormFieldType } from "../types/formReducerTypes";
-import { FormItem } from "../types/formTypes";
+import { FormFieldType, FormItem } from "../types/formTypes";
+import { Submission } from "../types/responseTypes";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
 type RequestMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
@@ -29,7 +29,6 @@ export const request = async (
   //Token Authentication
   const token = localStorage.getItem("token");
   const auth = token ? "Token " + localStorage.getItem("token") : "";
-  console.log({ auth });
   try {
     const response = await fetch(url, {
       method: method,
@@ -101,6 +100,22 @@ export const deleteFormField = (formId: number, formFieldId: number) => {
   return request(`forms/${formId}/fields/${formFieldId}/`, "DELETE", {});
 };
 
+//get submissions
+export const getSubmissions = (
+  pageParams: PaginationParams,
+  formId: number
+) => {
+  return request(`forms/${formId}/submission/`, "GET", pageParams);
+};
+//create submissions
+export const createSubmission = (formId: number, submission: Submission) => {
+  return request(`forms/${formId}/submission/`, "POST", submission);
+};
+
+//get submission
+export const getSubmission = (formId: number, submissionId: number) => {
+  return request(`forms/${formId}/submission/${submissionId}/`, "GET", {});
+};
 //add options
 // export const addOptions = (
 //   formId: number,

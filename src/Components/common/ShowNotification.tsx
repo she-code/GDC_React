@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { formData } from "../types/formTypes";
+import { formData } from "../../types/formTypes";
 
 export const ShowNotification = (props: { state: formData }) => {
   const [mounted, setMounted] = useState(false);

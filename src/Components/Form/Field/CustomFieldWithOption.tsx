@@ -1,16 +1,19 @@
-import React, { FormEvent } from "react";
-import EditableField from "./EditableField";
+import React from "react";
+import EditableField from "../../common/EditableField";
 import OptionAdder from "./OptionAdder";
-import { ColorField, DropdownField, RadioType } from "../types/formTypes";
-import Divider from "./Divider";
-import { FormFieldType } from "../types/formReducerTypes";
+import {
+  ColorField,
+  DropdownField,
+  FormFieldType,
+  RadioType,
+} from "../../../types/formTypes";
+import Divider from "../../common/Divider";
 
 export default function CustomFieldWithOption(props: {
   id: number;
   field: FormFieldType;
   handleChangeCB: (e: React.ChangeEvent<HTMLInputElement>, id: number) => void;
   removeFieldCB: (id: number, label: string) => void;
-  // addOptionCB: (e: React.FormEvent<HTMLFormElement>) => void;
   updateOptionCB: (option: string, index: number) => void;
   emptyFieldAlertCB: () => void;
   removeOptionCB: (optionId: number) => void;
@@ -22,7 +25,6 @@ export default function CustomFieldWithOption(props: {
     handleChangeCB,
     removeFieldCB,
     updateOptionCB,
-    // addOptionCB,
     emptyFieldAlertCB,
     formId,
   } = props;
@@ -36,7 +38,6 @@ export default function CustomFieldWithOption(props: {
           removeFieldCB={removeFieldCB}
         />
         <OptionAdder
-          // addOptionCB={addOptionCB}
           emptyFieldAlertCB={emptyFieldAlertCB}
           formId={formId}
           formField={field}

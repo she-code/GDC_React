@@ -17,23 +17,36 @@ export interface responseData {
 
 export type Answer = {
   form_field: number;
-  value: string;
+  value: string | string[];
 };
 
 export type Submission = {
   answers: Answer[];
   form?: FormItem;
   created_date?: string;
-  loading: boolean;
-  error: string;
   answer?: Answer;
-  currentField?: number;
+  id?: number;
+};
+
+export type SubmissionType = {
+  submissions: Submission[];
+  submission: Submission;
+  loading: boolean;
   userRes?: string | string[];
   selectedOptions?: string[];
+  error: string;
+  currentField?: number;
 };
-export const submissionIntialState: Submission = {
-  answers: [],
-  answer: { form_field: 0, value: "" },
+export const submissionIntialState: SubmissionType = {
+  submission: {
+    answers: [
+      {
+        form_field: 0,
+        value: "",
+      },
+    ],
+  },
+  submissions: [],
   loading: true,
   error: "",
 };

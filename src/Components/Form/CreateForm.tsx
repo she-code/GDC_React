@@ -1,10 +1,14 @@
 import React, { useState, useReducer } from "react";
-import { Errors, FormItem, validateForm } from "../types/formTypes";
+import {
+  Errors,
+  FormItem,
+  initialState,
+  validateForm,
+} from "../../types/formTypes";
 import { navigate } from "raviger";
-import CustomInputField from "./CustomInputField";
-import { FormReducer } from "../reducers/formReducer";
-import { initialState } from "../types/formReducerTypes";
-import { createForm } from "../utils/apiUtils";
+import CustomInputField from "../common/CustomInputField";
+import { FormReducer } from "../../reducers/formReducer";
+import { createForm } from "../../utils/apiUtils";
 
 export default function CreateForm() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
@@ -13,12 +17,10 @@ export default function CreateForm() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validateForm(formState?.form);
-    console.log({ form: formState?.form });
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
       try {
         const data = await createForm(formState?.form);
-        console.log({ data });
 
         if (data?.id) {
           dispatch({ type: "CREATE_FORM", form: data });

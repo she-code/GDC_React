@@ -3,28 +3,33 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Link, navigate } from "raviger";
-import { FormFieldKind, FormItem } from "../types/formTypes";
+import {
+  FormFieldKind,
+  FormFieldType,
+  FormItem,
+  initialState,
+} from "../../types/formTypes";
 
-import CustomInputField from "./CustomInputField";
+import CustomInputField from "../common/CustomInputField";
 
-import { FormFieldType, initialState } from "../types/formReducerTypes";
-import { FormReducer } from "../reducers/formReducer";
+import { FormReducer } from "../../reducers/formReducer";
 import {
   createFormFields,
   deleteFormField,
   getForm,
   getFormFields,
   updateFormField,
-} from "../utils/apiUtils";
-import { Pagination } from "../types/common";
-import Modal from "./common/Modal";
+} from "../../utils/apiUtils";
+import { Pagination } from "../../types/common";
+import Modal from "../common/Modal";
 import UpdateForm from "./UpdateForm";
-import CustomFieldWithOption from "./CustomFieldWithOption";
-import Divider from "./Divider";
-import EditableField from "./EditableField";
-import CustomHeader from "./CustomHeader";
-import NotFound from "./NotFound";
-import Loading from "./common/Loading";
+import CustomFieldWithOption from "./Field/CustomFieldWithOption";
+import Divider from "../common/Divider";
+import EditableField from "../common/EditableField";
+import CustomHeader from "../common/CustomHeader";
+import NotFound from "../NotFound";
+import Loading from "../common/Loading";
+import { getAuthToken } from "../../utils/storageUtils";
 
 const fetchForm = async (id: number) => {
   try {
@@ -35,34 +40,38 @@ const fetchForm = async (id: number) => {
   }
 };
 
-// create FormFields
-
 export default function Form(props: { id: number }) {
   const [state, dispatch] = useReducer(FormReducer, initialState);
   const [newForm, setNewForm] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
+  //checks if the user is authenticated
   useEffect(() => {
-    console.log("useEffect");
+    if (getAuthToken() === null) {
+      navigate("/login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  //fetches forms and fields
+  useEffect(() => {
     const getForm = async () => {
       const form = await fetchForm(props.id);
       if (form?.id) {
         dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
         const formFields: Pagination<FormFieldType> = await getFormFields(
-          { offset: 0, limit: 10 },
+          { offset: 0, limit: 5 },
           form?.id
         );
-        if (formFields.results) {
+        if (formFields?.results) {
           dispatch({
             type: "FETCH_FORM_FIELDS",
-            formFields: formFields.results,
+            formFields: formFields?.results,
           });
         }
       } else {
         dispatch({ type: "FETCH_FORM_FAILURE", error: "Something went wrong" });
-        console.log(state?.error);
       }
-      console.log({ formFields: state.formFields });
     };
     getForm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,22 +87,9 @@ export default function Form(props: { id: number }) {
     };
   }, []);
 
-  // creates toast
-  const notify = () =>
-    toast.info("The form is up-to-date", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-
   //informs user empty fields are not allowd
   const emptyFieldAlert = () =>
-    toast.info("Field name can't be empty", {
+    toast.info("Field can't be empty", {
       position: "top-center",
       autoClose: 2000,
       hideProgressBar: true,
@@ -104,11 +100,15 @@ export default function Form(props: { id: number }) {
       theme: "light",
     });
 
+  //handles formField creation
   const handleFieldCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (state?.formField?.label.length === 0) {
+      emptyFieldAlert();
+      return;
+    }
     try {
       if (state.form.id === undefined) throw Error("Form Id is undefined");
-      console.log({ field: state?.formField }, state.form.id);
       const newField = await createFormFields(
         state?.form?.id,
         state?.formField
@@ -121,19 +121,18 @@ export default function Form(props: { id: number }) {
             dispatch({ type: "CLEAR_FORM_FIELD", kind: "TEXT", label: "" });
           },
         });
-        //window.location.reload();
         navigate(`/forms/${state?.form?.id}`);
       }
-      console.log({ newField });
-      // dispatch({ type: "ADD_FORM_FIELD", formField: newField,  });
     } catch (error) {
       console.error(error);
     }
   };
 
+  //handles formField deletion
   const handleFieldDelete = async (id: number) => {
     try {
       if (state?.form?.id === undefined) throw Error("Form Id is undefined");
+
       await deleteFormField(state?.form?.id, id);
       dispatch({
         type: "DELETE_FORM_FIELD",
@@ -144,6 +143,8 @@ export default function Form(props: { id: number }) {
       console.error(error);
     }
   };
+
+  //handles option deletion
   const handleOptionDelete = async (id: number, field: FormFieldType) => {
     try {
       if (state?.form?.id === undefined) throw Error("Form Id is undefined");
@@ -154,16 +155,16 @@ export default function Form(props: { id: number }) {
         field
       );
       if (updatedFormField) {
-        console.log({ updatedFormField });
         navigate(`/forms/${state?.form?.id}`);
       }
     } catch (error) {
       console.error(error);
     }
   };
+
   return state?.loading ? (
     <Loading />
-  ) : state.form.id ? (
+  ) : state?.form?.id ? (
     <div
       className="p-4  flex-col gap-2 mx-auto  w-10/12  max-h-screen overflow-y-auto my-5 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
     "
@@ -199,7 +200,7 @@ export default function Form(props: { id: number }) {
               <option value="TEXT">text</option>
               <option value="RADIO">radio</option>
               <option value="DROPDOWN">dropdown</option>
-              <option value="COLOR">color</option>
+              <option value="GENERIC">generic</option>
             </select>
           </div>
 
@@ -223,104 +224,71 @@ export default function Form(props: { id: number }) {
 
       <CustomHeader title="Created Fields" margin={true} />
       <div className="my-7 w-11/12  ">
-        {state?.formFields?.length > 0 ? (
-          <>
-            {state?.formFields?.map((field) => {
-              switch (field.kind) {
-                case "TEXT":
-                  return (
-                    <div className="divide divide-x-2" key={field.id}>
-                      <EditableField
-                        field={field}
-                        formId={state.form.id as number}
-                        handleChangeCB={(
-                          e: React.ChangeEvent<HTMLInputElement>
-                        ) => {}}
-                        removeFieldCB={
-                          (id: number) => {
-                            handleFieldDelete(id);
-                          }
-                          // dispatch({ type: "remove_field", id: id })
-                        }
-                      />
-                      <Divider />
-                    </div>
-                  );
-                case "DROPDOWN":
-                  return (
-                    <CustomFieldWithOption
-                      key={field.id}
-                      field={field}
-                      formId={state.form.id as number}
-                      handleChangeCB={(e) => {}}
-                      id={field?.id as number}
-                      removeFieldCB={
-                        (id) => {}
-                        // dispatch({ type: "remove_field", id: id })
-                      }
-                      removeOptionCB={(id: number) => {
-                        dispatch({
-                          type: "DELETE_OPTION",
-                          fieldId: field.id as number,
-                          index: id,
-                        });
-                        console.log({
-                          field,
-                          options: state?.formField.options,
-                        });
-                        handleOptionDelete(field.id as number, field);
-                      }}
-                      updateOptionCB={(option, index) => {}}
-                      emptyFieldAlertCB={emptyFieldAlert}
-                    />
-                  );
-
-                case "RADIO":
-                  return (
-                    <CustomFieldWithOption
-                      key={field.id}
-                      field={field}
-                      formId={state.form.id as number}
-                      handleChangeCB={(e) => {}}
-                      id={field?.id as number}
-                      removeFieldCB={
-                        (id) => {}
-                        // dispatch({ type: "remove_field", id: id })
-                      }
-                      removeOptionCB={(id: number) => {
-                        dispatch({
-                          type: "DELETE_OPTION",
-                          fieldId: field.id as number,
-                          index: id,
-                        });
-                        console.log({
-                          field,
-                          options: state?.formField.options,
-                        });
-                        handleOptionDelete(field.id as number, field);
-                      }}
-                      updateOptionCB={(option, index) => {}}
-                      emptyFieldAlertCB={emptyFieldAlert}
-                    />
-                  );
-              }
-            })}
-          </>
+        {state?.loading ? (
+          <Loading />
         ) : (
-          <div>No fields Created</div>
+          <>
+            {state?.formFields?.length > 0 ? (
+              <>
+                {state?.formFields?.map((field: FormFieldType) => {
+                  switch (field.kind) {
+                    case "TEXT":
+                      return (
+                        <div className="divide divide-x-2" key={field.id}>
+                          <EditableField
+                            field={field}
+                            formId={state?.form?.id as number}
+                            handleChangeCB={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {}}
+                            removeFieldCB={(id: number) => {
+                              handleFieldDelete(id);
+                            }}
+                          />
+                          <Divider />
+                        </div>
+                      );
+                    default:
+                      return (
+                        <CustomFieldWithOption
+                          key={field?.id}
+                          field={field}
+                          formId={state?.form?.id as number}
+                          handleChangeCB={(e) => {}}
+                          id={field?.id as number}
+                          removeFieldCB={(id: number) => {
+                            handleFieldDelete(id);
+                          }}
+                          removeOptionCB={(id: number) => {
+                            dispatch({
+                              type: "DELETE_OPTION",
+                              fieldId: field?.id as number,
+                              index: id,
+                            });
+
+                            handleOptionDelete(field?.id as number, field);
+                          }}
+                          updateOptionCB={(option, index) => {}}
+                          emptyFieldAlertCB={emptyFieldAlert}
+                        />
+                      );
+                  }
+                })}
+              </>
+            ) : (
+              <div>No fields Created</div>
+            )}
+          </>
         )}
       </div>
 
       <div className="flex gap-4 w-11/12 items-start justify-between">
-        <button
-          className="bg-gray-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
-          onClick={(_) => {
-            // saveFormData(state);
-            notify();
-          }}
+        <Link
+          className="bg-gray-600 text-white py-2 pl-8 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
+          href={`/forms/${state?.form?.id}/submission`}
         >
-          Save
-        </button>
+          Submissions
+        </Link>
         <Link
           href="/"
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 text-center hover:bg-green-500"
@@ -329,14 +297,15 @@ export default function Form(props: { id: number }) {
         </Link>
         <button
           className="bg-gray-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
-          onClick={(_) => setNewForm(true)}
+          onClick={(_) =>
+            getAuthToken() === null ? navigate("/login") : setNewForm(true)
+          }
         >
-          Update Form
+          Edit Form
         </button>
         <Modal open={newForm} closeCB={() => setNewForm(false)}>
           <UpdateForm form={state?.form as FormItem} />
         </Modal>
-        {/* <Button name={"Clear Form"} handleEvent={clearForm} /> */}
       </div>
     </div>
   ) : (

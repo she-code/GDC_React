@@ -175,18 +175,29 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
     //   };
     // }
     case "UPDATE_FORM_FIELD": {
-      let formField = state.formFields.find(
-        (formField) => formField.id === action.formField.id
-      );
-      if (formField) {
-        formField = action.formField;
-        return {
-          ...state,
-          formFields: [...state.formFields, formField],
-        };
-      }
-      return state;
+      // console.log("called update");
+      // let field = state.formFields.find((formField) => {
+      //   console.log(formField.id);
+      //   return formField.id === action.formField.id;
+      // });
+      // console.log({ field }, "jk");
+      // if (!field) {
+      //   console.log({ action });
+
+      //   field = action.formField;
+      //   return {
+      //     ...state,
+      //     formFields: [...state.formFields, field],
+      //   };
+      // }
+      // return state;
+      console.log({ action });
+      return {
+        ...state,
+        formField: action.formField,
+      };
     }
+
     case "SET_OPTION": {
       if (typeof action.option === "string" && state) {
         return {

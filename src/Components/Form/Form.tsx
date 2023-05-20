@@ -146,21 +146,63 @@ export default function Form(props: { id: number }) {
 
   //handles option deletion
   const handleOptionDelete = async (id: number, field: FormFieldType) => {
+    console.log("p");
     try {
       if (state?.form?.id === undefined) throw Error("Form Id is undefined");
 
+      let updatedField = field?.options?.filter(
+        (option, index) => index !== id
+      );
+      field.options = updatedField;
       const updatedFormField = await updateFormField(
         state?.form.id as number,
         field?.id as number,
         field
       );
       if (updatedFormField) {
+        dispatch({
+          type: "DELETE_OPTION",
+          fieldId: field?.id as number,
+          index: id,
+        });
         navigate(`/forms/${state?.form?.id}`);
       }
     } catch (error) {
       console.error(error);
     }
   };
+  // const handleOptionCreate = async (option: string) => {
+  //   try {
+  //     //create an event for this
+  //     if (state?.userRes) {
+  //       state?.formField?.options?.push(option);
+  //       const updatedFormField: FormFieldType = await updateFormField(
+  //         state?.form?.id as number,
+  //         state?.formField?.id as number,
+  //         state?.formField
+  //       );
+  //       if (updatedFormField) {
+  //         console.log("hi", updatedFormField);
+  //         dispatch({
+  //           type: "UPDATE_FORM_FIELD",
+  //           fieldId: updatedFormField?.id as number,
+  //           formField: updatedFormField,
+  //         });
+  //         console.log(state?.formField, "d");
+  //         // window.location.reload();
+  //         dispatch({
+  //           type: "SET_OPTION",
+  //           option: "",
+  //         });
+  //         navigate(`/forms/${state?.form?.id}`);
+  //       }
+  //     } else {
+  //       // emptyFieldAlertCB();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   return state?.loading ? (
     <Loading />
@@ -260,16 +302,13 @@ export default function Form(props: { id: number }) {
                             handleFieldDelete(id);
                           }}
                           removeOptionCB={(id: number) => {
-                            dispatch({
-                              type: "DELETE_OPTION",
-                              fieldId: field?.id as number,
-                              index: id,
-                            });
-
-                            handleOptionDelete(field?.id as number, field);
+                            handleOptionDelete(id, field);
                           }}
                           updateOptionCB={(option, index) => {}}
                           emptyFieldAlertCB={emptyFieldAlert}
+                          formState={state}
+                          dispatch={dispatch}
+                          // handleOptionCreateCB={handleOptionCreate}
                         />
                       );
                   }

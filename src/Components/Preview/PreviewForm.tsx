@@ -167,19 +167,20 @@ export default function PreviewQuestion(props: { id: number }) {
         (res: Answer) => res.form_field === formState.formFields[fieldIndex]?.id
       );
       if (existingRes) {
+        let currentValue = responseState?.submission?.answers.find(
+          (ans) => ans.form_field === formState?.formFields[fieldIndex].id
+        );
         dispatch({
           type: "SET_USER_RESPONSE",
-          userRes:
-            (responseState?.submission?.answers[fieldIndex]?.value as string) ||
-            "",
+          userRes: (currentValue?.value as string) || "",
         });
+        console.log(responseState?.userRes, "u", currentValue);
         if (formState?.formFields[fieldIndex]?.kind === "DROPDOWN") {
           dispatch({
             type: "SET_SELECTED_OPTION",
-            selectedOptions:
-              (responseState?.submission?.answers[fieldIndex]
-                ?.value as string[]) || [],
+            selectedOptions: (currentValue?.value as string[]) || [],
           });
+          console.log(responseState?.selectedOptions, "sl");
         }
         return;
       }
@@ -200,6 +201,7 @@ export default function PreviewQuestion(props: { id: number }) {
           fieldId: formState?.formFields[fieldIndex].id as number,
           value: (responseState?.userRes as string) || "",
         });
+        console.log("ans", responseState?.submission?.answers);
       }, 1000);
     }
     return () => {

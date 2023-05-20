@@ -5,9 +5,11 @@ import {
   ColorField,
   DropdownField,
   FormFieldType,
+  FormIntialState,
   RadioType,
 } from "../../../types/formTypes";
 import Divider from "../../common/Divider";
+import { FormAction } from "../../../actions/formReducerActions";
 
 export default function CustomFieldWithOption(props: {
   id: number;
@@ -17,6 +19,8 @@ export default function CustomFieldWithOption(props: {
   updateOptionCB: (option: string, index: number) => void;
   emptyFieldAlertCB: () => void;
   removeOptionCB: (optionId: number) => void;
+  formState: FormIntialState;
+  dispatch: (attr: FormAction) => void;
   formId: number;
 }) {
   const {
@@ -26,6 +30,9 @@ export default function CustomFieldWithOption(props: {
     removeFieldCB,
     updateOptionCB,
     emptyFieldAlertCB,
+    formState,
+    dispatch,
+    // handleOptionCreateCB,
     formId,
   } = props;
   return (
@@ -41,6 +48,9 @@ export default function CustomFieldWithOption(props: {
           emptyFieldAlertCB={emptyFieldAlertCB}
           formId={formId}
           formField={field}
+          formState={formState}
+          dispatch={dispatch}
+          // handleOptionCreateCB={handleOptionCreateCB}
         />
       </div>
       <>

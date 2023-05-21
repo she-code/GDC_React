@@ -175,7 +175,6 @@ export const submissionReducer = (
         action.selectedOptions.every((option) => typeof option === "string") &&
         state
       ) {
-        console.log({ action });
         return {
           ...state,
           selectedOptions: action.selectedOptions,

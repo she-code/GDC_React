@@ -178,6 +178,7 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       }
       return state;
     }
+
     case "DELETE_OPTION": {
       return {
         ...state,
@@ -193,6 +194,25 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
           return field;
         }),
       };
+    }
+
+    case "UPDATE_FIELD_OPTION": {
+      if (
+        typeof action.option === "string" &&
+        state?.formField?.id === action.fieldId &&
+        Array.isArray(state?.formField?.options)
+      ) {
+        const updatedOptions = [...state.formField.options];
+        updatedOptions[action.index] = action.option;
+        return {
+          ...state,
+          formField: {
+            ...state.formField,
+            options: updatedOptions,
+          },
+        };
+      }
+      return state;
     }
   }
 };

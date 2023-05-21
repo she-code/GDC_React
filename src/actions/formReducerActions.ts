@@ -100,6 +100,12 @@ export type DeleteOption = {
   index: number;
   fieldId: number;
 };
+type UpdateFieldOption = {
+  type: "UPDATE_FIELD_OPTION";
+  index: number;
+  fieldId: number;
+  option: string;
+};
 export type FormAction =
   | FetchFormsSucess
   | FetchFormsError
@@ -110,6 +116,7 @@ export type FormAction =
   | AddFormField
   | ClearFormField
   | SetOption
+  | UpdateFieldOption
   | DeleteOption
   | FetchFormFields
   | SetFormTitle

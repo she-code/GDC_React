@@ -118,8 +118,8 @@ export type FormFieldType = {
   options?: string[];
   value?: string;
   meta?: {
-    description: string;
-    x_nullable: boolean;
+    description?: string;
+    x_nullable?: boolean;
   };
 };
 export type FormIntialState = {

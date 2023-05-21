@@ -112,6 +112,8 @@ export default function Form(props: { id: number }) {
         kind: state?.kind,
         label: state?.label,
         options: [],
+        value: "",
+        meta: {},
       });
       if (newField) {
         navigate(`/forms/${state?.form?.id}`);
@@ -154,19 +156,21 @@ export default function Form(props: { id: number }) {
     try {
       if (state?.form?.id === undefined) throw Error("Form Id is undefined");
 
-      let updatedField = field?.options?.filter(
-        (option, index) => index !== id
-      );
-      field.options = updatedField;
+      const updatedField = {
+        ...field,
+        options: field.options?.filter((option, index) => index !== id),
+      };
+
       const updatedFormField = await updateFormField(
         state?.form.id as number,
-        field?.id as number,
-        field
+        field.id as number,
+        updatedField
       );
+
       if (updatedFormField) {
         dispatch({
           type: "DELETE_OPTION",
-          fieldId: field?.id as number,
+          fieldId: field.id as number,
           index: id,
         });
         navigate(`/forms/${state?.form?.id}`);

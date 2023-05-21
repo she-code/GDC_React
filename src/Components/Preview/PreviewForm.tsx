@@ -74,23 +74,22 @@ export default function PreviewQuestion(props: { id: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //handles the checkbox input change
+  //updates selected option
   const handleCheckboxChange = (option: string) => {
-    if (responseState?.selectedOptions?.includes(option)) {
-      dispatch({
-        type: "SET_SELECTED_OPTION",
-        selectedOptions: responseState?.selectedOptions?.filter(
-          (item) => item !== option
-        ),
-      });
-    } else {
-      dispatch({
-        type: "SET_SELECTED_OPTION",
-        selectedOptions: [
-          ...(responseState?.selectedOptions as string[]),
-          option,
-        ],
-      });
+    if (Array.isArray(responseState?.selectedOptions)) {
+      if (responseState.selectedOptions.includes(option)) {
+        dispatch({
+          type: "SET_SELECTED_OPTION",
+          selectedOptions: responseState.selectedOptions?.filter(
+            (item) => item !== option
+          ),
+        });
+      } else {
+        dispatch({
+          type: "SET_SELECTED_OPTION",
+          selectedOptions: [...responseState?.selectedOptions, option],
+        });
+      }
     }
   };
 

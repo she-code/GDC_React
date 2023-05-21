@@ -131,7 +131,9 @@ export default function UpdateFormField(props: {
           </div>
           {errors.kind && <p className="text-red-500">{errors.kind}</p>}
         </div>
-        <p className="font-semibold text-lg">Options</p>
+        {formState?.formField?.kind !== "TEXT" && (
+          <p className="font-semibold text-lg">Options</p>
+        )}
         <div className=" max-h-36 overflow-y-auto  border-3 border-gray-200 ml-3 divide divide-y-2 mb-3 w-3/4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {formState?.formField?.options &&
           formState?.formField?.options?.length === 0 ? (

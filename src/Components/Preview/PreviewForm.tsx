@@ -174,13 +174,11 @@ export default function PreviewQuestion(props: { id: number }) {
           type: "SET_USER_RESPONSE",
           userRes: (currentValue?.value as string) || "",
         });
-        console.log(responseState?.userRes, "u", currentValue);
         if (formState?.formFields[fieldIndex]?.kind === "DROPDOWN") {
           dispatch({
             type: "SET_SELECTED_OPTION",
             selectedOptions: (currentValue?.value as string[]) || [],
           });
-          console.log(responseState?.selectedOptions, "sl");
         }
         return;
       }
@@ -201,7 +199,6 @@ export default function PreviewQuestion(props: { id: number }) {
           fieldId: formState?.formFields[fieldIndex].id as number,
           value: (responseState?.userRes as string) || "",
         });
-        console.log("ans", responseState?.submission?.answers);
       }, 1000);
     }
     return () => {
@@ -230,7 +227,7 @@ export default function PreviewQuestion(props: { id: number }) {
       });
       if (newSubmission) {
         dispatch({ type: "CREATE_SUBMISSION", submission: newSubmission });
-        navigate(`/form/${id}/submission/${newSubmission?.id}`);
+        navigate(`/forms/${id}/submission/${newSubmission?.id}`);
       }
     } catch (error) {}
   };

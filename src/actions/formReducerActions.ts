@@ -88,9 +88,7 @@ export type DeleteFormField = {
 
 export type UpdateFormField = {
   type: "UPDATE_FORM_FIELD";
-  // option: string;
   formField: FormFieldType;
-  fieldId: number;
 };
 export type SetOption = {
   type: "SET_OPTION";

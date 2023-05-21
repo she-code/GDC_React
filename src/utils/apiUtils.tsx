@@ -116,6 +116,11 @@ export const createSubmission = (formId: number, submission: Submission) => {
 export const getSubmission = (formId: number, submissionId: number) => {
   return request(`forms/${formId}/submission/${submissionId}/`, "GET", {});
 };
+
+//get formField
+export const getFormField = (formId: number, formFieldId: number) => {
+  return request(`forms/${formId}/fields/${formFieldId}/`, "GET", {});
+};
 //add options
 // export const addOptions = (
 //   formId: number,

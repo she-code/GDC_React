@@ -113,23 +113,20 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
     case "SET_FIELD_KIND": {
       return {
         ...state,
-        formField: { ...state.formField, kind: action.kind },
+        kind: action.kind,
       };
     }
     case "SET_FIELD_LABEL": {
       return {
         ...state,
-        formField: { ...state.formField, label: action.label },
+        label: action.label,
       };
     }
     case "CLEAR_FORM_FIELD": {
       return {
         ...state,
-        formField: {
-          ...state.formField,
-          label: action.label,
-          kind: action.kind,
-        },
+        Kind: action.kind,
+        label: action.label,
       };
     }
     case "ADD_FORM_FIELD": {
@@ -157,44 +154,18 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       }
       return state;
     }
-    // case "ADD_OPTION": {
-    //   return {
-    //     ...state,
-    //     formFields: state?.formFields?.map((field) => {
-    //       if (field.id === action.fieldId && field.kind !== "TEXT") {
-    //         return {
-    //           ...field,
-    //           options: [
-    //             ...((field as DropdownField | RadioType)?.options ?? []),
-    //             action.option,
-    //           ],
-    //         };
-    //       }
-    //       return field;
-    //     }),
-    //   };
-    // }
     case "UPDATE_FORM_FIELD": {
-      // console.log("called update");
-      // let field = state.formFields.find((formField) => {
-      //   console.log(formField.id);
-      //   return formField.id === action.formField.id;
-      // });
-      // console.log({ field }, "jk");
-      // if (!field) {
-      //   console.log({ action });
-
-      //   field = action.formField;
-      //   return {
-      //     ...state,
-      //     formFields: [...state.formFields, field],
-      //   };
-      // }
-      // return state;
-      console.log({ action });
       return {
         ...state,
-        formField: action.formField,
+        formFields: state?.formFields?.map((field) => {
+          if (field.id === action?.formField?.id && field.kind !== "TEXT") {
+            return {
+              ...field,
+              options: action?.formField?.options,
+            };
+          }
+          return field;
+        }),
       };
     }
 

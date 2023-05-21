@@ -5,11 +5,9 @@ import {
   ColorField,
   DropdownField,
   FormFieldType,
-  FormIntialState,
   RadioType,
 } from "../../../types/formTypes";
 import Divider from "../../common/Divider";
-import { FormAction } from "../../../actions/formReducerActions";
 
 export default function CustomFieldWithOption(props: {
   id: number;
@@ -19,9 +17,8 @@ export default function CustomFieldWithOption(props: {
   updateOptionCB: (option: string, index: number) => void;
   emptyFieldAlertCB: () => void;
   removeOptionCB: (optionId: number) => void;
-  formState: FormIntialState;
-  dispatch: (attr: FormAction) => void;
   formId: number;
+  handleOptionCreateCB: (updatedFormField: FormFieldType) => void;
 }) {
   const {
     field,
@@ -30,9 +27,7 @@ export default function CustomFieldWithOption(props: {
     removeFieldCB,
     updateOptionCB,
     emptyFieldAlertCB,
-    formState,
-    dispatch,
-    // handleOptionCreateCB,
+    handleOptionCreateCB,
     formId,
   } = props;
   return (
@@ -45,12 +40,11 @@ export default function CustomFieldWithOption(props: {
           removeFieldCB={removeFieldCB}
         />
         <OptionAdder
+          key={field.id}
           emptyFieldAlertCB={emptyFieldAlertCB}
           formId={formId}
           formField={field}
-          formState={formState}
-          dispatch={dispatch}
-          // handleOptionCreateCB={handleOptionCreateCB}
+          handleOptionCreateCB={handleOptionCreateCB}
         />
       </div>
       <>
@@ -62,7 +56,7 @@ export default function CustomFieldWithOption(props: {
           {field?.options && field?.options?.length === 0 ? (
             <>No options</>
           ) : (
-            <>
+            <div key={field.id}>
               {(field as DropdownField | RadioType | ColorField).options?.map(
                 (option: string, index: number) => (
                   <div key={index} className="flex  w-5/12 ml-3">
@@ -95,7 +89,7 @@ export default function CustomFieldWithOption(props: {
                   </div>
                 )
               )}
-            </>
+            </div>
           )}
         </div>
       </>

@@ -74,8 +74,7 @@ export default function Form(props: { id: number }) {
       }
     };
     getForm();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.id]);
 
   //updates the title
   useEffect(() => {
@@ -103,17 +102,19 @@ export default function Form(props: { id: number }) {
   //handles formField creation
   const handleFieldCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (state?.formField?.label.length === 0) {
+    if (state?.label?.length === 0) {
       emptyFieldAlert();
       return;
     }
     try {
       if (state.form.id === undefined) throw Error("Form Id is undefined");
-      const newField = await createFormFields(
-        state?.form?.id,
-        state?.formField
-      );
+      const newField = await createFormFields(state?.form?.id, {
+        kind: state?.kind,
+        label: state?.label,
+        options: [],
+      });
       if (newField) {
+        navigate(`/forms/${state?.form?.id}`);
         dispatch({
           type: "ADD_FORM_FIELD",
           formField: newField,
@@ -121,7 +122,6 @@ export default function Form(props: { id: number }) {
             dispatch({ type: "CLEAR_FORM_FIELD", kind: "TEXT", label: "" });
           },
         });
-        navigate(`/forms/${state?.form?.id}`);
       }
     } catch (error) {
       console.error(error);
@@ -144,9 +144,13 @@ export default function Form(props: { id: number }) {
     }
   };
 
+  //handles field update
+  const handleFieldUpdate = async (formField: FormFieldType) => {
+    dispatch({ type: "UPDATE_FORM_FIELD", formField: formField });
+  };
+
   //handles option deletion
   const handleOptionDelete = async (id: number, field: FormFieldType) => {
-    console.log("p");
     try {
       if (state?.form?.id === undefined) throw Error("Form Id is undefined");
 
@@ -171,38 +175,6 @@ export default function Form(props: { id: number }) {
       console.error(error);
     }
   };
-  // const handleOptionCreate = async (option: string) => {
-  //   try {
-  //     //create an event for this
-  //     if (state?.userRes) {
-  //       state?.formField?.options?.push(option);
-  //       const updatedFormField: FormFieldType = await updateFormField(
-  //         state?.form?.id as number,
-  //         state?.formField?.id as number,
-  //         state?.formField
-  //       );
-  //       if (updatedFormField) {
-  //         console.log("hi", updatedFormField);
-  //         dispatch({
-  //           type: "UPDATE_FORM_FIELD",
-  //           fieldId: updatedFormField?.id as number,
-  //           formField: updatedFormField,
-  //         });
-  //         console.log(state?.formField, "d");
-  //         // window.location.reload();
-  //         dispatch({
-  //           type: "SET_OPTION",
-  //           option: "",
-  //         });
-  //         navigate(`/forms/${state?.form?.id}`);
-  //       }
-  //     } else {
-  //       // emptyFieldAlertCB();
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   return state?.loading ? (
     <Loading />
@@ -248,7 +220,7 @@ export default function Form(props: { id: number }) {
 
           <input
             type="text"
-            value={state.formField.label ?? ""}
+            value={state?.label ?? ""}
             className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2  w-2/3 focus:outline-none focus:border-l-green-500 focus:border-l-8"
             onChange={(e) => {
               dispatch({ type: "SET_FIELD_LABEL", label: e.target.value });
@@ -272,47 +244,70 @@ export default function Form(props: { id: number }) {
           <>
             {state?.formFields?.length > 0 ? (
               <>
-                {state?.formFields?.map((field: FormFieldType) => {
-                  switch (field.kind) {
-                    case "TEXT":
-                      return (
-                        <div className="divide divide-x-2" key={field.id}>
-                          <EditableField
+                {state?.formFields?.map(
+                  (field: FormFieldType, index: number) => {
+                    switch (field.kind) {
+                      case "TEXT":
+                        return (
+                          <div className="divide divide-x-2" key={field.id}>
+                            <EditableField
+                              field={field}
+                              formId={state?.form?.id as number}
+                              handleChangeCB={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                              ) => {}}
+                              removeFieldCB={(id: number) => {
+                                handleFieldDelete(id);
+                              }}
+                            />
+                            <Divider />
+                          </div>
+                        );
+                      default:
+                        return (
+                          <CustomFieldWithOption
+                            key={field?.id}
                             field={field}
                             formId={state?.form?.id as number}
-                            handleChangeCB={(
-                              e: React.ChangeEvent<HTMLInputElement>
-                            ) => {}}
+                            handleChangeCB={(e) => {}}
+                            id={field?.id as number}
                             removeFieldCB={(id: number) => {
                               handleFieldDelete(id);
                             }}
+                            removeOptionCB={(id: number) => {
+                              handleOptionDelete(id, field);
+                            }}
+                            updateOptionCB={(option, index) => {}}
+                            emptyFieldAlertCB={emptyFieldAlert}
+                            handleOptionCreateCB={handleFieldUpdate}
                           />
-                          <Divider />
-                        </div>
-                      );
-                    default:
-                      return (
-                        <CustomFieldWithOption
-                          key={field?.id}
-                          field={field}
-                          formId={state?.form?.id as number}
-                          handleChangeCB={(e) => {}}
-                          id={field?.id as number}
-                          removeFieldCB={(id: number) => {
-                            handleFieldDelete(id);
-                          }}
-                          removeOptionCB={(id: number) => {
-                            handleOptionDelete(id, field);
-                          }}
-                          updateOptionCB={(option, index) => {}}
-                          emptyFieldAlertCB={emptyFieldAlert}
-                          formState={state}
-                          dispatch={dispatch}
-                          // handleOptionCreateCB={handleOptionCreate}
-                        />
-                      );
+                        );
+                      // case "RADIO":
+                      //   return (
+                      //     <CustomFieldWithOption
+                      //       key={field?.id}
+                      //       field={field}
+                      //       formId={state?.form?.id as number}
+                      //       handleChangeCB={(e) => {}}
+                      //       id={field?.id as number}
+                      //       removeFieldCB={(id: number) => {
+                      //         handleFieldDelete(id);
+                      //       }}
+                      //       removeOptionCB={(id: number) => {
+                      //         handleOptionDelete(id, field);
+                      //       }}
+                      //       updateOptionCB={(option, index) => {}}
+                      //       emptyFieldAlertCB={emptyFieldAlert}
+                      //       formState={state}
+                      //       dispatch={dispatch}
+                      //       // handleOptionCreateCB={handleOptionCreate}
+                      //     />
+                      //   );
+                      // default:
+                      //   return <>Default</>;
+                    }
                   }
-                })}
+                )}
               </>
             ) : (
               <div>No fields Created</div>

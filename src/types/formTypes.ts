@@ -130,6 +130,8 @@ export type FormIntialState = {
   userRes: string;
   formFields: FormFieldType[];
   formField: FormFieldType;
+  kind: FormFieldKind;
+  label: string;
 };
 export const initialState: FormIntialState = {
   form: {
@@ -139,6 +141,8 @@ export const initialState: FormIntialState = {
   loading: true,
   error: "",
   userRes: "",
+  label: "",
+  kind: "TEXT",
   formFields: [],
   formField: { label: "", kind: "TEXT", options: [] } as FormFieldType,
 };

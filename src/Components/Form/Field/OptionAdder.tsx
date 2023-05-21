@@ -1,50 +1,47 @@
-import React, { useEffect } from "react";
-import { updateFormField } from "../../../utils/apiUtils";
+import React, { useEffect, useReducer, useState } from "react";
+import { getFormField, updateFormField } from "../../../utils/apiUtils";
 import { navigate } from "raviger";
-import { FormFieldType, FormIntialState } from "../../../types/formTypes";
-import { FormAction } from "../../../actions/formReducerActions";
+import { FormFieldType, initialState } from "../../../types/formTypes";
+import { FormReducer } from "../../../reducers/formReducer";
 
 export default function OptionAdder(props: {
   emptyFieldAlertCB: () => void;
   formId: number;
   formField: FormFieldType;
-  formState: FormIntialState;
-  dispatch: (attr: FormAction) => void;
-  // handleOptionCreateCB: (option: string) => void;
+  handleOptionCreateCB: (updatedFormField: FormFieldType) => void;
 }) {
-  const { emptyFieldAlertCB, formState, dispatch } = props;
+  const { emptyFieldAlertCB, handleOptionCreateCB } = props;
+  const [state, dispatchForm] = useReducer(FormReducer, initialState);
   const { formField, formId } = props;
+  const [option, setOption] = useState("");
   useEffect(() => {
-    dispatch({
-      type: "FETCH_FORM_FIELD",
-      formField: formField as FormFieldType,
-    });
+    const getForm = async () => {
+      const form_field = await getFormField(formId, formField?.id as number);
+      if (form_field?.id) {
+        dispatchForm({
+          type: "FETCH_FORM_FIELD",
+          formField: formField as FormFieldType,
+        });
+      }
+    };
+    getForm();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formField]);
   const handleOptionCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       //create an event for this
-      if (formState?.userRes) {
-        formState?.formField?.options?.push(formState?.userRes as string);
+      if (option) {
+        state?.formField?.options?.push(option as string);
         const updatedFormField: FormFieldType = await updateFormField(
           formId as number,
-          formState?.formField?.id as number,
-          formState?.formField
+          state?.formField?.id as number,
+          state?.formField
         );
         if (updatedFormField) {
-          console.log("hi", updatedFormField);
-          dispatch({
-            type: "UPDATE_FORM_FIELD",
-            fieldId: updatedFormField?.id as number,
-            formField: updatedFormField,
-          });
-          console.log(formState?.formField, "d");
-          // window.location.reload();
-          dispatch({
-            type: "SET_OPTION",
-            option: "",
-          });
+          handleOptionCreateCB(updatedFormField);
+          setOption("");
           navigate(`/forms/${formId}`);
         }
       } else {
@@ -54,32 +51,22 @@ export default function OptionAdder(props: {
       console.log(error);
     }
   };
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   console.log("op");
-  //   handleOptionCreateCB(formState?.userRes);
-  // };
+
   return (
-    <div className=" flex w-4/5 ml-5 pl-5 items-center">
-      <form onSubmit={handleOptionCreate}>
+    <div className=" flex w-full ml-5  items-center justify-between">
+      <form onSubmit={handleOptionCreate} className="w-full ml-5">
         <input
           className="border-2 border-gray-400 border-l-blue-500 rounded-lg p-2 m-2  h-10
         focus:outline-none focus:border-l-yellow-500 focus:border-l-8 w-2/3 align-middle"
           placeholder="Add Option"
           type="text"
-          value={formState?.userRes || ""}
+          value={option || ""}
           onChange={(e) => {
-            dispatch({
-              type: "SET_OPTION",
-              option: e.target.value,
-            });
+            setOption(e.target.value);
           }}
         />
-
         <button
-          onClick={(_) => {
-            console.log("clikc");
-          }}
+          type="submit"
           className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
         >
           Add

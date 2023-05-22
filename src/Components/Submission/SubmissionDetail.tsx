@@ -77,10 +77,17 @@ export default function SubmissionDetail(props: {
                         open={open === index + 1}
                         key={index}
                         className="p-3 divide-y-2 divider mt-3"
+                        role="region"
+                        aria-labelledby={`accordion-header-${index + 1}`}
                       >
                         <AccordionHeader
+                          role="button"
                           onClick={() => handleOpen(index + 1)}
                           className="flex justify-between mb-3"
+                          id={`accordion-header-${index + 1}`}
+                          tabIndex={0}
+                          aria-controls={`accordion-body-${index + 1}`}
+                          aria-expanded={open === index + 1 ? "true" : "false"}
                         >
                           <p>Answer {index + 1}</p>
                           <p className="font-light text-lg flex-2">
@@ -92,8 +99,13 @@ export default function SubmissionDetail(props: {
                             }
                           </p>
                         </AccordionHeader>
-                        <AccordionBody>
-                          <div className="flex  gap-2 justify-between w-1/2">
+                        <AccordionBody
+                          id={`accordion-body-${index + 1}`}
+                          hidden={open !== index + 1}
+                          aria-labelledby={`accordion-header-${index + 1}`}
+                          role="region"
+                        >
+                          <div className="flex gap-2 justify-between w-1/2">
                             <p>{answer?.form_field}</p>
                             <p className="capitalize text-lg">
                               {answer?.value}

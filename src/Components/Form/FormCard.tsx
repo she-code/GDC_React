@@ -7,19 +7,22 @@ export default function FormCard(props: {
 }) {
   const { title, id, handleDeleteEventCB } = props;
   return (
-    <div className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white">
+    <div
+      className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white "
+      tabIndex={0}
+    >
       <div>
         <p className="capitalize text-lg font-semibold text-gray-500 mb-1">
           {title}
         </p>
-        {/* <p className="text-md text-gray-500 border-2 border-yellow-200 px-2 py-1">
-          {questions ? `${questions} Questions` : "No questions"}
-        </p> */}
       </div>
       <div className=" flex items-start">
         <Link
+          role="link"
+          aria-label="edit"
+          tabIndex={0}
           href={`/forms/${id}`}
-          className="hover:bg-neutral-100 w-full px-4 py-2 text-lg font-normal text-neutral"
+          className="hover:bg-neutral-100 w-full px-4 py-2 text-lg font-normal text-neutral focus:outline-none focus:bg-neutral-100 focus:text-green-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +40,8 @@ export default function FormCard(props: {
           </svg>
         </Link>
         <button
-          className=" px-4 py-2 text-lg font-normal text-neutral hover:bg-neutral-100 w-full text-start"
+          aria-label="delete"
+          className=" px-4 py-2 text-lg font-normal text-neutral hover:bg-neutral-100 w-full text-start focus:outline-none focus:bg-neutral-100 focus:text-red-600"
           onClick={(_) => handleDeleteEventCB(id)}
         >
           <svg
@@ -57,7 +61,9 @@ export default function FormCard(props: {
         </button>
         <Link
           href={`/preview/${id}`}
-          className="  px-4 py-2 text-lg font-normal text-neutral hover:bg-neutral-100 w-full items-center"
+          arai-label="preview"
+          role="link"
+          className="  px-4 py-2 text-lg font-normal text-neutral hover:bg-neutral-100 w-full items-center focus:outline-none focus:bg-neutral-100 focus:text-blue-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

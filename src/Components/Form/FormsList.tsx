@@ -132,6 +132,7 @@ export default function FormsList() {
               <CustomInputField
                 value={searchString}
                 type="text"
+                name="search"
                 handleInputChangeCB={updateSearchString}
               />
             </div>

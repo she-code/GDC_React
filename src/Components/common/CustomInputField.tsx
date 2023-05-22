@@ -16,6 +16,8 @@ export default function CustomInputField(props: {
       onChange={(e) => handleInputChangeCB(e)}
       ref={elementRef}
       name={name}
+      tabIndex={0}
+      araia-label={name}
     />
   );
 }

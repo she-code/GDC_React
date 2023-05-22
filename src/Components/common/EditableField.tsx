@@ -33,7 +33,7 @@ export default function EditableField(props: {
       </div>
 
       <button
-        className=" py-2 px-3 text-red-500"
+        className=" py-2 px-3 text-red-500  focus:outline-none focus:bg-neutral-100 focus:text-red-600"
         onClick={(_) => removeFieldCB(field?.id as number, field.label)}
       >
         <svg
@@ -52,7 +52,7 @@ export default function EditableField(props: {
         </svg>
       </button>
       <button
-        className=" py-2 px-3 text-green-500"
+        className=" py-2 px-3 text-green-500 focus:outline-none focus:bg-neutral-100 focus:text-green-600"
         // onClick={(_) => removeFieldCB(field?.id as number, field.label)}
         onClick={(_) => setNewForm(true)}
       >

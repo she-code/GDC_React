@@ -36,6 +36,9 @@ export default function Header(props: { title: string; currentUser: User }) {
         ].map((link) =>
           link.url ? (
             <ActiveLink
+              role="link"
+              tabIndex={0}
+              aria-label={link.page}
               href={link.url}
               key={link.page}
               exactActiveClass="text-green-500"
@@ -46,6 +49,8 @@ export default function Header(props: { title: string; currentUser: User }) {
           ) : (
             <button
               key={link.page}
+              tabIndex={0}
+              aria-label={link.page}
               onClick={link.onclick}
               className="p-3 shadow-md text-lg mx-2 font-semibold "
             >

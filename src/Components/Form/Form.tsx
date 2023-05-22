@@ -30,6 +30,7 @@ import CustomHeader from "../common/CustomHeader";
 import NotFound from "../NotFound";
 import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
+import ShareForm from "./ShareForm";
 
 const fetchForm = async (id: number) => {
   try {
@@ -197,6 +198,7 @@ export default function Form(props: { id: number }) {
             type="text"
             elementRef={titleRef}
             key={state?.form?.id}
+            name="title"
           />
         </div>
       </div>
@@ -225,6 +227,8 @@ export default function Form(props: { id: number }) {
           <input
             type="text"
             value={state?.label ?? ""}
+            tabIndex={0}
+            aria-label="field-label"
             className="border-2 border-gray-200 border-l-blue-500 rounded-lg p-3 m-2  w-2/3 focus:outline-none focus:border-l-green-500 focus:border-l-8"
             onChange={(e) => {
               dispatch({ type: "SET_FIELD_LABEL", label: e.target.value });
@@ -232,8 +236,9 @@ export default function Form(props: { id: number }) {
           />
           <button
             type="submit"
-            className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44
-             hover:bg-green-500"
+            className="bg-green-500 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 
+            focus:outline-none focus:bg-green-600
+             hover:bg-green-600"
           >
             Add Field
           </button>
@@ -341,6 +346,7 @@ export default function Form(props: { id: number }) {
         >
           Edit Form
         </button>
+        <ShareForm formID={state?.form?.id} />
         <Modal open={newForm} closeCB={() => setNewForm(false)}>
           <UpdateForm form={state?.form as FormItem} />
         </Modal>

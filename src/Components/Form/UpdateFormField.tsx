@@ -101,7 +101,7 @@ export default function UpdateFormField(props: {
             <CustomInputField
               handleInputChangeCB={(event) => {
                 dispatch({
-                  type: "SET_FIELD_LABEL",
+                  type: "UPDATE_FIELD_LABEL",
                   label: event.target.value,
                 });
               }}
@@ -120,7 +120,7 @@ export default function UpdateFormField(props: {
             <CustomInputField
               handleInputChangeCB={(event) => {
                 dispatch({
-                  type: "SET_FIELD_KIND",
+                  type: "UPDATE_FIELD_KIND",
                   kind: event.target.value.toUpperCase() as FormFieldKind,
                 });
               }}

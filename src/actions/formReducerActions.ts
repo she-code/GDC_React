@@ -106,6 +106,14 @@ type UpdateFieldOption = {
   fieldId: number;
   option: string;
 };
+type UpdateFieldLabel = {
+  type: "UPDATE_FIELD_LABEL";
+  label: string;
+};
+type UpdateFieldKind = {
+  type: "UPDATE_FIELD_KIND";
+  kind: FormFieldKind;
+};
 export type FormAction =
   | FetchFormsSucess
   | FetchFormsError
@@ -129,4 +137,6 @@ export type FormAction =
   | CreateForm
   | SetFieldKind
   | FetchFormFailure
+  | UpdateFieldLabel
+  | UpdateFieldKind
   | SetFieldLabel;

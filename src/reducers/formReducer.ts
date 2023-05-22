@@ -214,5 +214,17 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
       }
       return state;
     }
+    case "UPDATE_FIELD_KIND": {
+      return {
+        ...state,
+        formField: { ...state.formField, kind: action.kind },
+      };
+    }
+    case "UPDATE_FIELD_LABEL": {
+      return {
+        ...state,
+        formField: { ...state.formField, label: action.label },
+      };
+    }
   }
 };

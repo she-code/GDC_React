@@ -11,7 +11,8 @@ import Login from "../Components/Login";
 import { User } from "../types/userTypes";
 import SubmissionDetail from "../Components/Submission/SubmissionDetail";
 import SubmissionsList from "../Components/Submission/SubmissionsList";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export default function AppRouter(props: { currentUser: User }) {
   const routes = {
@@ -43,21 +44,22 @@ export default function AppRouter(props: { currentUser: User }) {
   let routeResult = useRoutes(routes);
 
   return (
-    // <DndProvider backend={HTML5Backend}>
-    <AppContainer currentUser={props.currentUser}>
-      {routeResult}
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </AppContainer>
+    <DndProvider backend={HTML5Backend}>
+      <AppContainer currentUser={props.currentUser}>
+        {routeResult}
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar={true}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </AppContainer>
+    </DndProvider>
   );
 }

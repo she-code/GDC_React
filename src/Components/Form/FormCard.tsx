@@ -1,7 +1,4 @@
 import { Link } from "raviger";
-import { useDrag, useDrop } from "react-dnd";
-import { FormItem } from "../../types/formTypes";
-import { useRef } from "react";
 
 export default function FormCard(props: {
   title: string;
@@ -10,27 +7,8 @@ export default function FormCard(props: {
 }) {
   const { title, id, handleDeleteEventCB } = props;
 
-  const [{ isDragging }, drag] = useDrag(
-    () => ({
-      type: "formCard",
-      item: { id },
-      end: (item, monitor) => {
-        const dropResult = monitor.getDropResult();
-        if (item && dropResult) {
-          console.log(dropResult, item.id);
-        }
-      },
-      collect: (monitor) => ({
-        isDragging: monitor.isDragging(),
-      }),
-    }),
-    [id]
-  );
-
   return (
     <div
-      ref={drag}
-      draggable
       className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white focus-outline-none focus-visible:bg-transparent 
                           focus:outline-none 
                           focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 "

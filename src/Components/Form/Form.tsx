@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useRef, useReducer } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useReducer,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import update from "immutability-helper";
 
 import { Link, navigate } from "raviger";
 import {
@@ -24,13 +31,12 @@ import { Pagination } from "../../types/common";
 import Modal from "../common/Modal";
 import UpdateForm from "./UpdateForm";
 import CustomFieldWithOption from "./Field/CustomFieldWithOption";
-import Divider from "../common/Divider";
-import EditableField from "../common/EditableField";
 import CustomHeader from "../common/CustomHeader";
 import NotFound from "../NotFound";
 import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
 import ShareForm from "./ShareForm";
+import TextField from "./Field/TextField";
 
 const fetchForm = async (id: number) => {
   try {
@@ -46,6 +52,7 @@ export default function Form(props: { id: number }) {
   const [newForm, setNewForm] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLSelectElement | null>(null);
+  const [cards, setCards] = useState(state?.formFields || []);
 
   //checks if the user is authenticated
   useEffect(() => {
@@ -66,6 +73,7 @@ export default function Form(props: { id: number }) {
           form?.id
         );
         if (formFields?.results) {
+          setCards(formFields?.results);
           dispatch({
             type: "FETCH_FORM_FIELDS",
             formFields: formFields?.results,
@@ -191,6 +199,16 @@ export default function Form(props: { id: number }) {
       selectRef.current?.click();
     }
   };
+  const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
+    setCards((prevCards: FormFieldType[]) =>
+      update(prevCards, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, prevCards[dragIndex] as FormFieldType],
+        ],
+      })
+    );
+  }, []);
   return state?.loading ? (
     <Loading />
   ) : state?.form?.id ? (
@@ -267,47 +285,47 @@ export default function Form(props: { id: number }) {
           <>
             {state?.formFields?.length > 0 ? (
               <>
-                {state?.formFields?.map(
-                  (field: FormFieldType, index: number) => {
-                    switch (field.kind) {
-                      case "TEXT":
-                        return (
-                          <div className="divide divide-x-2" key={field.id}>
-                            <EditableField
-                              field={field}
-                              formId={state?.form?.id as number}
-                              handleChangeCB={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) => {}}
-                              removeFieldCB={(id: number) => {
-                                handleFieldDelete(id);
-                              }}
-                            />
-                            <Divider />
-                          </div>
-                        );
-                      default:
-                        return (
-                          <CustomFieldWithOption
-                            key={field?.id}
-                            field={field}
-                            formId={state?.form?.id as number}
-                            handleChangeCB={(e) => {}}
-                            id={field?.id as number}
-                            removeFieldCB={(id: number) => {
-                              handleFieldDelete(id);
-                            }}
-                            removeOptionCB={(id: number) => {
-                              handleOptionDelete(id, field);
-                            }}
-                            updateOptionCB={(option, index) => {}}
-                            emptyFieldAlertCB={emptyFieldAlert}
-                            handleOptionCreateCB={handleFieldUpdate}
-                          />
-                        );
-                    }
+                {cards?.map((field: FormFieldType, index: number) => {
+                  switch (field.kind) {
+                    case "TEXT":
+                      return (
+                        <TextField
+                          key={field?.id}
+                          index={index}
+                          field={field}
+                          id={state?.form?.id as number}
+                          handleChangeCB={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                          ) => {}}
+                          removeFieldCB={(id: number) => {
+                            handleFieldDelete(id);
+                          }}
+                          moveCard={moveCard}
+                        />
+                      );
+                    default:
+                      return (
+                        <CustomFieldWithOption
+                          key={field?.id}
+                          field={field}
+                          formId={state?.form?.id as number}
+                          handleChangeCB={(e) => {}}
+                          id={field?.id as number}
+                          removeFieldCB={(id: number) => {
+                            handleFieldDelete(id);
+                          }}
+                          removeOptionCB={(id: number) => {
+                            handleOptionDelete(id, field);
+                          }}
+                          updateOptionCB={(option, index) => {}}
+                          emptyFieldAlertCB={emptyFieldAlert}
+                          handleOptionCreateCB={handleFieldUpdate}
+                          moveCard={moveCard}
+                          index={index}
+                        />
+                      );
                   }
-                )}
+                })}
               </>
             ) : (
               <div>No fields Created</div>

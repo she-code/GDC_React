@@ -291,29 +291,6 @@ export default function Form(props: { id: number }) {
                             handleOptionCreateCB={handleFieldUpdate}
                           />
                         );
-                      // case "RADIO":
-                      //   return (
-                      //     <CustomFieldWithOption
-                      //       key={field?.id}
-                      //       field={field}
-                      //       formId={state?.form?.id as number}
-                      //       handleChangeCB={(e) => {}}
-                      //       id={field?.id as number}
-                      //       removeFieldCB={(id: number) => {
-                      //         handleFieldDelete(id);
-                      //       }}
-                      //       removeOptionCB={(id: number) => {
-                      //         handleOptionDelete(id, field);
-                      //       }}
-                      //       updateOptionCB={(option, index) => {}}
-                      //       emptyFieldAlertCB={emptyFieldAlert}
-                      //       formState={state}
-                      //       dispatch={dispatch}
-                      //       // handleOptionCreateCB={handleOptionCreate}
-                      //     />
-                      //   );
-                      // default:
-                      //   return <>Default</>;
                     }
                   }
                 )}
@@ -327,19 +304,25 @@ export default function Form(props: { id: number }) {
 
       <div className="flex gap-4 w-11/12 items-start justify-between">
         <Link
-          className="bg-gray-600 text-white py-2 pl-8 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
+          className="bg-gray-600 text-white py-2 pl-8 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500   
+          focus-outline-none focus:bg-gray-500 active-outline-none active:bg-gray-500"
           href={`/forms/${state?.form?.id}/submission`}
+          role="link"
+          aria-label="submissions"
         >
           Submissions
         </Link>
         <Link
           href="/"
+          role="link"
+          aria-label="close form"
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 text-center hover:bg-green-500"
         >
           Close Form
         </Link>
         <button
-          className="bg-gray-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500"
+          className="bg-gray-500 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500
+           focus-outline-none focus:bg-gray-600  "
           onClick={(_) =>
             getAuthToken() === null ? navigate("/login") : setNewForm(true)
           }

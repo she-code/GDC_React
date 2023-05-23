@@ -28,6 +28,8 @@ export default function EditableField(props: {
       my-2  w-min focus:outline-none focus:border-l-green-500 focus:border-l-8 h-10 capitalize"
           type="text"
           value={field.label}
+          tabIndex={0}
+          aria-label={field.label}
           onChange={(e) => handleChangeCB(e, field?.id as number)}
         />
       </div>

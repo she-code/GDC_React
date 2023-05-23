@@ -68,7 +68,7 @@ export default function CustomFieldWithOption(props: {
                       onChange={(e) => updateOptionCB(e.target.value, index)}
                     />
                     <button
-                      className=" py-2 px-3 text-red-500"
+                      className=" py-2 px-3 text-red-500  focus:outline-none focus:bg-neutral-100 focus:text-red-600"
                       onClick={(_) => removeOptionCB(index)}
                     >
                       <svg

@@ -148,6 +148,9 @@ export default function UpdateFormField(props: {
                             my-2 w-full focus:outline-none focus:border-l-green-500 focus:border-l-8 "
                       type="text"
                       value={option}
+                      name={`option${index}`}
+                      aria-label={`option${index}`}
+                      tabIndex={0}
                       onChange={(e) => {
                         handleOptionChange(index, e.target.value);
                       }}
@@ -160,7 +163,8 @@ export default function UpdateFormField(props: {
         </div>
         <button
           type="submit"
-          className="bg-green-600 rounded py-2 px-3 text-white "
+          className="bg-green-500 rounded py-2 px-3 text-white  focus:outline-none focus:bg-green-600
+          hover:bg-green-600"
         >
           Submit
         </button>

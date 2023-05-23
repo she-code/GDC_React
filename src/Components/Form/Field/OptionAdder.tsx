@@ -60,6 +60,8 @@ export default function OptionAdder(props: {
         focus:outline-none focus:border-l-yellow-500 focus:border-l-8 w-2/3 align-middle"
           placeholder="Add Option"
           type="text"
+          tabIndex={0}
+          aria-label="Add Option"
           value={option || ""}
           onChange={(e) => {
             setOption(e.target.value);
@@ -67,7 +69,8 @@ export default function OptionAdder(props: {
         />
         <button
           type="submit"
-          className="bg-green-600 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10"
+          className="bg-green-500 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10  focus:outline-none focus:bg-green-600
+          hover:bg-green-600"
         >
           Add
         </button>

@@ -321,7 +321,8 @@ export default function PreviewQuestion(props: { id: number }) {
             <div></div>
           ) : (
             <button
-              className="bg-yellow-500 text-white rounded-lg py-2 px-2 h-10"
+              className="bg-yellow-500 text-white rounded-lg py-2 px-2 h-10 
+              focus-within:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-opacity-50  "
               onClick={(e) => {
                 e.preventDefault();
                 handlePrev();
@@ -349,7 +350,8 @@ export default function PreviewQuestion(props: { id: number }) {
             <>
               {formState?.formFields?.length > 0 ? (
                 <button
-                  className="bg-green-500 text-white rounded-lg py-2 px-2 h-10"
+                  className="bg-green-500 text-white rounded-lg py-2 px-2 h-10  focus-within:outline-none focus:ring-2
+                   focus:ring-green-600 focus:ring-opacity-50 "
                   onClick={(e) => {
                     e.preventDefault();
                     handleNext();
@@ -380,10 +382,10 @@ export default function PreviewQuestion(props: { id: number }) {
           <div className="flex justify-center mb-5">
             <button
               type="submit"
-              className="bg-blue-500 text-white rounded-lg py-2 px-3  w-1/3 text-lg"
+              className="bg-blue-400 text-white rounded-lg py-2 px-3  w-1/3 text-lg  focus-within:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 "
               // onClick={handleSubmissionCreate}
             >
-              Submit
+              SUBMIT
             </button>
           </div>
         ) : (

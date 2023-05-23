@@ -8,7 +8,11 @@ export default function SubmissionCard(props: {
 }) {
   const { formId, answersCount, submissionId, index } = props;
   return (
-    <div className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white">
+    <div
+      className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white focus:outline-none
+       focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+      tabIndex={0}
+    >
       <div>
         <p className="capitalize text-lg font-semibold text-gray-500 mb-1">
           Submission {index + 1}
@@ -21,8 +25,10 @@ export default function SubmissionCard(props: {
       </div>
       <div className=" flex items-start">
         <Link
+          role="link"
+          aria-label={`View submission ${index + 1}`}
           href={`/forms/${formId}/submission/${submissionId}`}
-          className="hover:bg-neutral-100 w-full px-4 py-2 text-lg font-normal text-neutral"
+          className="  px-4 py-2 text-lg font-normal text-neutral hover:bg-neutral-100 w-full items-center focus:outline-none focus:bg-neutral-200 focus:text-blue-600"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

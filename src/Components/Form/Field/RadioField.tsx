@@ -16,6 +16,9 @@ export default function RadioField(props: {
         value={value}
         onChange={(e) => handleChangeCB(e)}
         checked={checked}
+        aria-label={label}
+        tabIndex={0}
+        className="mr-2 focus-within:outline-none focus-within:border-l-green-500 focus-within:border-l-8"
       />
       <label className="text-lg ml-2">{label}</label>
     </div>

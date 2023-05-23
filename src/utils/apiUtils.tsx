@@ -3,18 +3,34 @@ import { FormFieldType, FormItem } from "../types/formTypes";
 import { Submission } from "../types/responseTypes";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
+type RequestData =
+  | FormItem
+  | { username: string; password: string }
+  | PaginationParams
+  | { formId: number; form: FormItem }
+  | { formId: number; formField: FormFieldType }
+  | { pageParams: PaginationParams; formId: number }
+  | { formId: number; formFieldId: number; formField: FormFieldType }
+  | { pageParams: PaginationParams; formId: number }
+  | { formId: number; submission: Submission }
+  | { formId: number; submissionId: number }
+  | { formId: number; formFieldId: number }
+  | string
+  | {};
 type RequestMethod = "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 export const request = async (
   endpoint: string,
   method: RequestMethod = "GET",
-  data: any = {}
+  data: RequestData = {}
 ) => {
   let url;
   let payload: string;
   if (method === "GET") {
     const requestParams = data
       ? `?${Object.keys(data)
-          .map((key) => `${key}=${data[key]}`)
+          .map(
+            (key) => `${key}=${(data as RequestData)[key as keyof RequestData]}`
+          )
           .join("&")}`
       : "";
     url = `${API_BASE_URL}${endpoint}${requestParams}`;

@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { navigate, useQueryParams } from "raviger";
+
 import CustomInputField from "../common/CustomInputField";
 import FormCard from "./FormCard";
 import { FormItem, initialState } from "../../types/formTypes";
@@ -11,36 +12,52 @@ import { deleteForm, listForms } from "../../utils/apiUtils";
 import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
 import { toast } from "react-toastify";
-const fetchForms = async () => {
-  try {
-    const data: Pagination<FormItem> = await listForms({
-      offset: 0,
-      limit: 5,
-    });
-    if (!data) {
-      throw Error("No data found");
-    }
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
+
+import FormPagination from "./FormPagination";
+
 export default function FormsList() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
-  const [{ search }, setQuery] = useQueryParams();
+  const [{ search }, setQuery] = useQueryParams<{ search: string }>();
   const [searchString, setSearchString] = useState("");
   const [newForm, setNewForm] = useState(false);
 
+  const [limit] = useState(5);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [count, setCount] = useState(0);
+  const [offset, setOffset] = useState(0);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  const fetchForms = async (offset: number, limit: number) => {
+    try {
+      const data: Pagination<FormItem> = await listForms({ offset, limit });
+      if (!data) {
+        throw Error("No data found");
+      }
+      setTotalPages(data.count / limit);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    fetchForms()
-      .then((data) => {
-        dispatch({
-          type: "FETCH_FORMS_SUCCESS",
-          forms: data?.results ? data?.results : [],
-        });
+    setOffset((currentPage - 1) * limit);
+    fetchForms(offset, limit)
+      .then((data: Pagination<FormItem> | undefined) => {
+        if (data) {
+          setCount(data.count);
+          dispatch({
+            type: "FETCH_FORMS_SUCCESS",
+            forms: data.results ? data.results : [],
+          });
+        }
       })
       .catch((error) => {
         dispatch({
@@ -48,7 +65,8 @@ export default function FormsList() {
           error: "Failed to fetch data",
         });
       });
-  }, []);
+  }, [currentPage, limit, offset]);
+
   const loginAlert = () =>
     toast.info("Please Login", {
       position: "top-center",
@@ -165,6 +183,14 @@ export default function FormsList() {
             )}
           </div>
 
+          <FormPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            count={count}
+            offset={offset}
+            limit={limit}
+          />
           <Modal open={newForm} closeCB={() => setNewForm(false)}>
             <CreateForm />
           </Modal>

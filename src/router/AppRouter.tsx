@@ -1,4 +1,5 @@
 import { useRoutes } from "raviger";
+
 import Home from "../Components/Home";
 import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
@@ -10,6 +11,7 @@ import Login from "../Components/Login";
 import { User } from "../types/userTypes";
 import SubmissionDetail from "../Components/Submission/SubmissionDetail";
 import SubmissionsList from "../Components/Submission/SubmissionsList";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 
 export default function AppRouter(props: { currentUser: User }) {
   const routes = {
@@ -39,7 +41,9 @@ export default function AppRouter(props: { currentUser: User }) {
     "*": () => <NotFound />,
   };
   let routeResult = useRoutes(routes);
+
   return (
+    // <DndProvider backend={HTML5Backend}>
     <AppContainer currentUser={props.currentUser}>
       {routeResult}
       <ToastContainer

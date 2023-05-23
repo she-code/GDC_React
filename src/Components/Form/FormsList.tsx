@@ -1,6 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { navigate, useQueryParams } from "raviger";
+import { useDrop } from "react-dnd";
 
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import CustomInputField from "../common/CustomInputField";
 import FormCard from "./FormCard";
 import { FormItem, initialState } from "../../types/formTypes";
@@ -14,6 +19,8 @@ import { getAuthToken } from "../../utils/storageUtils";
 import { toast } from "react-toastify";
 
 import FormPagination from "./FormPagination";
+import SortableItem from "./SortableItem";
+import DragDropContainer from "./DragDropContainer";
 
 export default function FormsList() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
@@ -94,7 +101,25 @@ export default function FormsList() {
   const updateSearchString = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchString(e.target.value);
   };
+  const [forms, setForms] = useState(formState?.forms || []);
 
+  const moveCard = (dragIndex: number, hoverIndex: number) => {
+    const draggedCard = forms[dragIndex];
+    setForms((prevForms) => {
+      const updatedForms = [...prevForms];
+      updatedForms.splice(dragIndex, 1);
+      updatedForms.splice(hoverIndex, 0, draggedCard);
+      return updatedForms;
+    });
+  };
+  const [, drop] = useDrop({
+    accept: "formCard",
+    drop: () => ({ name: "form-container" }),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop(),
+    }),
+  });
   return (
     <div>
       {formId === 0 ? (
@@ -155,7 +180,28 @@ export default function FormsList() {
               />
             </div>
           </form>
-          <div>
+          {/* <DragDropContainer forms={formState?.forms} search={search} /> */}
+          {/* <SortableContext
+            items={formState?.forms.map((form) => ({
+              id: form.id as number,
+            }))}
+            strategy={verticalListSortingStrategy}
+          >
+            {formState?.forms
+              ?.filter((form: FormItem) =>
+                form.title.toLowerCase().includes(search?.toLowerCase() || "")
+              )
+              .map((form: FormItem) => (
+                <div
+                  className="flex gap-2 justify-between my-2 items-center"
+                  key={form.id}
+                >
+                  <SortableItem key={form} id={form.id} />
+                </div>
+              ))}
+          </SortableContext> */}
+
+          {/* <div>
             {formState?.loading ? (
               <Loading />
             ) : (
@@ -176,13 +222,13 @@ export default function FormsList() {
                         key={form?.id}
                         id={form?.id || 0}
                         handleDeleteEventCB={handleDelete}
+                        // moveCard={moveCard}
                       />
                     </div>
                   ))}
               </div>
             )}
-          </div>
-
+          </div> */}
           <FormPagination
             currentPage={currentPage}
             totalPages={totalPages}

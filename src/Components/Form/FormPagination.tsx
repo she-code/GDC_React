@@ -1,4 +1,3 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
@@ -77,7 +76,20 @@ export default function FormPagination(props: PaginationProps) {
                 onClick={() => handlePageClick(currentPage - 1)}
               >
                 <span className="sr-only">Previous</span>
-                <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />{" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 19.5L8.25 12l7.5-7.5"
+                  />
+                </svg>
               </button>
             )}
             <div className="flex mt-2">{renderPaginationNavs()}</div>
@@ -87,7 +99,20 @@ export default function FormPagination(props: PaginationProps) {
                 onClick={() => handlePageClick(currentPage + 1)}
               >
                 <span className="sr-only">Next</span>
-                <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />{" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
               </button>
             )}
           </nav>

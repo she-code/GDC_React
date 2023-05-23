@@ -28,10 +28,11 @@ export const request = async (
   if (method === "GET") {
     const requestParams = data
       ? `?${Object.keys(data)
-          .map((key) => `${key}=${(data as any)[key]}`)
+          .map(
+            (key) => `${key}=${(data as RequestData)[key as keyof RequestData]}`
+          )
           .join("&")}`
       : "";
-
     url = `${API_BASE_URL}${endpoint}${requestParams}`;
     payload = "";
   } else {

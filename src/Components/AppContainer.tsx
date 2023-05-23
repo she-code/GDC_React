@@ -13,6 +13,7 @@ export default function AppContainer(props: {
           title="Typeform using #react-typescript with #tailwindcss"
           currentUser={props.currentUser}
         />
+
         {props.children}
       </div>
     </div>

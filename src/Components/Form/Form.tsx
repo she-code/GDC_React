@@ -286,29 +286,6 @@ export default function Form(props: { id: number }) {
                             handleOptionCreateCB={handleFieldUpdate}
                           />
                         );
-                      // case "RADIO":
-                      //   return (
-                      //     <CustomFieldWithOption
-                      //       key={field?.id}
-                      //       field={field}
-                      //       formId={state?.form?.id as number}
-                      //       handleChangeCB={(e) => {}}
-                      //       id={field?.id as number}
-                      //       removeFieldCB={(id: number) => {
-                      //         handleFieldDelete(id);
-                      //       }}
-                      //       removeOptionCB={(id: number) => {
-                      //         handleOptionDelete(id, field);
-                      //       }}
-                      //       updateOptionCB={(option, index) => {}}
-                      //       emptyFieldAlertCB={emptyFieldAlert}
-                      //       formState={state}
-                      //       dispatch={dispatch}
-                      //       // handleOptionCreateCB={handleOptionCreate}
-                      //     />
-                      //   );
-                      // default:
-                      //   return <>Default</>;
                     }
                   }
                 )}

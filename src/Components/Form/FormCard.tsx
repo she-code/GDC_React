@@ -12,9 +12,6 @@ export default function FormCard(props: {
         <p className="capitalize text-lg font-semibold text-gray-500 mb-1">
           {title}
         </p>
-        {/* <p className="text-md text-gray-500 border-2 border-yellow-200 px-2 py-1">
-          {questions ? `${questions} Questions` : "No questions"}
-        </p> */}
       </div>
       <div className=" flex items-start">
         <Link

@@ -83,7 +83,9 @@ export default function SubmissionDetail(props: {
                         <AccordionHeader
                           role="button"
                           onClick={() => handleOpen(index + 1)}
-                          className="flex justify-between mb-3 focus-outline-none focus-visible:bg-transparent
+                          className="flex justify-between mb-3 focus-outline-none focus-visible:bg-transparent 
+                          focus:outline-none p-3
+                          focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50
                           "
                           id={`accordion-header-${index + 1}`}
                           tabIndex={0}

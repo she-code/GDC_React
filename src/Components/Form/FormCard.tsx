@@ -8,7 +8,9 @@ export default function FormCard(props: {
   const { title, id, handleDeleteEventCB } = props;
   return (
     <div
-      className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white "
+      className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white focus-outline-none focus-visible:bg-transparent 
+      focus:outline-none p-3
+      focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 "
       tabIndex={0}
     >
       <div>

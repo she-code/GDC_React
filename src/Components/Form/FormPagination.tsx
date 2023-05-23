@@ -20,10 +20,18 @@ export default function FormPagination(props: PaginationProps) {
       navs.push(
         <button
           key={i}
+          aria-label={`Goto page ${i}`}
+          tabIndex={0}
           className={`${
             i === currentPage ? "bg-indigo-600 text-white" : "text-gray-900"
-          } relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:outline-none`}
+          } relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:outline-none 
+          focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           onClick={() => handlePageClick(i)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handlePageClick(i);
+            }
+          }}
         >
           {i}
         </button>
@@ -37,16 +45,30 @@ export default function FormPagination(props: PaginationProps) {
       <div className="flex flex-1 justify-between sm:hidden">
         {currentPage > 1 && (
           <button
+            tabIndex={0}
+            aria-label="Previous"
             className="relative inline-flex items-center px-2 py-2 text-gray-400 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none"
             onClick={() => handlePageClick(currentPage - 1)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handlePageClick(currentPage - 1);
+              }
+            }}
           >
             Previous
           </button>
         )}
         {currentPage < totalPages && (
           <button
+            tabIndex={0}
+            aria-label="Next"
             className="relative inline-flex items-center px-2 py-2 text-gray-400 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none"
             onClick={() => handlePageClick(currentPage + 1)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handlePageClick(currentPage + 1);
+              }
+            }}
           >
             Next
           </button>

@@ -45,6 +45,7 @@ export default function Form(props: { id: number }) {
   const [state, dispatch] = useReducer(FormReducer, initialState);
   const [newForm, setNewForm] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
+  const selectRef = useRef<HTMLSelectElement | null>(null);
 
   //checks if the user is authenticated
   useEffect(() => {
@@ -181,6 +182,15 @@ export default function Form(props: { id: number }) {
     }
   };
 
+  const handleFocus = () => {
+    selectRef.current?.click();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLSelectElement>) => {
+    if (e.key === "ArrowDown" || e.key === "Enter") {
+      selectRef.current?.click();
+    }
+  };
   return state?.loading ? (
     <Loading />
   ) : state?.form?.id ? (
@@ -204,18 +214,22 @@ export default function Form(props: { id: number }) {
       </div>
       <form onSubmit={handleFieldCreate}>
         <div className="flex gap-2 w-11/12 items-center">
-          <div className="flex rounded-lg shadow-lg h-14 items-center p-3">
+          <div className="flex rounded-lg shadow-lg h-14 items-center p-3 focus:border-l-2">
             <span className="font-semibold mr-1">Kind:</span>
             <select
               name="KindSelecter"
               id=""
-              className="px-2 focus:outline-none font-light "
+              tabIndex={0}
+              ref={selectRef}
+              className="px-2 focus:outline-none font-light  focus:border-l-green-500 focus:border-l-4"
               onChange={(e) => {
                 dispatch({
                   type: "SET_FIELD_KIND",
                   kind: e.target.value as FormFieldKind,
                 });
               }}
+              onFocus={handleFocus}
+              onKeyDown={handleKeyDown}
             >
               <option value="TEXT">text</option>
               <option value="RADIO">radio</option>

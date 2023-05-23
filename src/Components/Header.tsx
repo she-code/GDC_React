@@ -42,7 +42,8 @@ export default function Header(props: { title: string; currentUser: User }) {
               href={link.url}
               key={link.page}
               exactActiveClass="text-green-500"
-              className="p-3 shadow-md text-lg mx-2 font-semibold "
+              className="p-3 shadow-md text-lg mx-2 font-semibold focus:outline-none
+              focus:ring-1 focus:ring-blue-600 focus:ring-opacity-50"
             >
               {link.page}
             </ActiveLink>
@@ -52,7 +53,8 @@ export default function Header(props: { title: string; currentUser: User }) {
               tabIndex={0}
               aria-label={link.page}
               onClick={link.onclick}
-              className="p-3 shadow-md text-lg mx-2 font-semibold "
+              className="p-3 shadow-md text-lg mx-2 font-semibold focus:outline-none
+              focus:ring-1 focus:ring-blue-600 focus:ring-opacity-50"
             >
               {link.page}
             </button>

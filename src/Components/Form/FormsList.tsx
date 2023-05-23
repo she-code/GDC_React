@@ -104,7 +104,7 @@ export default function FormsList() {
               onClick={(_) =>
                 getAuthToken() === null ? navigate("/login") : setNewForm(true)
               }
-              className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600"
+              className="bg-green-500 py-2 px-3 text-white rounded-lg flex  shadow-lg hover:bg-green-600 focus:outline-none focus:bg-green-600"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -69,7 +69,7 @@ export default function FormsList() {
           error: "Failed to fetch data",
         });
       });
-  }, [currentPage, limit, dispatch]);
+  }, [currentPage, limit, dispatch, formState.forms.length]);
 
   // Fetch forms and update pagination after API response
   useEffect(() => {
@@ -114,7 +114,10 @@ export default function FormsList() {
     try {
       await deleteForm(id);
       dispatch({ type: "DELETE_FORM", formId: id });
-      window.location.reload();
+      dispatch({
+        type: "FETCH_FORMS_SUCCESS",
+        forms: formState.forms.filter((form) => form.id !== id),
+      });
     } catch (error) {
       console.error(error);
     }

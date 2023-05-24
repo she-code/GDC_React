@@ -128,6 +128,7 @@ export default function CustomFieldWithOption(props: {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       aria-label={`Draggable field ${field.id}`}
+      className="focus:outline-none focus:ring-2 focus:ring-l-blue-500 focus:ring-opacity-50 p-3"
     >
       <div className="flex items-center w-full" key={field.id}>
         <EditableField

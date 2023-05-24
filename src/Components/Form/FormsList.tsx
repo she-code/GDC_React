@@ -49,6 +49,7 @@ export default function FormsList() {
 
   useEffect(() => {
     setOffset((currentPage - 1) * limit);
+    dispatch({ type: "SET_LOADING", loading: true });
     fetchForms(offset, limit)
       .then((data: Pagination<FormItem> | undefined) => {
         if (data) {
@@ -86,6 +87,7 @@ export default function FormsList() {
     try {
       await deleteForm(id);
       dispatch({ type: "DELETE_FORM", formId: id });
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -158,38 +160,40 @@ export default function FormsList() {
             {formState?.loading ? (
               <Loading />
             ) : (
-              <div className="mx-5">
-                {formState?.forms
-                  ?.filter((form: FormItem) =>
-                    form.title
-                      .toLowerCase()
-                      .includes(search?.toLowerCase() || "")
-                  )
-                  .map((form: FormItem) => (
-                    <div
-                      className="flex gap-2 justify-between my-2 items-center"
-                      key={form.id}
-                    >
-                      <FormCard
-                        title={form?.title}
-                        key={form?.id}
-                        id={form?.id || 0}
-                        handleDeleteEventCB={handleDelete}
-                      />
-                    </div>
-                  ))}
-              </div>
+              <>
+                <div className="mx-5">
+                  {formState?.forms
+                    ?.filter((form: FormItem) =>
+                      form.title
+                        .toLowerCase()
+                        .includes(search?.toLowerCase() || "")
+                    )
+                    .map((form: FormItem) => (
+                      <div
+                        className="flex gap-2 justify-between my-2 items-center"
+                        key={form.id}
+                      >
+                        <FormCard
+                          title={form?.title}
+                          key={form?.id}
+                          id={form?.id || 0}
+                          handleDeleteEventCB={handleDelete}
+                        />
+                      </div>
+                    ))}
+                </div>
+                <FormPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  count={count}
+                  offset={offset}
+                  limit={limit}
+                />
+              </>
             )}
           </div>
 
-          <FormPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            count={count}
-            offset={offset}
-            limit={limit}
-          />
           <Modal open={newForm} closeCB={() => setNewForm(false)}>
             <CreateForm />
           </Modal>

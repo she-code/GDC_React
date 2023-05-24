@@ -226,5 +226,11 @@ export const FormReducer = (state: FormIntialState, action: FormAction) => {
         formField: { ...state.formField, label: action.label },
       };
     }
+    case "SET_LOADING": {
+      return {
+        ...state,
+        loading: action.loading,
+      };
+    }
   }
 };

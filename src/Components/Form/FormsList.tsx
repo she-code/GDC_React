@@ -31,9 +31,6 @@ export default function FormsList() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const fetchForms = async (offset: number, limit: number) => {
     try {
       const data: Pagination<FormItem> = await listForms({ offset, limit });
@@ -47,10 +44,14 @@ export default function FormsList() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    console.log({ page, offset, currentPage });
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
-    setOffset((currentPage - 1) * limit);
-    dispatch({ type: "SET_LOADING", loading: true });
-    fetchForms(offset, limit)
+    // Fetches initial content on page reload
+    fetchForms((currentPage - 1) * limit, limit)
       .then((data: Pagination<FormItem> | undefined) => {
         if (data) {
           setCount(data.count);
@@ -58,6 +59,8 @@ export default function FormsList() {
             type: "FETCH_FORMS_SUCCESS",
             forms: data.results ? data.results : [],
           });
+          // Updates totalPages on page reload
+          setTotalPages(Math.ceil(data.count / limit));
         }
       })
       .catch((error) => {
@@ -66,7 +69,31 @@ export default function FormsList() {
           error: "Failed to fetch data",
         });
       });
-  }, [currentPage, limit, offset]);
+  }, [currentPage, limit, dispatch]);
+
+  // Fetch forms and update pagination after API response
+  useEffect(() => {
+    setOffset((currentPage - 1) * limit);
+
+    if (currentPage !== 1) {
+      fetchForms(offset, limit)
+        .then((data: Pagination<FormItem> | undefined) => {
+          if (data) {
+            setCount(data.count);
+            dispatch({
+              type: "FETCH_FORMS_SUCCESS",
+              forms: data.results ? data.results : [],
+            });
+          }
+        })
+        .catch((error) => {
+          dispatch({
+            type: "FETCH_FORMS_FAILURE",
+            error: "Failed to fetch data",
+          });
+        });
+    }
+  }, [currentPage, limit, offset, dispatch]);
 
   const loginAlert = () =>
     toast.info("Please Login", {

@@ -9,6 +9,7 @@ import { navigate } from "raviger";
 import CustomInputField from "../common/CustomInputField";
 import { FormReducer } from "../../reducers/formReducer";
 import { createForm } from "../../utils/apiUtils";
+import { t } from "i18next";
 
 export default function CreateForm() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
@@ -37,7 +38,7 @@ export default function CreateForm() {
         <div className="p-2  ">
           <div className="flex items-center">
             <label htmlFor="title" className="text-lg font-semibold mr-2">
-              Title
+              {t("title")}
             </label>
             <CustomInputField
               handleInputChangeCB={(event) => {
@@ -56,7 +57,7 @@ export default function CreateForm() {
         <div className="p-2  ">
           <div className="flex items-center">
             <label htmlFor="description" className="text-lg font-semibold mr-2">
-              description
+              {t("description")}
             </label>
             <CustomInputField
               handleInputChangeCB={(event) => {
@@ -89,7 +90,7 @@ export default function CreateForm() {
               value={formState.form.is_public ? "true" : "false"}
             />
             <label htmlFor="is_public" className="text-lg font-semibold mr-2">
-              Is Public
+              {t("is_public")}
             </label>
           </div>
           {errors.is_public && (
@@ -100,7 +101,7 @@ export default function CreateForm() {
           type="submit"
           className="bg-green-600 rounded py-2 px-3 text-white "
         >
-          Submit
+          {t("submit")}
         </button>
       </form>
     </div>

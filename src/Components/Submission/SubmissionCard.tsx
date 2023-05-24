@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { Link } from "raviger";
 
 export default function SubmissionCard(props: {
@@ -15,7 +16,8 @@ export default function SubmissionCard(props: {
     >
       <div>
         <p className="capitalize text-lg font-semibold text-gray-500 mb-1">
-          Submission {index + 1}
+          {t("submission")}
+          {index + 1}
         </p>
         <p className="text-md text-gray-500 border-2 border-yellow-200 px-2 py-1">
           {answersCount === 0

@@ -1,6 +1,7 @@
 import React from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useState } from "react";
+import { t } from "i18next";
 
 export default function ShareForm(props: { formID: number }) {
   const [copied, setCopied] = useState(false);
@@ -14,12 +15,12 @@ export default function ShareForm(props: { formID: number }) {
 
   return (
     <div className="flex">
-      <label>Shareable Link</label>
+      <label>{t("shareForm")}</label>
       <CopyToClipboard
         text={`localhost:3000/form/${props.formID}`}
         onCopy={onCopy}
       >
-        <button>Copy</button>
+        <button>{t("copy")}</button>
       </CopyToClipboard>
       {copied && <span>Copied!</span>}
     </div>

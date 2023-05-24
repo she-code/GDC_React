@@ -37,6 +37,7 @@ import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
 import ShareForm from "./ShareForm";
 import TextField from "./Field/TextField";
+import { t } from "i18next";
 
 const fetchForm = async (id: number) => {
   try {
@@ -233,7 +234,7 @@ export default function Form(props: { id: number }) {
       <form onSubmit={handleFieldCreate}>
         <div className="flex gap-2 w-11/12 items-center">
           <div className="flex rounded-lg shadow-lg h-14 items-center p-3 focus:border-l-2">
-            <span className="font-semibold mr-1">Kind:</span>
+            <span className="font-semibold mr-1">{t("kind")}:</span>
             <select
               name="KindSelecter"
               id=""
@@ -249,10 +250,10 @@ export default function Form(props: { id: number }) {
               onFocus={handleFocus}
               onKeyDown={handleKeyDown}
             >
-              <option value="TEXT">text</option>
-              <option value="RADIO">radio</option>
-              <option value="DROPDOWN">dropdown</option>
-              <option value="GENERIC">generic</option>
+              <option value="TEXT">{t("text")}</option>
+              <option value="RADIO">{t("radio")}</option>
+              <option value="DROPDOWN">{t("dropdown")}</option>
+              <option value="GENERIC">{t("generic")}</option>
             </select>
           </div>
 
@@ -272,12 +273,12 @@ export default function Form(props: { id: number }) {
             focus:outline-none focus:bg-green-600
              hover:bg-green-600"
           >
-            Add Field
+            {t("addField")}
           </button>
         </div>
       </form>
 
-      <CustomHeader title="Created Fields" margin={true} />
+      <CustomHeader title={t("createdFields")} margin={true} />
       <div className="my-7 w-11/12  ">
         {state?.loading ? (
           <Loading />
@@ -328,7 +329,7 @@ export default function Form(props: { id: number }) {
                 })}
               </>
             ) : (
-              <div>No fields Created</div>
+              <div>{t("noField")}</div>
             )}
           </>
         )}
@@ -342,7 +343,7 @@ export default function Form(props: { id: number }) {
           role="link"
           aria-label="submissions"
         >
-          Submissions
+          {t("submissions")}
         </Link>
         <Link
           href="/"
@@ -350,7 +351,7 @@ export default function Form(props: { id: number }) {
           aria-label="close form"
           className="bg-green-600 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 text-center hover:bg-green-500"
         >
-          Close Form
+          {t("closeForm")}
         </Link>
         <button
           className="bg-gray-500 text-white py-2 px-3 text-lg  rounded-xl m-3  w-44 hover:bg-gray-500
@@ -359,7 +360,7 @@ export default function Form(props: { id: number }) {
             getAuthToken() === null ? navigate("/login") : setNewForm(true)
           }
         >
-          Edit Form
+          {t("editForm")}
         </button>
         <ShareForm formID={state?.form?.id} />
         <Modal open={newForm} closeCB={() => setNewForm(false)}>

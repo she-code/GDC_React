@@ -5,6 +5,7 @@ import { submissionIntialState, Submission } from "../../types/responseTypes";
 import { getSubmissions } from "../../utils/apiUtils";
 import Loading from "../common/Loading";
 import SubmissionCard from "./SubmissionCard";
+import { t } from "i18next";
 
 export default function SubmissionsList(props: { formId: number }) {
   const [state, dispatch] = useReducer(
@@ -50,7 +51,7 @@ export default function SubmissionsList(props: { formId: number }) {
             ) : (
               <div className="mx-5">
                 {state?.submissions?.length === 0 ? (
-                  <p>No Submissions are created</p>
+                  <p>{t("noSubmissions")}</p>
                 ) : (
                   <>
                     {state?.submissions?.map(

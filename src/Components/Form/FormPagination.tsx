@@ -1,3 +1,5 @@
+import { t } from "i18next";
+
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
@@ -76,15 +78,16 @@ export default function FormPagination(props: PaginationProps) {
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Showing{" "}
+            {t("showing")}
             <span className="font-medium">
               {offset === 0 ? offset + 1 : offset}
             </span>{" "}
-            to{" "}
+            {t("to")}
             <span className="font-medium">
               {limit > count ? count : offset + limit}
             </span>{" "}
-            of <span className="font-medium">{count}</span> results
+            {t("of")} <span className="font-medium">{count}</span>
+            {t("results")}
           </p>
         </div>
         <div>

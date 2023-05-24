@@ -1,9 +1,28 @@
+import { useEffect, useState } from "react";
 import logo from "../logo.svg";
 import { ActiveLink } from "raviger";
+import { useTranslation } from "react-i18next";
+
 import { User } from "../types/userTypes";
 import { getAuthToken } from "../utils/storageUtils";
 
 export default function Header(props: { title: string; currentUser: User }) {
+  const { t, i18n } = useTranslation();
+  const languages = [
+    { name: t("english"), code: "en" },
+    { name: t("hindi"), code: "hi" },
+  ];
+  const currentLocale = localStorage.getItem("i18next") || "en";
+  const [language, setLanguage] = useState(currentLocale);
+  useEffect(() => {
+    i18n.changeLanguage(language); // Set initial language
+  }, [language, i18n]);
+
+  const handleChangeLocale = (e: any) => {
+    const lang = e.target.value;
+    setLanguage(lang);
+    localStorage.setItem("i18next", lang); // Store language preference in localStorage
+  };
   return (
     <div className="flex items-center justify-between text-gray-500">
       <img
@@ -12,15 +31,25 @@ export default function Header(props: { title: string; currentUser: User }) {
         alt="img"
         style={{ animation: "spin 2s linear infinite" }}
       />
+      <div className="switcher">
+        <span>{t("languages")}</span>{" "}
+        <select onChange={handleChangeLocale} value={language}>
+          {languages.map(({ name, code }) => (
+            <option key={code} value={code}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>{" "}
       <div className="flex justify-evenly">
         {[
-          { page: "HOME", url: "/" },
-          { page: "ABOUT", url: "/about" },
+          { page: t("home"), url: "/" },
+          { page: t("about"), url: "/about" },
           // ...(props.currentUser?.username?.length > 0
           ...(getAuthToken()
             ? [
                 {
-                  page: "LOGOUT",
+                  page: t("logout"),
                   onclick: () => {
                     localStorage.removeItem("token");
                     window.location.reload();
@@ -29,7 +58,7 @@ export default function Header(props: { title: string; currentUser: User }) {
               ]
             : [
                 {
-                  page: "LOGIN",
+                  page: t("login"),
                   url: "/login",
                 },
               ]),

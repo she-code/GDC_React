@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import EditableField from "../../common/EditableField";
 import OptionAdder from "./OptionAdder";
 import {
@@ -10,6 +10,7 @@ import {
 import Divider from "../../common/Divider";
 import type { Identifier, XYCoord } from "dnd-core";
 import { useDrag, useDrop } from "react-dnd";
+import { t } from "i18next";
 
 interface DragItem {
   index: number;
@@ -80,10 +81,6 @@ export default function CustomFieldWithOption(props: {
       // Get pixels to the top
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
       // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
@@ -97,10 +94,6 @@ export default function CustomFieldWithOption(props: {
       // Time to actually perform the action
       moveCard(dragIndex, hoverIndex);
 
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
       item.index = hoverIndex;
     },
   });
@@ -115,9 +108,26 @@ export default function CustomFieldWithOption(props: {
   });
 
   const opacity = isDragging ? 0 : 1;
-  drag(drop(ref));
+  // drag(drop(ref));
+
+  useEffect(() => {
+    drag(drop(ref));
+  }, [drag, drop]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      drag(drop(ref));
+    }
+  };
   return (
-    <div ref={ref} style={{ opacity }} data-handler-id={handlerId}>
+    <div
+      ref={ref}
+      style={{ opacity }}
+      data-handler-id={handlerId}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label={`Draggable field ${field.id}`}
+    >
       <div className="flex items-center w-full" key={field.id}>
         <EditableField
           field={field}
@@ -134,13 +144,13 @@ export default function CustomFieldWithOption(props: {
         />
       </div>
       <>
-        <p className="font-semibold text-lg">Options</p>
+        <p className="font-semibold text-lg">{t("options")}</p>
         <div
           className=" max-h-36 overflow-y-auto  border-3 border-gray-200 ml-3 divide divide-y-2 mb-3 w-3/4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full
 "
         >
           {field?.options && field?.options?.length === 0 ? (
-            <>No options</>
+            <>{t("noOptions")}</>
           ) : (
             <div key={field.id}>
               {(field as DropdownField | RadioType | ColorField).options?.map(

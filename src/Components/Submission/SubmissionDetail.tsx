@@ -11,6 +11,7 @@ import { submissionIntialState, Answer } from "../../types/responseTypes";
 import Loading from "../common/Loading";
 import NotFound from "../NotFound";
 import { getAuthToken } from "../../utils/storageUtils";
+import { t } from "i18next";
 
 const fetchSubmission = async (id: number, submissionId: number) => {
   try {
@@ -92,9 +93,14 @@ export default function SubmissionDetail(props: {
                           aria-controls={`accordion-body-${index + 1}`}
                           aria-expanded={open === index + 1 ? "true" : "false"}
                         >
-                          <p>Answer {index + 1}</p>
+                          <p>
+                            {t("answer")}
+                            {index + 1}
+                          </p>
                           <p className="font-light text-lg flex-2">
-                            <span className=" font-semibold">Created At: </span>
+                            <span className=" font-semibold">
+                              {t("createdAt")}:{" "}
+                            </span>
                             {
                               state?.submission?.created_date
                                 ?.toString()

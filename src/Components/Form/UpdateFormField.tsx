@@ -10,6 +10,7 @@ import {
 import { getForm, getFormFields, updateFormField } from "../../utils/apiUtils";
 import CustomInputField from "../common/CustomInputField";
 import { Pagination } from "../../types/common";
+import { t } from "i18next";
 
 export default function UpdateFormField(props: {
   formId: number;
@@ -96,7 +97,7 @@ export default function UpdateFormField(props: {
         <div className="p-2  ">
           <div className="flex items-center">
             <label htmlFor="label" className="text-lg font-semibold mr-2">
-              Label
+              {t("label")}
             </label>
             <CustomInputField
               handleInputChangeCB={(event) => {
@@ -115,7 +116,7 @@ export default function UpdateFormField(props: {
         <div className="p-2  ">
           <div className="flex items-center">
             <label htmlFor="kind" className="text-lg font-semibold mr-2">
-              Kind
+              {t("kind")}
             </label>
             <CustomInputField
               handleInputChangeCB={(event) => {
@@ -137,7 +138,7 @@ export default function UpdateFormField(props: {
         <div className=" max-h-36 overflow-y-auto  border-3 border-gray-200 ml-3 divide divide-y-2 mb-3 w-3/4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {formState?.formField?.options &&
           formState?.formField?.options?.length === 0 ? (
-            <>No options</>
+            <>{t("noOptions")}</>
           ) : (
             <div key={formState?.formField?.id}>
               {formState?.formField?.options?.map(
@@ -166,7 +167,7 @@ export default function UpdateFormField(props: {
           className="bg-green-500 rounded py-2 px-3 text-white  focus:outline-none focus:bg-green-600
           hover:bg-green-600"
         >
-          Submit
+          {t("submit")}
         </button>
       </form>
     </div>

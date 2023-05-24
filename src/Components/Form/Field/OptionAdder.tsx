@@ -3,6 +3,7 @@ import { getFormField, updateFormField } from "../../../utils/apiUtils";
 import { navigate } from "raviger";
 import { FormFieldType, initialState } from "../../../types/formTypes";
 import { FormReducer } from "../../../reducers/formReducer";
+import { t } from "i18next";
 
 export default function OptionAdder(props: {
   emptyFieldAlertCB: () => void;
@@ -72,7 +73,7 @@ export default function OptionAdder(props: {
           className="bg-green-500 text-white px-3 text-lg capitalize rounded-xl m-3  mx-auto h-10  focus:outline-none focus:bg-green-600
           hover:bg-green-600"
         >
-          Add
+          {t("add")}
         </button>
       </form>
     </div>

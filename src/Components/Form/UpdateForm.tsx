@@ -8,12 +8,14 @@ import {
 import CustomInputField from "../common/CustomInputField";
 import { FormReducer } from "../../reducers/formReducer";
 import { updateForm } from "../../utils/apiUtils";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateForm(props: { form: FormItem }) {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
   const [errors, setErrors] = useState<Errors<FormItem>>({});
   const { form } = props;
+  const { t } = useTranslation();
+
   useEffect(() => {
     dispatch({ type: "FETCH_FORM", form: form ? form : { title: "" } });
   }, [form]);

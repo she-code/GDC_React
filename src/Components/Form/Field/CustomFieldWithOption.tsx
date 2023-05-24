@@ -9,8 +9,8 @@ import {
 } from "../../../types/formTypes";
 import Divider from "../../common/Divider";
 import type { Identifier, XYCoord } from "dnd-core";
-import { useDrag, useDrop } from "react-dnd";
-import { t } from "i18next";
+import { DragSourceMonitor, useDrag, useDrop } from "react-dnd";
+import { useTranslation } from "react-i18next";
 
 interface DragItem {
   index: number;
@@ -44,6 +44,7 @@ export default function CustomFieldWithOption(props: {
     moveCard,
   } = props;
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ handlerId }, drop] = useDrop<
     DragItem,
@@ -102,7 +103,7 @@ export default function CustomFieldWithOption(props: {
     item: () => {
       return { id, index };
     },
-    collect: (monitor: any) => ({
+    collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
   });

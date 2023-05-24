@@ -3,7 +3,7 @@ import { getFormField, updateFormField } from "../../../utils/apiUtils";
 import { navigate } from "raviger";
 import { FormFieldType, initialState } from "../../../types/formTypes";
 import { FormReducer } from "../../../reducers/formReducer";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function OptionAdder(props: {
   emptyFieldAlertCB: () => void;
@@ -15,6 +15,8 @@ export default function OptionAdder(props: {
   const [state, dispatchForm] = useReducer(FormReducer, initialState);
   const { formField, formId } = props;
   const [option, setOption] = useState("");
+  const { t } = useTranslation();
+
   useEffect(() => {
     const getForm = async () => {
       const form_field = await getFormField(formId, formField?.id as number);

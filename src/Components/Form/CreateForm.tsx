@@ -9,11 +9,12 @@ import { navigate } from "raviger";
 import CustomInputField from "../common/CustomInputField";
 import { FormReducer } from "../../reducers/formReducer";
 import { createForm } from "../../utils/apiUtils";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function CreateForm() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
   const [errors, setErrors] = useState<Errors<FormItem>>({});
+  const { t } = useTranslation();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

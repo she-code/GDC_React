@@ -1,10 +1,11 @@
 import React from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useState } from "react";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function ShareForm(props: { formID: number }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
   const onCopy = () => {
     setCopied(true);

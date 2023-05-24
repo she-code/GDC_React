@@ -12,12 +12,13 @@ import { deleteForm, listForms } from "../../utils/apiUtils";
 import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 import FormPagination from "./FormPagination";
 
 export default function FormsList() {
   const [formState, dispatch] = useReducer(FormReducer, initialState);
-
+  const { t } = useTranslation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formId, setFormId] = useState(0);
   const [{ search }, setQuery] = useQueryParams<{ search: string }>();
@@ -148,7 +149,7 @@ export default function FormsList() {
                   d="M12 4.5v15m7.5-7.5h-15"
                 />
               </svg>
-              <span className="text-lg">New Form</span>
+              <span className="text-lg">{t("newForm")}</span>
             </button>
           </div>
           <form

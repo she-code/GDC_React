@@ -37,7 +37,7 @@ import Loading from "../common/Loading";
 import { getAuthToken } from "../../utils/storageUtils";
 import ShareForm from "./ShareForm";
 import TextField from "./Field/TextField";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const fetchForm = async (id: number) => {
   try {
@@ -54,6 +54,7 @@ export default function Form(props: { id: number }) {
   const titleRef = useRef<HTMLInputElement>(null);
   const selectRef = useRef<HTMLSelectElement | null>(null);
   const [cards, setCards] = useState(state?.formFields || []);
+  const { t } = useTranslation();
 
   //checks if the user is authenticated
   useEffect(() => {

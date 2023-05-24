@@ -10,13 +10,14 @@ import {
 import { getForm, getFormFields, updateFormField } from "../../utils/apiUtils";
 import CustomInputField from "../common/CustomInputField";
 import { Pagination } from "../../types/common";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function UpdateFormField(props: {
   formId: number;
   formField: FormFieldType;
 }) {
   const { formField, formId } = props;
+  const { t } = useTranslation();
   const [formState, dispatch] = useReducer(FormReducer, initialState);
   const [errors, setErrors] = useState<Errors<FormFieldType>>({});
   const [optionValues, setOptionValues] = useState(
@@ -133,7 +134,7 @@ export default function UpdateFormField(props: {
           {errors.kind && <p className="text-red-500">{errors.kind}</p>}
         </div>
         {formState?.formField?.kind !== "TEXT" && (
-          <p className="font-semibold text-lg">Options</p>
+          <p className="font-semibold text-lg">{t("options")}</p>
         )}
         <div className=" max-h-36 overflow-y-auto  border-3 border-gray-200 ml-3 divide divide-y-2 mb-3 w-3/4 scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300  scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {formState?.formField?.options &&

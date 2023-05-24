@@ -1,4 +1,4 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 type PaginationProps = {
   currentPage: number;
@@ -11,6 +11,8 @@ type PaginationProps = {
 
 export default function FormPagination(props: PaginationProps) {
   const { currentPage, totalPages, onPageChange, count, offset, limit } = props;
+  const { t } = useTranslation();
+
   const handlePageClick = (page: number) => {
     onPageChange(page);
   };

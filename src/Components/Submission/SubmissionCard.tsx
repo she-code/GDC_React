@@ -1,4 +1,4 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Link } from "raviger";
 
 export default function SubmissionCard(props: {
@@ -8,6 +8,7 @@ export default function SubmissionCard(props: {
   index: number;
 }) {
   const { formId, answersCount, submissionId, index } = props;
+  const { t } = useTranslation();
   return (
     <div
       className="flex my-2 p-5 justify-between shadow-md w-full rounded-lg bg-white focus:outline-none

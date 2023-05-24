@@ -5,9 +5,10 @@ import { submissionIntialState, Submission } from "../../types/responseTypes";
 import { getSubmissions } from "../../utils/apiUtils";
 import Loading from "../common/Loading";
 import SubmissionCard from "./SubmissionCard";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function SubmissionsList(props: { formId: number }) {
+  const { t } = useTranslation();
   const [state, dispatch] = useReducer(
     submissionReducer,
     submissionIntialState

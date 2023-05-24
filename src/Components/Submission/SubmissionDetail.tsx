@@ -11,7 +11,7 @@ import { submissionIntialState, Answer } from "../../types/responseTypes";
 import Loading from "../common/Loading";
 import NotFound from "../NotFound";
 import { getAuthToken } from "../../utils/storageUtils";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const fetchSubmission = async (id: number, submissionId: number) => {
   try {
@@ -27,6 +27,7 @@ export default function SubmissionDetail(props: {
   submissionId: number;
 }) {
   const [open, setOpen] = useState(1);
+  const { t } = useTranslation();
   const { id, submissionId } = props;
   const param = usePath();
   const subId = Number(param?.split("/")[4]);

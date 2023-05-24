@@ -15,13 +15,15 @@ export default function Header(props: { title: string; currentUser: User }) {
   const currentLocale = localStorage.getItem("i18next") || "en";
   const [language, setLanguage] = useState(currentLocale);
   useEffect(() => {
-    i18n.changeLanguage(language); // Set initial language
+    // Set initial language
+    i18n.changeLanguage(language);
   }, [language, i18n]);
 
-  const handleChangeLocale = (e: any) => {
+  const handleChangeLocale = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const lang = e.target.value;
     setLanguage(lang);
-    localStorage.setItem("i18next", lang); // Store language preference in localStorage
+    // Store language preference in localStorage
+    localStorage.setItem("i18next", lang);
   };
   return (
     <div className="flex items-center justify-between text-gray-500">
@@ -31,9 +33,15 @@ export default function Header(props: { title: string; currentUser: User }) {
         alt="img"
         style={{ animation: "spin 2s linear infinite" }}
       />
-      <div className="switcher">
+      <div>
         <span>{t("languages")}</span>{" "}
-        <select onChange={handleChangeLocale} value={language}>
+        <select
+          onChange={handleChangeLocale}
+          value={language}
+          tabIndex={0}
+          aria-label="language-switcher"
+          className="focus:outline-none focus:ring-1 focus:ring-blue-600 focus:ring-opacity-50"
+        >
           {languages.map(({ name, code }) => (
             <option key={code} value={code}>
               {name}

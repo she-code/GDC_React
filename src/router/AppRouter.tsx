@@ -1,6 +1,5 @@
+import React, { Suspense } from "react";
 import { useRoutes } from "raviger";
-
-import Home from "../Components/Home";
 import About from "../Components/About";
 import AppContainer from "../Components/AppContainer";
 import Form from "../Components/Form/Form";
@@ -13,10 +12,17 @@ import SubmissionDetail from "../Components/Submission/SubmissionDetail";
 import SubmissionsList from "../Components/Submission/SubmissionsList";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import Loading from "../Components/common/Loading";
+
+const Home = React.lazy(() => import("../Components/Home"));
 
 export default function AppRouter(props: { currentUser: User }) {
   const routes = {
-    "/": () => <Home />,
+    "/": () => (
+      <Suspense fallback={<Loading />}>
+        <Home />
+      </Suspense>
+    ),
 
     "/about": () => <About />,
     "/forms/:formId": ({ formId }: { formId: string }) => (

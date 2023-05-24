@@ -45,7 +45,6 @@ export default function FormsList() {
   };
 
   const handlePageChange = (page: number) => {
-    console.log({ page, offset, currentPage });
     setCurrentPage(page);
   };
 

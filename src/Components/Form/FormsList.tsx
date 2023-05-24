@@ -31,9 +31,6 @@ export default function FormsList() {
   const [count, setCount] = useState(0);
   const [offset, setOffset] = useState(0);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const fetchForms = async (offset: number, limit: number) => {
     try {
       const data: Pagination<FormItem> = await listForms({ offset, limit });
@@ -47,9 +44,13 @@ export default function FormsList() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
-    setOffset((currentPage - 1) * limit);
-    fetchForms(offset, limit)
+    // Fetches initial content on page reload
+    fetchForms((currentPage - 1) * limit, limit)
       .then((data: Pagination<FormItem> | undefined) => {
         if (data) {
           setCount(data.count);
@@ -57,6 +58,8 @@ export default function FormsList() {
             type: "FETCH_FORMS_SUCCESS",
             forms: data.results ? data.results : [],
           });
+          // Updates totalPages on page reload
+          setTotalPages(Math.ceil(data.count / limit));
         }
       })
       .catch((error) => {
@@ -65,7 +68,31 @@ export default function FormsList() {
           error: "Failed to fetch data",
         });
       });
-  }, [currentPage, limit, offset]);
+  }, [currentPage, limit, dispatch]);
+
+  // Fetch forms and update pagination after API response
+  useEffect(() => {
+    setOffset((currentPage - 1) * limit);
+
+    if (currentPage !== 1) {
+      fetchForms(offset, limit)
+        .then((data: Pagination<FormItem> | undefined) => {
+          if (data) {
+            setCount(data.count);
+            dispatch({
+              type: "FETCH_FORMS_SUCCESS",
+              forms: data.results ? data.results : [],
+            });
+          }
+        })
+        .catch((error) => {
+          dispatch({
+            type: "FETCH_FORMS_FAILURE",
+            error: "Failed to fetch data",
+          });
+        });
+    }
+  }, [currentPage, limit, offset, dispatch]);
 
   const loginAlert = () =>
     toast.info("Please Login", {
@@ -86,6 +113,7 @@ export default function FormsList() {
     try {
       await deleteForm(id);
       dispatch({ type: "DELETE_FORM", formId: id });
+      window.location.reload();
     } catch (error) {
       console.error(error);
     }
@@ -160,37 +188,40 @@ export default function FormsList() {
             {formState?.loading ? (
               <Loading />
             ) : (
-              <div className="mx-5">
-                {formState?.forms
-                  ?.filter((form: FormItem) =>
-                    form.title
-                      .toLowerCase()
-                      .includes(search?.toLowerCase() || "")
-                  )
-                  .map((form: FormItem, index) => (
-                    <div
-                      className="flex gap-2 justify-between my-2 items-center"
-                      key={form.id}
-                    >
-                      <FormCard
-                        title={form?.title}
-                        key={form?.id}
-                        id={form?.id || 0}
-                        handleDeleteEventCB={handleDelete}
-                      />
-                    </div>
-                  ))}
-              </div>
+              <>
+                <div className="mx-5">
+                  {formState?.forms
+                    ?.filter((form: FormItem) =>
+                      form.title
+                        .toLowerCase()
+                        .includes(search?.toLowerCase() || "")
+                    )
+                    .map((form: FormItem) => (
+                      <div
+                        className="flex gap-2 justify-between my-2 items-center"
+                        key={form.id}
+                      >
+                        <FormCard
+                          title={form?.title}
+                          key={form?.id}
+                          id={form?.id || 0}
+                          handleDeleteEventCB={handleDelete}
+                        />
+                      </div>
+                    ))}
+                </div>
+                <FormPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  count={count}
+                  offset={offset}
+                  limit={limit}
+                />
+              </>
             )}
           </div>
-          <FormPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            count={count}
-            offset={offset}
-            limit={limit}
-          />
+
           <Modal open={newForm} closeCB={() => setNewForm(false)}>
             <CreateForm />
           </Modal>

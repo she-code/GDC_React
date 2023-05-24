@@ -114,8 +114,14 @@ type UpdateFieldKind = {
   type: "UPDATE_FIELD_KIND";
   kind: FormFieldKind;
 };
+
+type SetLoading = {
+  type: "SET_LOADING";
+  loading: boolean;
+};
 export type FormAction =
   | FetchFormsSucess
+  | SetLoading
   | FetchFormsError
   | FetchForm
   | SetError

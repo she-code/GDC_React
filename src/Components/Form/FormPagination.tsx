@@ -17,7 +17,7 @@ export default function FormPagination(props: PaginationProps) {
 
   const renderPaginationNavs = (): JSX.Element[] => {
     const navs: JSX.Element[] = [];
-    for (let i = 1; i <= totalPages; i++) {
+    for (let i = 1; i < totalPages + 1; i++) {
       navs.push(
         <button
           key={i}
@@ -78,13 +78,13 @@ export default function FormPagination(props: PaginationProps) {
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            {t("showing")}
+            {t("showing")} <span className="font-medium">{offset + 1}</span> to{" "}
             <span className="font-medium">
-              {offset === 0 ? offset + 1 : offset}
-            </span>{" "}
-            {t("to")}
-            <span className="font-medium">
-              {limit > count ? count : offset + limit}
+              {limit > count
+                ? count
+                : count - offset < offset
+                ? count
+                : offset + limit}
             </span>{" "}
             {t("of")} <span className="font-medium">{count}</span>
             {t("results")}

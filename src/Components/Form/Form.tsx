@@ -86,7 +86,7 @@ export default function Form(props: { id: number }) {
       }
     };
     getForm();
-  }, [props.id]);
+  }, [props.id, dispatch, state?.formFields?.length]);
 
   //updates the title
   useEffect(() => {
@@ -127,8 +127,8 @@ export default function Form(props: { id: number }) {
         value: "",
         meta: {},
       });
+      console.log({ newField });
       if (newField) {
-        navigate(`/forms/${state?.form?.id}`);
         dispatch({
           type: "ADD_FORM_FIELD",
           formField: newField,
@@ -136,6 +136,7 @@ export default function Form(props: { id: number }) {
             dispatch({ type: "CLEAR_FORM_FIELD", kind: "TEXT", label: "" });
           },
         });
+        navigate(`/forms/${state?.form?.id}`);
       }
     } catch (error) {
       console.error(error);
@@ -287,7 +288,7 @@ export default function Form(props: { id: number }) {
           <>
             {state?.formFields?.length > 0 ? (
               <>
-                {cards?.map((field: FormFieldType, index: number) => {
+                {cards.map((field: FormFieldType, index: number) => {
                   switch (field.kind) {
                     case "TEXT":
                       return (
